@@ -12,14 +12,6 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
-//var builtins = map[string]*object.Builtin{
-//	"len": &object.Builtin{
-//		Fn:func(args ...object.Object) object.Object{
-//			return NULL
-//		},
-//	},
-//}
-
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 
@@ -82,8 +74,24 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return args[0]
 		}
 		return applyFunction(function, args)
+	case *ast.ArrayLiteral:
+		elements := evalExpression(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]){
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
 	case *ast.StringLiteral:
 		return &object.String{Value:node.Value}
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left){
+			return left
+		}
+		index := Eval(node.Index, env)
+		if isError(index){
+			return index
+		}
+		return evalIndexExpression(left, index)
 	}
 	return nil
 }
@@ -103,9 +111,6 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 	var result object.Object
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
-		//if result != nil && result.Type() == object.RETURN_VALUE_OBJ {
-		//	return result
-		//}
 		if result != nil {
 			rt := result.Type()
 			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ{
@@ -241,9 +246,6 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var result object.Object
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
-		//if returnValue, ok := result.(*object.ReturnValue); ok {
-		//	return returnValue.Value
-		//}
 		switch result := result.(type) {
 		case *object.ReturnValue:
 			return result.Value
@@ -266,11 +268,6 @@ func isError(obj object.Object) bool {
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment)object.Object{
-	//val, ok := env.Get(node.Value)
-	//if !ok{
-	//	return newError("identifier not found: " + node.Value)
-	//}
-	//return val
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
@@ -292,14 +289,27 @@ func evalExpression(exps []ast.Expression, env *object.Environment)[]object.Obje
 	return result
 }
 
+func evalIndexExpression(left, index object.Object)object.Object{
+	switch {
+	case left.Type()==object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("index operator not support:%s", left.Type())
+
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object{
+	arrayObject :=array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+	if idx<0 || idx > max{
+		return NULL
+	}
+	return arrayObject.Elements[idx]
+}
+
 func applyFunction(fn object.Object, args []object.Object) object.Object{
-	//function, ok := fn.(*object.Function)
-	//if !ok {
-	//	return newError("not a function: %s", fn.Type())
-	//}
-	//extendEnv := extendFunctionEnv(function, args)
-	//evaluated := Eval(function.Body, extendEnv)
-	//return upwrapReturnValue(evaluated)
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(fn, args)
