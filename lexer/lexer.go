@@ -79,6 +79,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RBRACKET, l.ch)
 	case ':':
 		tok = newToken(token.COLON, l.ch)
+	case '.':
+		l.readChar()
+		tok.Type = token.FLOAT
+		tok.Literal = "."+l.readNumber()
 	case byte(0):
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -88,9 +92,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
-			return tok
+			return l.readDecimal()
 		} else {
 			tok = newToken(token.IllEGAL, l.ch)
 		}
@@ -127,6 +129,17 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readDecimal() token.Token{
+	integer := l.readNumber()
+	if l.ch != '.'{
+		return token.Token{Type: token.INT, Literal: integer}
+	}else{
+		l.readChar()
+		fraction := l.readNumber()
+		return token.Token{Type: token.FLOAT, Literal: integer+"."+fraction}
+	}
 }
 
 func (l *Lexer) readString() string {

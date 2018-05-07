@@ -14,6 +14,7 @@ func TestLetStatements(t *testing.T) {
 		expectedValue      interface{}
 	}{
 		{"let x =5;", "x", 5},
+		{"let z =1.3;", "z", 1.3},
 		{"let y = true;", "y", true},
 		{"let foobar=y;", "foobar", "y"},
 	}
@@ -225,6 +226,20 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+// skip float literal test
+func testFloatLiteral(t *testing.T, exp ast.Expression, v float64) bool {
+	float, ok := exp.(*ast.FloatLiteral)
+	if !ok {
+		t.Errorf("exp not *ast.FloatLiteral. got=%T", exp)
+		return false
+	}
+	if float.Value != v {
+		t.Errorf("float.Value not %f. got=%f", v, float.Value)
+		return false
+	}
+	return true
+}
+
 func TestParsingInfixExpression(t *testing.T) {
 	infixTests := []struct {
 		input      string
@@ -232,6 +247,7 @@ func TestParsingInfixExpression(t *testing.T) {
 		operator   string
 		rightValue interface{}
 	}{
+		{"0.4+1.3", 0.4, "+", 1.3},
 		{"5+5;", 5, "+", 5},
 		{"5-5;", 5, "-", 5},
 		{"5*5;", 5, "*", 5},
@@ -339,8 +355,8 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 		return false
 	}
 	return true
-
 }
+
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
@@ -351,6 +367,10 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		return testIdentifier(t, exp, v)
 	case bool:
 		return testBooleanLiteral(t, exp, v)
+	case float32:
+		return testFloatLiteral(t, exp, float64(v))
+	case float64:
+		return testFloatLiteral(t, exp, v)
 	}
 	t.Errorf("type of exp not handled. got=%T", exp)
 	return false

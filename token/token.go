@@ -12,6 +12,7 @@ const (
 	EOF       = "EOF"
 	IDENT     = "IDENT"
 	INT       = "INT"
+	FLOAT     = "FLOAT"
 	ASSIGN    = "="
 	PLUS      = "+"
 	COMMA     = ","
@@ -39,6 +40,7 @@ const (
 	LBRACKET  = "["
 	RBRACKET  = "]"
 	COLON     = ":"
+	DOT       = "."
 )
 
 var keywords = map[string]TokenType{

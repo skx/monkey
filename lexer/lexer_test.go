@@ -55,6 +55,9 @@ if(5<10){
 "foo bar"
 [1,2];
 {"foo":"bar"}
+1.2
+0.5
+.3
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -146,6 +149,9 @@ if(5<10){
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
 		{token.RBRACE, "}"},
+		{token.FLOAT, "1.2"},
+		{token.FLOAT, "0.5"},
+		{token.FLOAT, ".3"},
 		{token.EOF, ""},
 	}
 	l := New(input)
