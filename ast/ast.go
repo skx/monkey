@@ -197,8 +197,9 @@ type FunctionLiteral struct {
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
-func (fl *FunctionLiteral) expressionNode() {}
-func (fl *FunctionLiteral) TokenLiteral() string {return fl.Token.Literal}
+
+func (fl *FunctionLiteral) expressionNode()      {}
+func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
 func (fl *FunctionLiteral) String() string {
 	var out bytes.Buffer
 	params := make([]string, 0)
@@ -215,16 +216,17 @@ func (fl *FunctionLiteral) String() string {
 }
 
 type CallExpression struct {
-	Token token.Token
-	Function Expression
+	Token     token.Token
+	Function  Expression
 	Arguments []Expression
 }
-func (ce *CallExpression) expressionNode() {}
-func (ce *CallExpression) TokenLiteral() string {return ce.Token.Literal}
+
+func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
 func (ce *CallExpression) String() string {
 	var out bytes.Buffer
-	args :=make([]string, 0)
-	for _, a := range ce.Arguments{
+	args := make([]string, 0)
+	for _, a := range ce.Arguments {
 		args = append(args, a.String())
 	}
 	out.WriteString(ce.Function.String())
@@ -239,21 +241,21 @@ type StringLiteral struct {
 	Value string
 }
 
-func (sl *StringLiteral) expressionNode() {}
-func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal}
-func (sl *StringLiteral) String() string { return sl.Token.Literal}
-
+func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
+func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
 type ArrayLiteral struct {
-	Token token.Token
+	Token    token.Token
 	Elements []Expression
 }
-func (al *ArrayLiteral) expressionNode() {}
-func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal}
+
+func (al *ArrayLiteral) expressionNode()      {}
+func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
 func (al *ArrayLiteral) String() string {
 	var out bytes.Buffer
 	elements := make([]string, 0)
-	for _, el := range al.Elements{
+	for _, el := range al.Elements {
 		elements = append(elements, el.String())
 	}
 	out.WriteString("[")
@@ -268,8 +270,8 @@ type IndexExpression struct {
 	Index Expression
 }
 
-func (ie *IndexExpression) expressionNode() {}
-func (ie *IndexExpression) TokenLiteral() string {return ie.Token.Literal}
+func (ie *IndexExpression) expressionNode()      {}
+func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
 func (ie *IndexExpression) String() string {
 	var out bytes.Buffer
 	out.WriteString("(")
@@ -285,12 +287,12 @@ type HashLiteral struct {
 	Pairs map[Expression]Expression
 }
 
-func (hl *HashLiteral) expressionNode() {}
-func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal}
+func (hl *HashLiteral) expressionNode()      {}
+func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
 func (hl *HashLiteral) String() string {
 	var out bytes.Buffer
 	pairs := make([]string, 0)
-	for key, value := range hl.Pairs{
+	for key, value := range hl.Pairs {
 		pairs = append(pairs, key.String()+":"+value.String())
 	}
 	out.WriteString("{")

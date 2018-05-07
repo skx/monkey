@@ -185,8 +185,8 @@ func TestErrorHandling(t *testing.T) {
 			}
 			return 1;
 }`, "unknown operator: BOOLEAN + BOOLEAN"},
-{"foobar", "identifier not found: foobar"},
-{`"Hello" - "World"`, "unknown operator: STRING - STRING"},
+		{"foobar", "identifier not found: foobar"},
+		{`"Hello" - "World"`, "unknown operator: STRING - STRING"},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -203,10 +203,9 @@ func TestErrorHandling(t *testing.T) {
 	}
 }
 
-
-func TestLetStatements(t *testing.T){
-	tests := []struct{
-		input string
+func TestLetStatements(t *testing.T) {
+	tests := []struct {
+		input  string
 		expect int64
 	}{
 		{"let a=5;a;", 5},
@@ -214,12 +213,12 @@ func TestLetStatements(t *testing.T){
 		{"let a=5; let b=a; b;", 5},
 		{"let a=5; let b=a; let c=a+b+5; c;", 15},
 	}
-	for _, tt := range tests{
+	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expect)
 	}
 }
 
-func TestFunctionObject(t *testing.T){
+func TestFunctionObject(t *testing.T) {
 	input := `fn(x) { x+2; };`
 	evaluated := testEval(input)
 	fn, ok := evaluated.(*object.Function)
@@ -231,18 +230,18 @@ func TestFunctionObject(t *testing.T){
 		t.Fatalf("function has wrong parameters. Parameters=%+v",
 			fn.Parameters)
 	}
-	if fn.Parameters[0].String() != "x"{
+	if fn.Parameters[0].String() != "x" {
 		t.Fatalf("parameter is not 'x'. got=%q", fn.Parameters[0])
 	}
 	expectedBody := `(x + 2)`
-	if fn.Body.String() != expectedBody{
+	if fn.Body.String() != expectedBody {
 		t.Fatalf("body is not %q. got=%q", expectedBody, fn.Body)
 	}
 }
 
-func TestFunctionApplication(t *testing.T){
-	tests := []struct{
-		input string
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
 		expected int64
 	}{
 		{"let identity=fn(x){x;}; identity(5);", 5},
@@ -252,12 +251,12 @@ func TestFunctionApplication(t *testing.T){
 		{"let add=fn(x,y){x+y;}; add(5+5, add(5,5));", 20},
 		{"fn(x){x;}(5)", 5},
 	}
-	for _, tt := range tests{
+	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
 	}
 }
 
-func TestClosures(t *testing.T){
+func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
 	fn(y) { x+y };
@@ -268,22 +267,22 @@ addTwo(2);
 	testIntegerObject(t, testEval(input), 4)
 }
 
-func TestStringLiteral(t *testing.T){
+func TestStringLiteral(t *testing.T) {
 	input := `"Hello World!"`
 	evaluated := testEval(input)
 	str, ok := evaluated.(*object.String)
-	if !ok{
+	if !ok {
 		t.Fatalf("object is not String. got=%T(%+v)",
 			evaluated, evaluated)
 	}
-	if str.Value != "Hello World!"{
+	if str.Value != "Hello World!" {
 		t.Errorf("String has wrong value. got=%q", str.Value)
 	}
 }
 
-func TestBuiltinFunction(t *testing.T){
-	tests :=[]struct{
-		input string
+func TestBuiltinFunction(t *testing.T) {
+	tests := []struct {
+		input    string
 		expected interface{}
 	}{
 		{`len("")`, 0},
@@ -292,18 +291,18 @@ func TestBuiltinFunction(t *testing.T){
 		{`len(1)`, "argument to `len` not supported, got=INTEGER"},
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
 	}
-	for _, tt := range tests{
+	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 		switch expected := tt.expected.(type) {
 		case int:
 			testIntegerObject(t, evaluated, int64(expected))
 		case string:
 			errObj, ok := evaluated.(*object.Error)
-			if !ok{
+			if !ok {
 				t.Errorf("object is not Error, got=%T(%+v)",
 					evaluated, evaluated)
 			}
-			if errObj.Message!=expected{
+			if errObj.Message != expected {
 				t.Errorf("wrong err messsage. expected=%q, got=%q",
 					expected, errObj.Message)
 			}
@@ -311,11 +310,11 @@ func TestBuiltinFunction(t *testing.T){
 	}
 }
 
-func TestArrayLiterals(t *testing.T){
+func TestArrayLiterals(t *testing.T) {
 	input := `[1, 2*2, 3+3]`
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Array)
-	if !ok{
+	if !ok {
 		t.Fatalf("object is not Array, got=%T(%v)",
 			evaluated, evaluated)
 	}
@@ -328,9 +327,9 @@ func TestArrayLiterals(t *testing.T){
 	testIntegerObject(t, result.Elements[2], 6)
 }
 
-func TestArrayIndexExpression(t *testing.T){
-	tests := []struct{
-		input string
+func TestArrayIndexExpression(t *testing.T) {
+	tests := []struct {
+		input    string
 		expected interface{}
 	}{
 		{
@@ -370,18 +369,18 @@ func TestArrayIndexExpression(t *testing.T){
 			nil,
 		},
 	}
-	for _, tt := range tests{
+	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
 			testIntegerObject(t, evaluated, int64(integer))
-		}else {
+		} else {
 			testNullObject(t, evaluated)
 		}
 	}
 }
 
-func TestHashLiterals(t *testing.T){
+func TestHashLiterals(t *testing.T) {
 	input := `let two="two";
 	{
 		"one":10-9,
@@ -398,17 +397,17 @@ func TestHashLiterals(t *testing.T){
 			evaluated, evaluated)
 	}
 	expected := map[object.HashKey]int64{
-		(&object.String{Value:"one"}).HashKey() : 1,
-		(&object.String{Value:"two"}).HashKey():2,
-		(&object.String{Value:"three"}).HashKey():3,
-		(&object.Integer{Value:4}).HashKey():4,
-		TRUE.HashKey():5,
-		FALSE.HashKey():6,
+		(&object.String{Value: "one"}).HashKey():   1,
+		(&object.String{Value: "two"}).HashKey():   2,
+		(&object.String{Value: "three"}).HashKey(): 3,
+		(&object.Integer{Value: 4}).HashKey():      4,
+		TRUE.HashKey():                             5,
+		FALSE.HashKey():                            6,
 	}
-	if len(result.Pairs) != len(expected){
-		t.Fatalf("Hash has wrong num of pairs. got=%d",len(result.Pairs))
+	if len(result.Pairs) != len(expected) {
+		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
 	}
-	for expectedKey, expectedValue := range expected{
+	for expectedKey, expectedValue := range expected {
 		pair, ok := result.Pairs[expectedKey]
 		if !ok {
 			t.Errorf("no pair for given key in Pairs")
