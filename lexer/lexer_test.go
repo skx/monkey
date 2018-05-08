@@ -58,6 +58,7 @@ if(5<10){
 1.2
 0.5
 .3
+世界
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -152,6 +153,7 @@ if(5<10){
 		{token.FLOAT, "1.2"},
 		{token.FLOAT, "0.5"},
 		{token.FLOAT, ".3"},
+		{token.IDENT, "世界"},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -163,5 +165,17 @@ if(5<10){
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 		}
+	}
+}
+
+func TestUnicodeLexer(t *testing.T) {
+	input := `世界`
+	l := New(input)
+	tok := l.NextToken()
+	if tok.Type != token.IDENT {
+		t.Fatalf("token type wrong, expected=%q, got=%q", token.IDENT, tok.Type)
+	}
+	if tok.Literal != "世界" {
+		t.Fatalf("token literal wrong, expected=%q, got=%q", "世界", tok.Literal)
 	}
 }

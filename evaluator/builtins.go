@@ -98,30 +98,30 @@ var builtins = map[string]*object.Builtin{
 			return &object.Array{Elements: newElements}
 		},
 	},
-	"set":{
-		Fn:func(args ...object.Object) object.Object{
-			if len(args)!=3{
+	"set": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 3 {
 				return newError("wrong number of arguments. got=%d, want=2",
 					len(args))
 			}
-			if args[0].Type() != object.HASH_OBJ{
+			if args[0].Type() != object.HASH_OBJ {
 				return newError("argument to `set` must be HASH, got=%s",
-				args[0].Type())
+					args[0].Type())
 			}
 			key, ok := args[1].(object.Hashable)
 			if !ok {
 				return newError("key `set` into HASH must be Hashable, got=%s",
-				args[1].Type())
+					args[1].Type())
 			}
 			newHash := make(map[object.HashKey]object.HashPair)
 			hash := args[0].(*object.Hash)
 			for k, v := range hash.Pairs {
-				newHash[k]=v
+				newHash[k] = v
 			}
 			newHashKey := key.HashKey()
-			newHashPair := object.HashPair{Key:args[1], Value:args[2]}
+			newHashPair := object.HashPair{Key: args[1], Value: args[2]}
 			newHash[newHashKey] = newHashPair
-			return &object.Hash{Pairs:newHash}
+			return &object.Hash{Pairs: newHash}
 		},
 	},
 	"puts": {

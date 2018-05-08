@@ -1,11 +1,11 @@
 package evaluator
 
 import (
+	"math"
 	"monkey/lexer"
 	"monkey/object"
 	"monkey/parser"
 	"testing"
-	"math"
 )
 
 func TestEvalArithmeticExpression(t *testing.T) {
@@ -61,7 +61,7 @@ func testDecimalObject(t *testing.T, obj object.Object, expected interface{}) bo
 		return false
 	}
 }
-func testIntegerObject(t *testing.T, obj object.Object, expected int64)bool{
+func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {
 		t.Errorf("obj is not Integer. got=%T(%+v)", obj, obj)
@@ -80,7 +80,7 @@ func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
 		t.Errorf("obj is not Float. got=%T(%+v)", obj, obj)
 		return false
 	}
-	if math.Abs(result.Value - expected) > 0.00001 {
+	if math.Abs(result.Value-expected) > 0.00001 {
 		t.Errorf("object has wrong value. got=%f, want=%f",
 			result.Value, expected)
 		return false

@@ -22,7 +22,7 @@ func Start(in io.Reader, out io.Writer) {
 			return
 		}
 		line := scanner.Text()
-		if line == "exit()" || line == "exit"{
+		if line == "exit()" || line == "exit" {
 			break
 		}
 		l := lexer.New(line)

@@ -133,6 +133,6 @@ print literal value of objects.
 To make `monkey` interpreter language to be more powerfull, it is deserved improving it.
 
 - [x] float type
-- [ ] unicode literal
+- [x] unicode literal
 - [ ] loop branch
 - [ ] ... 
