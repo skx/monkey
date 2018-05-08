@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"hash/fnv"
 	"monkey/ast"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type ObjectType string

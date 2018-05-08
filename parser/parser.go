@@ -201,15 +201,15 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 func (p *Parser) parseFloatLiteral() ast.Expression {
 	flo := &ast.FloatLiteral{Token: p.curToken}
-	value, err := strconv.ParseFloat(p.curToken.Literal,64)
-	if err!=nil {
+	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
+	if err != nil {
 		msg := fmt.Sprintf("could not parse %q as float", p.curToken.Literal)
 		p.errors = append(p.errors, msg)
 		return nil
 	}
 	flo.Value = value
 	return flo
-} 
+}
 
 func (p *Parser) parseBoolean() ast.Expression {
 	return &ast.Boolean{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
