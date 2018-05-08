@@ -5,12 +5,13 @@ import (
 	"monkey/object"
 	"monkey/parser"
 	"testing"
+	"math"
 )
 
-func TestEvalIntegerExpression(t *testing.T) {
+func TestEvalArithmeticExpression(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected int64
+		expected interface{}
 	}{
 		{"5", 5},
 		{"10", 10},
@@ -29,10 +30,16 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3*3*3+10", 37},
 		{"3*(3*3)+10", 37},
 		{"(5+10*2+15/3)*2+-10", 50},
+		{"1.2", 1.2},
+		{"-2.3", -2.3},
+		{"1.2+3.2", 4.4},
+		{"1+2.3", 3.3},
+		{"2.3*1.0", 2.3},
+		{"3.2-5.8", -2.6},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testDecimalObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -44,7 +51,17 @@ func testEval(input string) object.Object {
 	return Eval(program, env)
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+func testDecimalObject(t *testing.T, obj object.Object, expected interface{}) bool {
+	switch exp := expected.(type) {
+	case int64:
+		return testIntegerObject(t, obj, exp)
+	case float64:
+		return testFloatObject(t, obj, exp)
+	default:
+		return false
+	}
+}
+func testIntegerObject(t *testing.T, obj object.Object, expected int64)bool{
 	result, ok := obj.(*object.Integer)
 	if !ok {
 		t.Errorf("obj is not Integer. got=%T(%+v)", obj, obj)
@@ -52,6 +69,19 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
+func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
+	result, ok := obj.(*object.Float)
+	if !ok {
+		t.Errorf("obj is not Float. got=%T(%+v)", obj, obj)
+		return false
+	}
+	if math.Abs(result.Value - expected) > 0.00001 {
+		t.Errorf("object has wrong value. got=%f, want=%f",
 			result.Value, expected)
 		return false
 	}
@@ -136,7 +166,7 @@ func TestIfElseExpression(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testDecimalObject(t, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -164,7 +194,7 @@ func TestReturnStatements(t *testing.T) {
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testDecimalObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -214,7 +244,7 @@ func TestLetStatements(t *testing.T) {
 		{"let a=5; let b=a; let c=a+b+5; c;", 15},
 	}
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expect)
+		testDecimalObject(t, testEval(tt.input), tt.expect)
 	}
 }
 
@@ -252,7 +282,7 @@ func TestFunctionApplication(t *testing.T) {
 		{"fn(x){x;}(5)", 5},
 	}
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+		testDecimalObject(t, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -264,7 +294,7 @@ let newAdder = fn(x) {
 let addTwo = newAdder(2);
 addTwo(2);
 `
-	testIntegerObject(t, testEval(input), 4)
+	testDecimalObject(t, testEval(input), 4)
 }
 
 func TestStringLiteral(t *testing.T) {
@@ -295,7 +325,7 @@ func TestBuiltinFunction(t *testing.T) {
 		evaluated := testEval(tt.input)
 		switch expected := tt.expected.(type) {
 		case int:
-			testIntegerObject(t, evaluated, int64(expected))
+			testDecimalObject(t, evaluated, int64(expected))
 		case string:
 			errObj, ok := evaluated.(*object.Error)
 			if !ok {
@@ -322,9 +352,9 @@ func TestArrayLiterals(t *testing.T) {
 		t.Fatalf("array has wrong num of elements. got=%d",
 			len(result.Elements))
 	}
-	testIntegerObject(t, result.Elements[0], 1)
-	testIntegerObject(t, result.Elements[1], 4)
-	testIntegerObject(t, result.Elements[2], 6)
+	testDecimalObject(t, result.Elements[0], 1)
+	testDecimalObject(t, result.Elements[1], 4)
+	testDecimalObject(t, result.Elements[2], 6)
 }
 
 func TestArrayIndexExpression(t *testing.T) {
@@ -373,7 +403,7 @@ func TestArrayIndexExpression(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testDecimalObject(t, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -412,7 +442,7 @@ func TestHashLiterals(t *testing.T) {
 		if !ok {
 			t.Errorf("no pair for given key in Pairs")
 		}
-		testIntegerObject(t, pair.Value, expectedValue)
+		testDecimalObject(t, pair.Value, expectedValue)
 	}
 
 }
@@ -455,7 +485,7 @@ func TestHashIndexExpression(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testDecimalObject(t, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
