@@ -490,5 +490,19 @@ func TestHashIndexExpression(t *testing.T) {
 			testNullObject(t, evaluated)
 		}
 	}
+}
 
+func TestForLoopExpression(t *testing.T) {
+	input := `
+let x = 1;
+let sum = 0;
+let up = 100;
+for (x < up){
+	let sum = sum + x;
+	let x = x + 1;
+}
+sum
+`
+	evaluated := testEval(input)
+	testDecimalObject(t, evaluated, 4950)
 }

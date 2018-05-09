@@ -102,10 +102,12 @@ func (l *Lexer) NextToken() token.Token {
 	l.readChar()
 	return tok
 }
+
 // return new token
 func newToken(tokenType token.TokenType, ch rune) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
+
 // read Identifier
 func (l *Lexer) readIdentifier() string {
 	position := l.position
@@ -121,6 +123,7 @@ func (l *Lexer) skipWhitespace() {
 		l.readChar()
 	}
 }
+
 // read number
 func (l *Lexer) readNumber() string {
 	position := l.position
@@ -133,7 +136,7 @@ func (l *Lexer) readNumber() string {
 // read until white space
 func (l *Lexer) readUntilWhitespace() string {
 	position := l.position
-	for !isWhitespace(l.ch){
+	for !isWhitespace(l.ch) {
 		l.readChar()
 	}
 	return string(l.characters[position:l.position])
@@ -142,22 +145,23 @@ func (l *Lexer) readUntilWhitespace() string {
 // read decimal
 func (l *Lexer) readDecimal() token.Token {
 	integer := l.readNumber()
-	if l.ch == rune('.'){
+	if l.ch == rune('.') {
 		l.readChar()
 		fraction := l.readNumber()
-		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
-			return token.Token{Type:token.FLOAT, Literal:integer+"."+fraction}
-		}else {
+		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
+			return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
+		} else {
 			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type: token.IllEGAL, Literal: integer +"." + fraction+illegalPart}
+			return token.Token{Type: token.IllEGAL, Literal: integer + "." + fraction + illegalPart}
 		}
-	}else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) ||  isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
-		return token.Token{Type:token.INT, Literal:integer}
-	}else{
+	} else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
+		return token.Token{Type: token.INT, Literal: integer}
+	} else {
 		illegalPart := l.readUntilWhitespace()
-		return token.Token{Type:token.IllEGAL, Literal:integer+illegalPart}
+		return token.Token{Type: token.IllEGAL, Literal: integer + illegalPart}
 	}
 }
+
 // read float
 func (l *Lexer) readFloat() token.Token {
 	l.readChar()
@@ -165,14 +169,15 @@ func (l *Lexer) readFloat() token.Token {
 	if len(fraction) == 0 {
 		return token.Token{Type: token.IllEGAL, Literal: "."}
 	} else {
-		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
+		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 			return token.Token{Type: token.FLOAT, Literal: "." + fraction}
-		}else{
+		} else {
 			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type:token.IllEGAL, Literal:"."+fraction+illegalPart}
+			return token.Token{Type: token.IllEGAL, Literal: "." + fraction + illegalPart}
 		}
 	}
 }
+
 // read string
 func (l *Lexer) readString() string {
 	position := l.position + 1
@@ -184,6 +189,7 @@ func (l *Lexer) readString() string {
 	}
 	return string(l.characters[position:l.position])
 }
+
 // peek character
 func (l *Lexer) peekChar() rune {
 	if l.readPosition >= len(l.characters) {
@@ -197,10 +203,12 @@ func (l *Lexer) peekChar() rune {
 func isIdentifier(ch rune) bool {
 	return !isDigit(ch) && !isWhitespace(ch) && !isBrace(ch) && !isOperator(ch) && !isComparison(ch) && !isCompound(ch) && !isBrace(ch) && !isParen(ch) && !isBracket(ch) && !isEmpty(ch)
 }
+
 // is white space
 func isWhitespace(ch rune) bool {
 	return ch == rune(' ') || ch == rune('\t') || ch == rune('\n') || ch == rune('\r')
 }
+
 // is operators
 func isOperator(ch rune) bool {
 	return ch == rune('+') || ch == rune('-') || ch == rune('/') || ch == rune('*')
@@ -210,14 +218,17 @@ func isOperator(ch rune) bool {
 func isComparison(ch rune) bool {
 	return ch == rune('=') || ch == rune('!') || ch == rune('>') || ch == rune('<')
 }
+
 // is compound
 func isCompound(ch rune) bool {
 	return ch == rune(',') || ch == rune(':') || ch == rune('"') || ch == rune(';')
 }
+
 // is brace
 func isBrace(ch rune) bool {
 	return ch == rune('{') || ch == rune('}')
 }
+
 // is bracket
 func isBracket(ch rune) bool {
 	return ch == rune('[') || ch == rune(']')
@@ -232,9 +243,8 @@ func isParen(ch rune) bool {
 func isEmpty(ch rune) bool {
 	return rune(0) == ch
 }
+
 // is Digit
 func isDigit(ch rune) bool {
 	return rune('0') <= ch && ch <= rune('9')
 }
-
-

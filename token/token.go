@@ -37,6 +37,7 @@ const (
 	IF        = "IF"
 	ELSE      = "ELSE"
 	RETURN    = "RETURN"
+	FOR       = "FOR"
 	EQ        = "=="
 	NOT_EQ    = "!="
 	STRING    = "STRING"
@@ -54,6 +55,7 @@ var keywords = map[string]TokenType{
 	"if":     IF,
 	"else":   ELSE,
 	"return": RETURN,
+	"for":    FOR,
 }
 
 // LookupIdentifier used to determinate whether identifier is keyword nor not

@@ -48,6 +48,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.ForLoopExpression:
+		return evalForLoopExpression(node, env)
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
 		if isError(val) {
@@ -98,17 +100,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalHashLiteral(node, env)
 	}
 	return nil
-}
-
-func evalStatements(stmts []ast.Statement, env *object.Environment) object.Object {
-	var result object.Object
-	for _, statement := range stmts {
-		result = Eval(statement, env)
-		if returnValue, ok := result.(*object.ReturnValue); ok {
-			return returnValue.Value
-		}
-	}
-	return result
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
@@ -317,6 +308,22 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else {
 		return NULL
 	}
+}
+
+func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {
+	results := []object.Object{NULL}
+	for {
+		condition := Eval(fle.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+		if isTruthy(condition) {
+			results = append(results, Eval(fle.Consequence, env))
+		} else {
+			break
+		}
+	}
+	return results[len(results)-1]
 }
 
 func isTruthy(obj object.Object) bool {

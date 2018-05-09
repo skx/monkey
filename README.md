@@ -134,5 +134,5 @@ To make `monkey` interpreter language to be more powerfull, it is deserved impro
 
 - [x] float type
 - [x] unicode literal
-- [ ] loop branch
+- [x] loop branch
 - [ ] ... 

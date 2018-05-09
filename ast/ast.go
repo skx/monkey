@@ -201,6 +201,24 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type ForLoopExpression struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+}
+
+func (fle *ForLoopExpression) expressionNode()      {}
+func (fle *ForLoopExpression) TokenLiteral() string { return fle.Token.Literal }
+func (fle *ForLoopExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("for (")
+	out.WriteString(fle.Condition.String())
+	out.WriteString(" ) {")
+	out.WriteString(fle.Consequence.String())
+	out.WriteString("}")
+	return out.String()
+}
+
 type FunctionLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier

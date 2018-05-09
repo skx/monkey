@@ -63,6 +63,7 @@ if(5<10){
 9.2世
 4.3.2
 世界
+for
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -162,13 +163,14 @@ if(5<10){
 		{token.IllEGAL, "9.2世"},
 		{token.IllEGAL, "4.3.2"},
 		{token.IDENT, "世界"},
+		{token.FOR, "for"},
 		{token.EOF, ""},
 	}
 	l := New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
-			t.Errorf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
 		}
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
