@@ -129,6 +129,17 @@ print literal value of objects.
 2
 ```
 
+## 2.6 For-loop statements
+
+`monkey` support for-loop statement.
+
+```
+>>> let sum = fn(x) { let i = 1; let sum = 0; for (i < x) { let sum = sum + i; let i = i+1; } return sum; };
+>>> sum(100)
+4950
+```
+
+
 # 3 Extensions
 To make `monkey` interpreter language to be more powerfull, it is deserved improving it.
 
