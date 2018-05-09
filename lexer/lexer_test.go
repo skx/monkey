@@ -58,6 +58,10 @@ if(5<10){
 1.2
 0.5
 .3
+.
+3世
+9.2世
+4.3.2
 世界
 `
 	tests := []struct {
@@ -153,6 +157,10 @@ if(5<10){
 		{token.FLOAT, "1.2"},
 		{token.FLOAT, "0.5"},
 		{token.FLOAT, ".3"},
+		{token.IllEGAL, "."},
+		{token.IllEGAL, "3世"},
+		{token.IllEGAL, "9.2世"},
+		{token.IllEGAL, "4.3.2"},
 		{token.IDENT, "世界"},
 		{token.EOF, ""},
 	}
@@ -160,7 +168,7 @@ if(5<10){
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+			t.Errorf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
 		}
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)

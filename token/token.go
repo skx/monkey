@@ -1,12 +1,15 @@
 package token
 
+// TokenType is a string
 type TokenType string
 
+// Token struct represent the lexer token
 type Token struct {
 	Type    TokenType
 	Literal string
 }
 
+// pre-defined TokenType
 const (
 	IllEGAL   = "ILLEGAL"
 	EOF       = "EOF"
@@ -40,9 +43,9 @@ const (
 	LBRACKET  = "["
 	RBRACKET  = "]"
 	COLON     = ":"
-	DOT       = "."
 )
 
+// reversed keywords
 var keywords = map[string]TokenType{
 	"fn":     FUNCTIOIN,
 	"let":    LET,
@@ -53,8 +56,9 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
-func LookupIdent(ident string) TokenType {
-	if tok, ok := keywords[ident]; ok {
+// LookupIdentifier used to determinate whether identifier is keyword nor not
+func LookupIdentifier(identifier string) TokenType {
+	if tok, ok := keywords[identifier]; ok {
 		return tok
 	}
 	return IDENT
