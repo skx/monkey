@@ -145,13 +145,13 @@ func (l *Lexer) readDecimal() token.Token {
 	if l.ch == rune('.'){
 		l.readChar()
 		fraction := l.readNumber()
-		if isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
+		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
 			return token.Token{Type:token.FLOAT, Literal:integer+"."+fraction}
 		}else {
 			illegalPart := l.readUntilWhitespace()
 			return token.Token{Type: token.IllEGAL, Literal: integer +"." + fraction+illegalPart}
 		}
-	}else if isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) ||  isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
+	}else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) ||  isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch){
 		return token.Token{Type:token.INT, Literal:integer}
 	}else{
 		illegalPart := l.readUntilWhitespace()
@@ -165,7 +165,7 @@ func (l *Lexer) readFloat() token.Token {
 	if len(fraction) == 0 {
 		return token.Token{Type: token.IllEGAL, Literal: "."}
 	} else {
-		if isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
+		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch)  || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 			return token.Token{Type: token.FLOAT, Literal: "." + fraction}
 		}else{
 			illegalPart := l.readUntilWhitespace()
@@ -236,6 +236,5 @@ func isEmpty(ch rune) bool {
 func isDigit(ch rune) bool {
 	return rune('0') <= ch && ch <= rune('9')
 }
-
 
 
