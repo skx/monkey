@@ -152,13 +152,13 @@ func (l *Lexer) readDecimal() token.Token {
 			return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
 		} else {
 			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type: token.IllEGAL, Literal: integer + "." + fraction + illegalPart}
+			return token.Token{Type: token.ILLEGAL, Literal: integer + "." + fraction + illegalPart}
 		}
 	} else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 		return token.Token{Type: token.INT, Literal: integer}
 	} else {
 		illegalPart := l.readUntilWhitespace()
-		return token.Token{Type: token.IllEGAL, Literal: integer + illegalPart}
+		return token.Token{Type: token.ILLEGAL, Literal: integer + illegalPart}
 	}
 }
 
@@ -167,13 +167,13 @@ func (l *Lexer) readFloat() token.Token {
 	l.readChar()
 	fraction := l.readNumber()
 	if len(fraction) == 0 {
-		return token.Token{Type: token.IllEGAL, Literal: "."}
+		return token.Token{Type: token.ILLEGAL, Literal: "."}
 	} else {
 		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 			return token.Token{Type: token.FLOAT, Literal: "." + fraction}
 		} else {
 			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type: token.IllEGAL, Literal: "." + fraction + illegalPart}
+			return token.Token{Type: token.ILLEGAL, Literal: "." + fraction + illegalPart}
 		}
 	}
 }

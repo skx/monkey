@@ -7,12 +7,13 @@ import (
 	"monkey/token"
 	"strconv"
 )
-
+// prefix Parse function
+// infix parase function
 type (
 	prefixParseFn func() ast.Expression
 	infixParseFn  func(ast.Expression) ast.Expression
 )
-
+// precedence order
 const (
 	_ int = iota
 	LOWEST
@@ -24,7 +25,7 @@ const (
 	CALL        // myFunction(X)
 	INDEX       // array[index], map[key]
 )
-
+// each token precedence
 var precedences = map[token.TokenType]int{
 	token.EQ:       EQUALS,
 	token.NOT_EQ:   EQUALS,
@@ -38,14 +39,15 @@ var precedences = map[token.TokenType]int{
 	token.LBRACKET: INDEX,
 }
 
+// Parser object
 type Parser struct {
-	l         *lexer.Lexer
-	curToken  token.Token
-	peekToken token.Token
-	errors    []string
+	l         *lexer.Lexer //lexer 
+	curToken  token.Token  //current token 
+	peekToken token.Token  //next token
+	errors    []string  // errors when parsing
 
-	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns  map[token.TokenType]infixParseFn
+	prefixParseFns map[token.TokenType]prefixParseFn // prefix parse function mapping
+	infixParseFns  map[token.TokenType]infixParseFn // infix parse function mapping
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -63,7 +65,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FOR, p.parseForLoopExpression)
-	p.registerPrefix(token.FUNCTIOIN, p.parseFunctionLiteral)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
@@ -82,17 +84,20 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
+// register prefix function
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
+
+// register infix function
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
-
+// Errors return stored errors
 func (p *Parser) Errors() []string {
 	return p.errors
 }
-
+// if peek token occurs error
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.curToken.Type)
 	p.errors = append(p.errors, msg)

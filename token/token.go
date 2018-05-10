@@ -11,7 +11,7 @@ type Token struct {
 
 // pre-defined TokenType
 const (
-	IllEGAL   = "ILLEGAL"
+	ILLEGAL   = "ILLEGAL"
 	EOF       = "EOF"
 	IDENT     = "IDENT"
 	INT       = "INT"
@@ -30,7 +30,7 @@ const (
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
-	FUNCTIOIN = "FUNCTION"
+	FUNCTION  = "FUNCTION"
 	LET       = "LET"
 	TRUE      = "TRUE"
 	FALSE     = "FALSE"
@@ -48,7 +48,7 @@ const (
 
 // reversed keywords
 var keywords = map[string]TokenType{
-	"fn":     FUNCTIOIN,
+	"fn":     FUNCTION,
 	"let":    LET,
 	"true":   TRUE,
 	"false":  FALSE,
