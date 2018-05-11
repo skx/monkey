@@ -6,12 +6,13 @@ import (
 	"monkey/object"
 )
 
+// pre-defined object including Null, True and False
 var (
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
 )
-
+// Eval: entry point of environment
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 
@@ -102,6 +103,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	return nil
 }
 
+// eval block statement
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
 	for _, statement := range block.Statements {
@@ -116,6 +118,7 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 	return result
 }
 
+// for performance, using single instance of boolean
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
 		return TRUE
@@ -123,6 +126,7 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	return FALSE
 }
 
+// eval prefix expression
 func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {
 	case "!":
@@ -311,19 +315,22 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 }
 
 func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {
-	results := []object.Object{NULL}
+	var rt object.Object
 	for {
 		condition := Eval(fle.Condition, env)
 		if isError(condition) {
 			return condition
 		}
 		if isTruthy(condition) {
-			results = append(results, Eval(fle.Consequence, env))
+			rt := Eval(fle.Consequence, env)
+			if !isError(rt) && (rt.Type() == object.RETURN_VALUE_OBJ || rt.Type() == object.ERROR_OBJ) {
+				return rt
+			}
 		} else {
 			break
 		}
 	}
-	return results[len(results)-1]
+	return rt
 }
 
 func isTruthy(obj object.Object) bool {

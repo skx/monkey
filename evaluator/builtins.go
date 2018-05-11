@@ -5,6 +5,7 @@ import (
 	"monkey/object"
 )
 
+// builtin function maps
 var builtins = map[string]*object.Builtin{
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
