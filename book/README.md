@@ -1,6 +1,6 @@
 **用GO语言编写解析器**
 
-- [前言](ch01/Introduciton.md)
+- [前言](ch01/introduciton.md)
     - [Monkey 编程语言和解释器](ch01/the-Monkey-Programming-Language-and-Interpreter.md)
     - [为什么使用 Go 语言](ch01/Why-Go.md)
     - [如何使用这本书](ch01/How-to-Use-this-Book.md)
