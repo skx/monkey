@@ -4,7 +4,7 @@ A interpreter language implementation in Go
 # 1 Introduction
 [Write an Interpreter in Go](https://interpreterbook.com) source code. 
 
-[Chinese Version](book/README.md)
+[中文翻译](book/README.md)
 
 **Monkey** interpreter language which is implemented Go language. After typing `monkey` in terminal, you get into the `monkey` programming language.
 
