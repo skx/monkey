@@ -8,7 +8,7 @@
 翻译人员 | 章节
 ---|---
 [gaufung](https://github.com/gaufung) | 1.1 - 1.3
-  |  
+[Jehu Lu](https://github.com/lwhile)  | 2.1 - 2.5
   
   
 
