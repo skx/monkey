@@ -31,3 +31,87 @@ Ruby语言的使用者不需要接触基础数据类型，类似原生值类型�
 
 ## 对象系统的基础
 
+因为我们对Monkey解释器的性能暂时没有考虑，所以我们选择一种简单的方式：我们将要为我们每一个遇到的类型进行描述为一个 `Object`，它是我么设计的接口，每一个值都被封装到一个结构中，该结构将实现 `Object` 接口。
+
+在新的 `object` 包中，我们定义 `Object` 接口和 `ObjectType` 类型：
+```go
+//object/object.go
+package object
+type ObjectType string
+
+type Object interface {
+    Type() ObjectType
+    Inspect() string
+}
+```
+它看上去很简单，和我们先前在 `token`包以及 `Token`和 `TokenType`类型非常像，不同点就是 `token`是一个结构，而 `Object`是一个接口。原因是每一个值都需要不同的内部表达而这样做很容易定义不同的结构类型而不是将布尔型和整型都放到同样的结构体字段中。
+
+目前在Monkey解释器中我们只有三种数据类型: null，布尔型和整型。让我们开始实现整型并构建我们的值系统。
+
+**Integers**
+
+`object.Integer`类型就跟你想象中的一样小巧：
+```go
+import (
+    "fmt"
+)
+type Integer struct {
+    Value int64
+}
+func (i *Integer) Inpsect() string { return fmt.Sprintf("%d", i.Value) }
+```
+无论什么时候我们在源代码中遇到整型字面值，我们首先将其转换成一个 `ast.IntegerLiteral`，然后在计算那个抽象语法树的节点的时候，我们将其转换为一个 `object.Integer`，将它的值存入我们结构中然后这个结构的引用传出去。
+
+为了让 `object.Integer`结构去实现 `object.Object`接口，仍然需要一个 `Type()`方法用来返回它的 `ObjectType`。就像我们在 `token.TokenType`，我们为每一个 `ObjectType`定义一个常量：
+```go
+// object/object.go
+import "fmt"
+type ObjectType string 
+const (
+    INTEGER_OBJ = "INTEGER"
+)
+```
+正如我说的，就像我们在 `token` 包中所做的一样，这样我们就可以将 `Type()` 方法添加到`*object.Integer`结构中：
+```go
+//object/object.go
+func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
+```
+到此为止， 我们完成了 `Integer`类型，接下来进入下一个数据类型：布尔型。
+
+**Booleans**
+如果你在本小节中期待一个大的事情，我很抱歉你会失望的，`object.Boolean` 也是一个很简单的东西。
+```go
+//object/object.go
+const (
+//[...]
+    BOOLEAN_OBJ = "BOOLEAN"
+)
+
+type Boolean struct {
+    Value bool
+}
+func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
+func (b *Boolean) Inpsect() string { return fmt.Sprintf("%t", b.Value)}
+```
+仅仅是封装了一个`bool`型变量的结构。
+
+我们即将结束对象系统的基础内容，在来时我们 `Eval` 函数之前我们需要做一个其他的事情。
+
+**Null**
+1965年Tony Hoare 在 ALGOL W 语言中引入了空引用，也叫做他的[百万美元的错误](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare)。由于他的引用，空引用导致了无初次的系统奔溃，当一个描述中没有值得时候。Null(在其他语言中也称为nil)没有好的名声。
+
+我自己也思考过，Monkey语言中是否应该有空引用，一方面来讲，不要引入，因为编程语言将会变得安全如果它不允许有空或者空引用，但另一方面来讲，我们并不是重新发明一个轮子，而是去学习一些东西。我发现我自己在处理null的时候导致我再次思考什么时候有机会试用它。就像当我车里有个爆炸性的东西会让我开车更慢更小心一点。这一点让我非常满意的选择能够设计一门编程语言。于是我实现了 `Null` 数据类型同时让我仔细小心当我在后面使用它的时候。
+```go
+//object/object.go
+const (
+// [...]
+    NULL_OBJ = "NULL"
+)
+type Null struct {}
+
+func (n *Null) Type() ObjectType { return NULL_OBJ }
+func (N *Null) Inspect() string { return "null" }
+```
+`object.Null`与`object.boolean` 和 `object.Integer` 一样，除了它没有封装任何值。它代表了值得缺失。
+
+有了 `object.Null`, 我们的对象系统现在就可以代表布尔型、整型和空类型，对于我们开始`Eval` 函数足够了
