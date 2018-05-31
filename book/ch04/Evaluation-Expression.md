@@ -153,3 +153,85 @@ Feel free to type in commands
 999
 ```
 是不是感觉很不错？词法解析、语法解析、计算都在这里。
+
+
+**布尔字面值**
+布尔字面值就跟我刚刚遇到的整型一样，用来计算它们自己：`true`计算返回`true`,`false`计算返回`false`。在`Eval`中实现这个就跟实现整型字面值一样简单，接下来就是枯燥的测试。
+```go
+// evaluator/evaluator_test.go
+func TestEvalBooleanExpression(t *testing.T) {
+    tests := []struct {
+        input string
+        expected bool
+    }{
+        {"true", true},
+        {"false", false},
+    }
+    for _, tt := range tests {
+        evaluated := testEval(tt.intput)
+        testBooleanObject(t, evaluated, tt.expected)
+    }
+}
+func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
+    result, ok := obj.(*object.Boolean)
+    if !ok {
+        t.Errorf("object has wrong value. got=%T(%+V)", obj, obj)
+        return false
+    }
+    if result.Value != expected {
+        t.Errorf("object has wrong value. got=%t, want=%t", result.Value, expected)
+        return false
+    }
+    return true
+}
+```
+以后我们会拓展`tests`切片以便能够支持更多的表达式而不是布尔型。现在我们只需要确保当我们输入`true`和`false`能够得到正确的输出。这个测试目前当然是失败的：
+```
+$ go test ./evaluator
+--- FAIL: TestEvalBooleanExpression (0.00s)
+    evaluator_test.go:42: Eval didn't return BooleanObject. got=<nil>(nil)
+    evaluator_test.go:42: Eval didn't return BooleanObject. got=<nil>(nil)
+FAIL
+FAIL mongkey/evalutor 0.006s
+```
+为了使测试通过也非常简单，只需要将`*ast.IntegerLiteral`分支拷贝过来并做一些简单的修改即可：
+```go
+//evaluator/evalutor.go
+func Eval(node ast.Node) object.Object {
+//[...]
+    case *ast.Boolean:
+        return &object.Boolean{Value: node.Value}
+}
+```
+让我们看看在`REPL`如果进行工作的
+```
+$ go run main.go
+Hello mrnugget! This is the monkey programming language!
+Feel free to type in commands
+>> true
+true
+>> false
+false
+>>
+```
+完美!但是等等，我们是不是在这里每一个`true`或者`false`的时候都创建一个`object.Boolean`对象是不是有点不对劲？在两个`true`或者`fasle`内部之间是并没有什么不同的，但是我们为什么每次都使用新的实例对象呢？在这里只有连个不同的值，因此在这里我们只需要引用即可，而不是创建一个新的。
+```go
+// evaluator/evalutor.go
+var (
+    TRUE = &object.Boolean{Value: true}
+    FALSE = &object.Boolean{Value: false}
+)
+func Eval(node ast.Node) object.Object {
+// [...]
+    case *ast.Boolean:
+        return nativeBoolToBooleanObject(node.Value)
+// [...]
+}
+func nativeBoolToBooleanObject(input bool) *object.Boolean {
+    if input{
+        return TRUE
+    }
+    return FALSE
+}
+```
+现在在我们包中只有两个`object.Boolean`对象实例：`TRUE`和`FALSE`，我们引用它们而不是申请空间去创建它们。这个对我们性能小小提升很具有意义，而这些并不需要很多的工作。我们在`null`类型中同样这么处理的。
