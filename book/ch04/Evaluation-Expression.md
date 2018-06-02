@@ -235,3 +235,114 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 }
 ```
 现在在我们包中只有两个`object.Boolean`对象实例：`TRUE`和`FALSE`，我们引用它们而不是申请空间去创建它们。这个对我们性能小小提升很具有意义，而这些并不需要很多的工作。我们在`null`类型中同样这么处理的。
+
+
+**Null**
+
+就跟布尔型`true`和`false`各只有一个一样，对于 `null` 类型也应该只有一个，没有其他空类型的变种，没有任何其他乱七八糟的空类型，只有一个空类型。一个对象要么为空，要么不为空。所以我们首先创建一个`NULL`对象，以便我们在整个计算过程中都能引用它。
+```go
+// evaluator/evaluator.go
+var (
+    NULL = &object.NUll{}
+    TRUE = &object.Boolean{Value:true}
+    FALSE = &object.Boolean{Value:false}
+)
+```
+因此我们只有一份`NULL`引用。
+
+有了整型字面值和三个`NULL`, `TRUE` 和 `FALSE`，我们可以开始准备计算我么你操作表达式。
+
+**前缀表达式**
+
+在Monkey中中最简单的操作数表达式就是就前缀表达式，即单操作数表达式，也就是操作数跟在操作符之后。在我们先前解析过程中提到过，很多语言构造喜欢采用前缀表达式，因为这样解析它很简单。但是在本小节中的前缀表达式就是由一个操作数和一个操作符组成的操作符表达式。Monkey语言支持两种前缀操作数:`!`和`-`。
+
+计算操作符表达式（尤其是前缀操作和操作数）并不难，我们一点点实现构建我们设计出来的行为。但是我们要特别注意的是，我们我们想要达成的结果远超我们预期。要记住，在计算的过程中处理输入语言的意义，我们定义了Monkey语言的文法，一个微小的改变在计算操作符表达式的时候会导致一系列无法预知的问题，测试能帮助我们判断是我们想要的结果。
+
+首先我们开始实现支持`!`操作符，测试展示了这个操作符它的操作符变成一个布尔值，然后取反。
+```go
+// evaluator/evalutor_test.go
+
+func TestBangOperator(t *testing.T){
+    tests := []struct{
+        input string
+        expected bool
+    }{
+        {"!true", false},
+        {"!false", true},
+        {"!5", false},
+        {"!!true", true},
+        {"!!false", false},
+        {"!!5", true}
+    }
+    for _, tt := range tests {
+        evaluated := testEval(tt.input)
+        testBooleanObjec(t, "evaluted", tt.expected)
+    }
+}
+```
+
+正如我说的，这就是我们让着语言如何工作方式，`!true`和`!false`表达式和它们的期望值看上去很合理，但是`!5`其他语言设计者觉得应该是返回一个错误，但是我们想要说的是`5`行为上表现就是`truthy`.
+
+这个测试肯定不能通过，因为 `Eval`返回一个`nil`而不是`TRUE`或者`FALSE`. 计算前缀表达式第一个就是计算他的操作数，然后用它的操作符来计算结果。
+```go
+// evalutor/evalutor.go
+func Eval(node ast.Node) object.Object {
+//[...]
+    case *ast.PrefixExpression:
+        right :=Eval(node.Right)
+        return evalPrefix(node.Operator, right)
+}
+```
+在第一步调用后，右边的值可一个是 `*object.Integer` 或者是 `*object.Boolean`甚至可能是一个 `NULL`。 我们按着右边的操作数然后传递到`evalPrefixExpression`函数中，它用来检查这个操作符是否支持。
+```go
+// evalutor/evaluator.go
+func evalPrefixExpression(operator string, right object.Object)object.Object{
+    switch operator{
+        case "!":
+            return evalBangOperatorExpression(right)
+        default:
+            return NULL
+    }
+}
+```
+如果操作符不支持就返回NULL，这是最好的选择吗？或许是，或许也不是。但是到目前为止，这显然是最好的选择，因为我们还没有实现其他任何错误方式。
+
+`evalBangOperatorExpression` 函数及时 `!` 操作数具体的操作。
+```go
+func evalBangOperatorExpression(right object.Object) object.Object {
+    switch right {
+    case TRUE:
+        return FALSE
+    case FALSE:
+        return TRUE
+    case NULL:
+        return TRUE
+    default:
+        return FALSE
+    }
+}
+```
+当然，我们的测试全部通过
+```
+$ go test ./evalutor
+ok  monkey/evaluator 0.007s
+```
+
+让我们继续 `-` 前缀操作符，我们可以拓展我们的 `TestEvalIntegerExpression` 测试函数以纳入一下用例：
+```go
+//evalutor/evalutor_test.go
+func TestEvalIntegerExpression(t *testing.T){
+    tests := []struct {
+        input string
+        expected int64
+    }{
+        {"5", 5},
+        {"10", 10},
+        {"-5", -5},
+        {"-10", -10},
+    }
+// [...]
+}
+```
+
+为了测试`-`前缀表达式， 我选择拓展测试而不是重新编写一个
