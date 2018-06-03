@@ -345,4 +345,57 @@ func TestEvalIntegerExpression(t *testing.T){
 }
 ```
 
-为了测试`-`前缀表达式， 我选择拓展测试而不是重新编写一个
+为了测试`-`前缀表达式， 我选择拓展测试而不是重新编写一个测试方法主要是两个原因：一是整型是唯一支持`-`操作符的前缀操作数；第二是测试方法应该包含所有整型的运算方法以便达到清晰的目的。
+
+我们已经提前拓展了 `evalPrefixExpression` 方法以便能让测试通过，只需要在switch语句下添加新的分支：
+```go
+// evaluator/evalutor.go
+func evalPrefixExpression(operator string, right object.Object) object.Object {
+    switch operator{
+    case "!":
+        return evalBangOperatorExpression(right)
+    case "-":
+        return evalMinusPrefixOperatorExpression(right)
+    default:
+        return NULL
+    }
+}
+```
+`evalMinusPrefixOperatorExpresion` 函数看上去像这样：
+```go
+// evalutor/evalutor.go
+func evalMinusPrefixOperatorExpression(right object.Object)object.Object {
+    if right.Type() != object.INTEGER_OBJ {
+        return NULL
+    }
+    val := right.(*object.Integer).Value
+    return &object.Integer{Value : -value}
+}
+```
+首先先检查操作数是否为整数，如果不是，返回NULL；如果是，我们提取 `*object.Integer`中的值，然后重新分配一个对象来封装它的相反值。
+
+是不是只需要做简单的事，但是他的确能够工作:
+```
+$ go test ./evaluator
+ok  monkey/evalutor 0.0007s
+```
+棒极了，在继续中缀表达式之前，我们可以在REPL中给出我们前缀表达式的值：
+```
+$ go run main.go
+Hello mrnugget! This is the Monkey programming language！
+Feel free to tyoe in comamnds
+>> -5
+5
+>> !true
+false
+>> !-5
+false
+>> !! -5
+true
+>> !!!! -5
+true
+>> -true
+null
+```
+
+**中缀表达式**
