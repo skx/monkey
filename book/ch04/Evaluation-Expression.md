@@ -399,3 +399,104 @@ null
 ```
 
 **中缀表达式**
+作为一个新人，下面是八个Monkey语言支持的的中缀表达式
+```go
+5 + 5;
+5 - 5;
+5 * 5;
+5 / 5;
+
+5 > 5;
+5 < 5;
+5 == 5;
+5 != 5;
+```
+这八个操作符可以被分为两组，一组的操作符生成布尔型值作为结果，另外一组生成。我们开始实现第二组操作符 `+, -, *, /`。刚开始我们只支持整数操作数，只要他能工作，我们就支持操作数两边是布尔型值。
+
+测试框架已经准备就绪，我们仅仅只要拓展 `TestEvalIntegerExpression`测试方法来适应新的操作符。
+```go
+//evalutor/evalutor_test.go
+func TestEvalIntegerExpression(t *testing.T){
+    tests :=[] struct {
+        input string
+        expected int64
+    }{
+       {"5", 5},
+		{"10", 10},
+		{"5", 5},
+		{"10", 10},
+		{"-5", -5},
+		{"-10", -10},
+		{"5+5+5+5-10", 10},
+		{"2*2*2*2*2", 32},
+		{"-50+100+ -50", 0},
+		{"5*2+10", 20},
+		{"5+2*10", 25},
+		{"20 + 2 * -10", 0},
+		{"50/2 * 2 +10", 60},
+		{"2*(5+10)", 30},
+		{"3*3*3+10", 37},
+		{"3*(3*3)+10", 37},
+		{"(5+10*2+15/3)*2+-10", 50},
+    }
+//[...]
+}
+```
+这里有些测试用例可以删除，因为他们与其他的很有些重复并且增加了一些新的。实话来讲，我是非常高兴当这些测试通过的时候，我明白了我们所做的工作完成了，忍不住问自己，是不是这么简单？实际情况是的确这么简单。
+
+为了让这些测试用例通过，首先要做的是拓展在`Eval`函数中的`switch`语句：
+```go
+//evaluator/evalutor.go
+func Eval(node ast.Node) objet.Object{
+// [...]
+    case *ast.InfixExpression:
+        left := Eval(node.Left)
+        right := Eval(node.Right)
+        return evalInfixExpression(node.operator, left, right)
+// [...]
+}
+```
+就跟`*ast.PrefixExpression`一样，我们首先计算操作数。 现在我们有两个操作数，左边和右边各一个抽象语法树节点，我么已经知道，这可能是其他的表达式、一个函数调用、一个整型字面值、一个操作符表达式等等。我们不去关心这个，让`Eval`函数去关心这个。
+
+在计算完操作数之后，我们将两个返回值和操作符传递到 `evalIntegerInfixExpressions`函数中去，函数是这样子的：
+```go
+func evalInfixExpression(
+    operator string,
+    left, right object.Object,
+)object.Object {
+    switch {
+    case left.Type()==object.INTEGER_OBJ && right.Type()==object.INTEGER_OBJ:
+        return evalIntegerInfixExpression(operator,left,right)
+    default:
+        return NULL
+    }
+}
+```
+正如我刚刚保证的，一旦两边的操作数都不是整数的时候，我们就返回`NULL`, 当然我们后面将要拓展我们的函数，但是为了测试通过，这就足够了。重点在于`evalIntegerInfixExpression`函数中，在该函数中，我们封装的`*objet.Integers`的操作有加、减、乘和除。
+```go
+// evalutor/evalutor.go
+func evalIntegerInfixExpression(
+    operator string
+    left, right object.Object,
+)object.Object{
+    leftVal := left.(*object.Integer).Value
+    rightVal := right.(*object.Integer).Value
+    switch operator{
+    case "+":
+        return &object.Integer{Value:leftVal+rightVal}
+    case "-":
+        return &object.Integer{Value:leftVal-rightVal}
+    case "*":
+        return &object.Integer{Value:leftVal*rightVal}
+    case "/":
+        return &object.Integer{Value:leftVal/rightVal}
+    default:
+        return NULL
+    }
+}
+```
+现在信不信由你，测试通过了：
+```
+$ go test ./evalutor
+ok monkey/evalutor 0.007s
+```
