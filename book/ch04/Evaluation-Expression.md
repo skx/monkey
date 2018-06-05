@@ -499,4 +499,51 @@ func evalIntegerInfixExpression(
 ```
 $ go test ./evalutor
 ok monkey/evalutor 0.007s
+
+好的，我们继续前进，我们过会儿会再回到这边，以便支持哪些能够生成布尔值的操作符`==`,`!=`,`<`和`>`。
+
+我们可以拓展我们的`TestEvalBooleanExpression`方法，为上述的操作符增加测试用例，*因为它们都能生成布尔型值。
+```go
+//evaluator/evaluator_test.go
+func TestEvalBooleanExpression(t *testing.T){
+    tests := []struct {
+        input string
+        expected bool
+    }{
+        {"true", true},
+		{"false", false},
+        {"1<2", true},
+		{"1>2", false},
+		{"1<1", false},
+		{"1>1", false},
+		{"1==1", true},
+		{"1!=1", false},
+		{"1==2", false},
+		{"1!=2", true},
+    }
+}
 ```
+除此之外，我们还需要增加一些代码在 `evalIntegerInfixExpression`函数中，它们能够保证测试能够通过：
+```go
+// evaluator/evaluator.go
+func evalIntegerInfixExpression(
+    operator string
+    left, right object.Object,
+) object.Object {
+    leftVal := right.(*object.Integer).Value
+    rightVal := right.(*obejct.Integer).Value
+    switch operator {
+// [...]
+    case "<":
+        return nativeBoolToBooleanObject(leftVal < rightVal)
+    case ">":
+        return nativeBoolToBooleanObject(leftVal > rightVal)
+    case "==":
+        return nativeBoolToBooleanObject(leftVal == rightVal)
+    case "!=":
+        return nativeBoolToBooleanObject(leftVal != rightVal)
+    default:
+        return NULL
+    }
+}
+`nativeBoolToBoolean`
