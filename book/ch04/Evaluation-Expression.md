@@ -546,4 +546,91 @@ func evalIntegerInfixExpression(
         return NULL
     }
 }
-`nativeBoolToBoolean`
+`nativeBoolToBoolean`方法是我们用在布尔字面值的时候，现在我们在比较未封装的值比较的过程中又重新使用了它们。
+
+至少对于整数来说，我们现在已经完全支持八种中缀操作符，剩下的工作就是支持布尔型操作数。
+
+Monkey语言支持的布尔操作数是相等判别符`==`和`!=`。它不支持布尔型数值的加减乘除。检查`true`是否比`false`大，`<`和`>`能够做或运算都是不支持的，这些都减少了我们的工作量。
+
+首先我么你需要做的事情，你知道的，就是增加测试内容，就跟以前一样，我们拓展已有的测试方法，我们使用`TestEvalBooleanExpression`函数并增加`==`和`!=`操作符的测试用例。
+
+```go
+func TestEvalBooleanExpression(t *testing.T){
+    tests := []struct{
+        input string
+        expected bool
+    }{
+// [...]
+        {"true == true", true},
+		{"false == false", true},
+		{"true == false", false},
+		{"true != false", true},
+		{"(1<2)==true", true},
+		{"(1<2) == false", false},
+		{"(1>2) == true", false},
+        {"(1>2)==false", true},
+    }
+// [...]
+}
+```
+严格来讲，只需要五个测试用例就足够了，但是我们又增加了四个测试用例来检查生成布尔型值得比较。
+
+到目前为止，没有任何惊奇的地方，仅仅又是一系列失败的测试用例
+```
+$ go test ./evalutor
+--- FAIL: TestEvalBooleanExpression (0.00s)
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+evalutor_test.go:121: object is not Boolean. got=*object.Null {&{}}
+FAIL
+FAIL monkey/evalutor 0.007s
+```
+接下来就是增加一些简单的东西让测试通过：
+```go
+//evalutor/evalutor.go
+func evalInfixExpression(
+    opertor string 
+    left, right object.Obejct,
+)object.Object {
+    switch {
+// [...]
+    case operator == "==":
+        return nativeBoolToBooleanObject(left == right)
+    case oeprator == "!=":
+        return nativeBoolToBooleanObject(left != right)
+    default:
+        return NULL
+    }
+}
+```
+是的，我们只是在已经存在的`evalInfixExpression`函数中增加四行代码，测试就通过了，我们通过指针的比较来检查两个布尔型值之间的相等。这样做的原因是我们指向布尔型的指针只有两个`TRUE`和`FALSE`，如果有其他值也是`TRUE`，也就是内存地址一样，它就是`true`。对于`NULL`也是同样的道理。
+
+但是对于整型或者其他数据类型并不奏效，因为对于`*object.Integer`我们每次都分配内存来生成`object.Integer`实例因而我们就能有新的指针。我们无法比较指向不同实例的指针。我们无法比较指向不同实例的指针，否则像`5==5`就会是false，而这个并不是我们想要的。在这种情况下，我们要明确的指出是比较值而不是封装值得对象。
+
+这也是为什么我们在`switch`语句中首先检查整型部分的分支，它们将会首先进行匹配，只要我们留心其他啊操作数的类型是在指针比较之前，我们的成果就能很好的工作。
+
+想象一下，如果十年之后，Monkey语言变得出名了，许多人开始来研究讨论。忽视了这个半吊子地设计这门语言，那么我们就变得非常出名了。 有人就是去StackOverflow上去问，为什么在Monkey语言中，整型比较会比布尔型比较慢得多。你和我，或者其他人就会回答到，因为在Monkey语言中，不允许使用指针比较整型数据，在比较之前，需要拆封它们的值，然后进行比较。相对而言，布尔型操作比较就比较快。 我们将会加上答案的最后加上这么一句”因为源代码是我写的“。
+
+有点跑题了，回到正题。我们做到了，相当高兴，差不多都可以开始庆祝了。是时候开香槟庆祝了吗？对的，看看我们的解释器现在能做什么！
+```
+$go run main.go
+Hello mrnugget! This is the monkey programming language!
+Feel free to type in commands
+>> 5 * 5 + 10
+35
+>> 3 + 4 * 5 == 3 * 1 + 4 * 5
+true
+>> 5 * 10 > 40 + 5
+true
+>> (5 > 5 == true) != false
+false
+>> 500 / 2 != 250
+false
+```
+到目前为止，我们已经完成了一个函数计算器， 接下来让我继续增加，使它变得更像一个编程语言。
