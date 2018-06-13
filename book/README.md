@@ -1255,6 +1255,97 @@ func evalStatements(stmts []ast.Statement) object.Object {
     return result
 }
 ```
+首先需要修改的部分是执行器的`*ast.ReturnValue`，在这我们执行带有return语句的表达式。然后将`Eval`计算得到的结果封装成`object.ReturnValue`对象并记录跟踪它。
+
+在`evalStatement`语句中，我们执行`evalProgramStatement`和`evalBlockStatement`方法来分别计算一系列的语句。我们检查每一步执行的结果是不是`object.ReturnValue`，如果是则停止计算，然后返回那个被封装的值。有一点非常重要，我们不返回`object.ReturnValue`，而是返回它封装的值，这也是用户所需要被返回的值。
+
+但是问题是我们有时候想持续跟跟踪`object.ReturnValues`而不是一遇到就把获取未封装的值。这个在语句块中经常遇到。
+```go
+if (10 > 1) {
+    if (10 > 1){
+        return 10;
+    }
+    return 1;
+}
+```
+这个程序应该返回10，但是在目前我们版本中，它只是返回1，一个小的测试可以确认：
+```go
+// evalutor/evalutor_test.go
+func TestReturnStatements(t *testing.T){
+    tests :=[]struct {
+        input string
+        expected int64
+    }{
+        {`
+        if (10 > 1){
+            if (10 > 1){
+                return 10;
+            }
+            return 1;
+        }
+        `, 10,
+        },
+    }
+}
+```
+正如我们所期待的，这个测试是失败的
+```
+$ go test ./evalutor
+--- FAIL: TestReturnStatements(0.00s)
+    evaluator_test.go:159: object has wrong value. got=1, want=10
+FAIL
+FAIL monkey/evalutor 0.007s
+```
+我敢打赌你已经发现我们当前的版本出现的问题，但是还是让我说出来：如果我们有嵌套的语句块（这是在Money语言中完全合法的）我们不能一遇到`object.ReturnValue`就将封装的值取出来，因为我们还要继续跟踪该值，直到我们到达最外面一层语句块，停止执行。
+
+在当前版本中非嵌套的语句块可以很好地执行，但是遇到嵌套的语句块，首先要做的事承认我们不能再继续使用`evalStatement`函数来执行语句块。这也是我们为什么要重新命名`evalProgram`函数让其不是那么泛化。
+```go
+// evaluator/evaluator.go
+func Eval(node ast.Node) object.Objcet {
+// [...]
+    case *ast.Program:
+        return evalProgram(node)
+// [...]
+}
+func evalProgram(program *ast.Program) object.Object {
+    var result object.Object
+    for _, statement := range program.Statements {
+        result = Eval(statement)
+        if returnValue, ok := result.(*object.ReturnValue); ok {
+            return returnValue.Value
+        }
+    }
+    return result
+}
+```
+为了执行`*ast.BlockStatement`，我们引入了新的函数`evalBlockStatement`:
+```go
+// evalutor/evalutor.go
+func Eval(node ast.Node) object.Object {
+//[...]
+    case *ast.BlockStatement:
+        return evalBlockStatement(node)
+//[...]
+}
+func evalBlockStatement(block *ast.BlockStatement) object.Object {
+    var result object.Object
+    for _, statement := range block.Statements {
+        result = Eval(statement)
+        if result != nil && result.Type() == object.RETURN_VALUE_OBJ {
+            return reuslt
+        }
+    }
+    return result
+}
+```
+在这里对每一个执行结果，我们显式说明不拆封返回值只是检查其`Type()`方法，如果它是`object.RETURN_VALUE_OBJ`， 我们就简单的返回`*object.ReturnValue`而不是取出其中的`.Value`字段，所以它停止执行可能的外部语句块，像气泡一样一直到达`evalProgram`方法，然后取出被封装的值（在后面设置到函数调用的时候，这部分将会做出一些改变）
+
+测试通过：
+```
+go test ./evalutor
+ok monkey/evalutor 0.007s
+```
+返回语句完成，我们终于不再是构建一个计算器。由于`evalProgram`和`evalBlockStatement`对我们来讲还是很陌生，我们将继续研究它们。
 
 <h2 id="ch04-Error-Handling">4.8 错误处理</h2>
 <h2 id="ch04-Binding-and-Environment">4.9 绑定和环境</h2>
