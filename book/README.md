@@ -1186,6 +1186,76 @@ Feel free to type in commands
 9999
 ```
 <h2 id="ch04-Return-Statement">4.7 返回语句</h2>
+接下来的返回语句，这个在任何标准的计算器都不会出现的，但是`Monkey`有。 它不仅仅在函数体而且作为`Monkey`语言的顶层的语句。 它在任何地方使用都不会有任何影响，因为它不改变任何东西。返回语句将停止后面的所有计算，并且带着它计算的值离开。
+
+这儿有个一个最上层的返回语句：
+```go
+5 * 5 * 5;
+return 10;
+9 * 9 * 9;
+```
+执行这个程序将会返回10. 如果这些语句在一个函数体内，那么调用者将会得到10。最重要的是最后一行代码：`9 * 9 * 9`表达式将永远不会被执行。
+
+有一些不同的方式去实现返回语句，在一些宿主语言中我们可以使用`goto`或者异常等方式。但是在`go`语言中，实现异常捕获非常困难，而且我们也不想采用`goto`这种不简洁的方式。为了支持返回语句，我们会传递一个`返回值`给执行器， 当我们遇到一个 `return`, 我们将会其封装起来，并返回里面的对象，因此我们能够跟踪记录它，以便是否决定是否继续计算。
+
+接下来就是刚刚说的对象`object.ReturnValue`的实现：
+```go
+// object/object.go
+const (
+//[...]
+    RETURN_VALUE_OBJ = "RETURN_VALUE"
+)
+type ReturnValue struct {
+    Value Object
+}
+func (rv *ReturnValue) Type() ObjectType { return RETURN_VALUE_OBJ }
+func (rv *RetrunValue) Inspet() string {
+    return rv.Value.Inspect()
+}
+```
+仅仅是封装了其他的`object`对象，真正有趣的是当它在使用的时候。
+
+接下来的测试示范了我们在Monkey编程上下文中使用返回语句:
+```go
+// evaluator/evaluator_test.go
+func TestReturnStatement(t *testing.T){
+    tests := []struct {
+        input string
+        expected int64
+    }{
+        {"return 10;", 10},
+        {"return 10; 9;", 10},
+        {"return 2 * 5; 9;", 10},
+        {"9; return 2 * 5; 9;", 10},
+    }
+    for _, tt := range tests {
+        evaluated := testEval(tt.input)
+        testIntegerObject(t, evaluated, tt.expected)
+    }
+}
+```
+为了让测试通过，我们需要在`evalStatement`做一些修改，我们已经在`Eval`函数中增加了一个`*ast.ReturnStatement`分支：
+```go
+// evalutor/evaluator.go
+func Eval(node *ast.Node) object.Object {
+// [...]
+    case *ast.ReturnStatement:
+        val := Eval(node.ReturnValue)
+        return *object.ReturnValue{Value: val}
+// [...]
+}
+func evalStatements(stmts []ast.Statement) object.Object {
+    var result object.Object
+    for _, statement := range stmts {
+        result = Eval(statment)
+        if returnValue, ok := result.(*object.ReturnValue);ok {
+            return returnValue.Value
+        }
+    }
+    return result
+}
+```
+
 <h2 id="ch04-Error-Handling">4.8 错误处理</h2>
 <h2 id="ch04-Binding-and-Environment">4.9 绑定和环境</h2>
 <h2 id="h04-Function-and-Function-Call">4.10 函数和函数调用</h2>
