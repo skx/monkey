@@ -1348,6 +1348,74 @@ ok monkey/evalutor 0.007s
 返回语句完成，我们终于不再是构建一个计算器。由于`evalProgram`和`evalBlockStatement`对我们来讲还是很陌生，我们将继续研究它们。
 
 <h2 id="ch04-Error-Handling">4.8 错误处理</h2>
+还记得我们先前返回`NULL`对象， 我说过你现在不用担心这个，过会我们会回来处理的。现在正是处理真正的错误时候，以免后面太迟了。总体上来讲，我们只需要回退一小部分先前的代码。老实地说，我先前并没有一开始就实现错误处理是因为我认为实现表达式比处理处理有趣多了。但是现在我们必须把它加上，否则将来调试起来我们的解释器将会非常笨重。
+
+首先，让我们先定义一下什么是真正的错误处理机制，这个并不是什么用户自定义异常，而是内部的错误处理。是那些错误操作符，不支持的操作运算亦或者是在执行过程中出现的用户或者内部的异常。
+
+至于这些错误处理方式的实现由多种方法，但是大多数都是处理返回语句，原因也很简单，因为错误和返回语句是相似的，都是停止执行一系列语句。
+
+首先我们需要处理一个错误对象
+```go
+// object/object.go
+const (
+// [...]
+    ERROR_OBJ = "ERROR"
+)
+type Error struct {
+    Message string
+}
+func (e *Error) Type() OjectType { return ERROR_OBJ }
+func (e *Error) Inspect() string { return "ERROR: " + e.Message}
+```
+你可以看到 `object.Error` 真的非常简单， 它仅仅封装了一个`string`对象来处理错误消息。在一个生产的解释器中，我们需要将栈调用信息给这个错误对象，通过增加一些错误的所在的具体行和列信息添加到消息中。这些并不难实现，只需要在词法解析的过程中将行和列号添加到其中去。至于为什么我们的解释器并没有这么做，是因为我们想把事情做得简单一点，我们只需要一个错误消息即可， 它能给我的很多具体的反馈信息并且能够停止执行所有代码。
+
+我们会在几处合适的地方增加错误机制，以便提高我们解释器的容错能力。现在测试函数能够展示我们的错误处理机制如何工作的：
+```go
+// evalutor/evalutor_test.go
+func TestErrorHandling(t *testing.T) {
+	tests := []struct {
+		input           string
+		expectedMessage string
+	}{
+		{"5+true;", "type mismatch: INTEGER + BOOLEAN"},
+		{"5+true; 5;", "type mismatch: INTEGER + BOOLEAN"},
+		{"-true", "unknown operator: -BOOLEAN"},
+		{"true+false", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"5;true+false;5", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"if (10>1) { true+false;}", "unknown operator: BOOLEAN + BOOLEAN"},
+		{`if (10 > 1) { 
+      if (10>1) {
+			return true+false;	
+			}
+			return 1;
+}`, "unknown operator: BOOLEAN + BOOLEAN"},
+		{"foobar", "identifier not found: foobar"},
+		{`"Hello" - "World"`, "unknown operator: STRING - STRING"},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		errObj, ok := evaluated.(*object.Error)
+		if !ok {
+			t.Errorf("no error object returned. got=%T(%+v)",
+				evaluated, evaluated)
+			continue
+		}
+		if errObj.Message != tt.expectedMessage {
+			t.Errorf("wrong error message. expected=%q, got=%q",
+				tt.expectedMessage, errObj.Message)
+		}
+	}
+}
+```
+
+但我们运算测试的时候，又遇到了我们的老朋友`NULL`。
+```
+$ go test ./evaluator
+--- FAIL TestErrorHanding (0.00s)
+---
+FAIL
+FAIL monkey/evaluator 0.007s
+```
 <h2 id="ch04-Binding-and-Environment">4.9 绑定和环境</h2>
 <h2 id="h04-Function-and-Function-Call">4.10 函数和函数调用</h2>
 <h2 id="ch04-Trash-Out">4.11 垃圾回收</h2>
