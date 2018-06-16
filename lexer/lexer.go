@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"monkey/token"
+	"strings"
 )
 
 // Lexer used to be as lexer for monkey programming language.
@@ -187,7 +188,13 @@ func (l *Lexer) readString() string {
 			break
 		}
 	}
-	return string(l.characters[position:l.position])
+	out := string(l.characters[position:l.position])
+
+	// Expand newlines, linefeeds, and tabs
+	out = strings.Replace(out, `\n`, "\n", -1)
+	out = strings.Replace(out, `\r`, "\r", -1)
+	out = strings.Replace(out, `\t`, "\t", -1)
+	return out
 }
 
 // peek character
