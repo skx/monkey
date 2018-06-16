@@ -1416,7 +1416,147 @@ $ go test ./evaluator
 FAIL
 FAIL monkey/evaluator 0.007s
 ```
+但是在这出现了`*object.Integer`对象， 这是因为这些测试用例只实际上判断了两件事情：一是对于不支持的操作生成一些错误异常；二是阻止这些错误异常进一步执行。当`*object.Integer`被返回的时候，这些测试失败了，执行过程也并没有正确的停止。
+
+生成错误异常并且传递到`Eval`函数很简单，我们只需要一个辅助函数来帮助我们在我们认为需要的地方创建一个`*object.Errors`对象即可。
+```go
+//evaluator/evalutor.go
+func newError(format string, a ...interface{}) *object.Error{
+    return &object.Error{Message: fmt.Sprintf(format, a...)}
+}
+```
+这个`newError`函数用在我们不知道不知道返回什么值得时候，而不是简单地返回`NULL`:
+```go
+// evalutor/evalutor.go
+func evalPrefixExpresion(operator string, right object.Object) object.Object {
+    switch operator {
+// [...]
+    default:
+        return newError("unknown operator:%s%s", operator, right.Type())
+    }
+}
+func evalInfixExpression(
+    operator string,
+    left, right object.Object,
+)object.Object {
+    switch {
+// [...]
+    case left.Type() != right.Type():
+        return newError("type mismatch:%s %s %s",
+        left.Type(), operator, right.Type())
+    default:
+        return newError("unknown operator: %s %s %s",
+        left.Type(), operator, right.Type())      
+    }
+}
+func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+    return right.Type() != object.INTEGER_OBJ {
+        return newError("unknon operator: -%s", right.Type())
+    }
+// [...]
+}
+func evalIntegerInfixExpression(
+    operator string
+    left, right object.Object,
+)object.Object {
+//[...]
+    switch operator {
+//[...]
+    default:
+        return newError("unknown operator: %s %s %s",
+        left.Type(), operator, right.Type())
+    }
+}
+```
+通过上述的的改变，先前的一些列的失败测试用例只剩下两个
+```
+$ go test ./evaluator
+--- FAIL TestErrorHanding (0.00s)
+---
+FAIL
+FAIL monkey/evaluator 0.007s
+```
+上述的输出表明，通过生成错误的确可以停止执行。我们已经知道如何继续跟踪下去，是的在`evalProgram`和`evalBlockStatement`函数中，我们在这些函数的入口增加一些错误处理过程。
+```go
+func evalProgram(program *ast.Program) object.Object {
+    var result object.Object
+    for _, statement := range program.Statements {
+        result = Eval(statement)
+        switch result := result.(type) {
+        case *object.ReturnValue:
+            return result.Value
+        case *object.Error:
+            return result
+        }
+    }
+}
+func evalBlockStatment(block *ast.BlockStatement) object.Object {
+    var result object.Object
+    for _, statement := range block.Statements {
+        result = Eval(statement)
+        if result != nil {
+            rt := result.Type()
+            if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+                return result
+            }
+        }
+    }
+}
+```
+这样做的的话，执行器在正确的位置停下来并且测试通过：
+```
+$ go test ./evalutor
+ok monkey/evaluator 0.010s
+```
+最后还需要做一件事，我们需要检查当我们在调用`Eval`函数的的时候是否有错误异常。为了防止错误被传递，我们需要将其从源头上浮到程序执行的地方：
+```go
+// evalutro/evalutor.go
+func isError(obj object.Object) bool {
+    if obj != nil {
+        return obj.Type() == object.ERROR_OBJ
+    }
+    return false
+}
+func Eval(node ast.Node) object.Object {
+    switch node := node.(type) {
+//[...]
+    case *ast.ReturnStatement:
+        val := Eval(node.ReturnValue)
+        if isError(val){
+            return val
+        }
+        return &object.ReturnValue{Value: val}
+//[...]
+    case *ast.PrefixExpression:
+        right := Eval(node.Right)
+        if isError(right){
+            return right
+        }
+        return evalPrefixExpression(node.Operator, right)
+    case *ast.InfixPression:
+        left := Eval(node.Left)
+        if isError(left){
+            return left
+        }
+        right := Eval(node.right)
+        if isError(right){
+            return right
+        }
+        return evalInfixExpression(node.operator, left, right)
+    }
+// [...]
+}
+func evalIfExpression(ie *ast.IfExpression) object.Object{
+    condition := Eval(ie.Condition)
+    if isError(condition){
+        return condition
+    }
+// [...]
+}
+```
+好了，错误异常处理完毕。
 <h2 id="ch04-Binding-and-Environment">4.9 绑定和环境</h2>
+
 <h2 id="h04-Function-and-Function-Call">4.10 函数和函数调用</h2>
 <h2 id="ch04-Trash-Out">4.11 垃圾回收</h2>
 
