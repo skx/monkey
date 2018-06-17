@@ -24,7 +24,6 @@ var file_readers = make(map[uintptr]*bufio.Reader)
 //
 func setupHandles() {
 	if file_handles[0] != nil {
-		fmt.Printf("Already setup..")
 		return
 	}
 	file_handles[0] = os.Stdin
