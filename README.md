@@ -107,6 +107,10 @@ insert key value pair into the map
 
 print literal value of objects.
 
+- `read`
+
+read a single line from STDIN, optionally a prompt may be displayed for example `read( "Enter your name:" )`.
+
 - `type`
 
 returns the type of a variable.
@@ -133,7 +137,7 @@ It is also possible to define a function without using `let` via the `function` 
 Hello, world
 
 
-## 2.5 If-else statements
+## 2.6 If-else statements
 
 `monkey` supports if-else statements.
 ```
@@ -142,7 +146,7 @@ Hello, world
 2
 ```
 
-## 2.6 For-loop statements
+## 2.7 For-loop statements
 
 `monkey` support for-loop statement.
 
@@ -152,7 +156,7 @@ Hello, world
 4950
 ```
 
-## 2.7 Comments
+## 2.8 Comments
 
 `monkey` support two kinds of comments:
 

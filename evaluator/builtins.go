@@ -1,8 +1,10 @@
 package evaluator
 
 import (
+	"bufio"
 	"fmt"
 	"monkey/object"
+	"os"
 )
 
 // builtin function maps
@@ -157,6 +159,35 @@ var builtins = map[string]*object.Builtin{
 			default:
 				return newError("argument to `type` not supported, got=%s",
 					args[0].Type())
+			}
+		},
+	},
+	"read": {
+		Fn: func(args ...object.Object) object.Object {
+			//
+			// If there is one argument, and it is a string,
+			// then that is the prompt to display
+			//
+			prompt := ""
+			if len(args) == 1 {
+				switch args[0].(type) {
+				case *object.String:
+					prompt = args[0].(*object.String).Value
+				}
+			}
+			if len(prompt) > 0 {
+				fmt.Print(prompt)
+			}
+
+			//
+			// Read from STDIN
+			//
+			reader := bufio.NewReader(os.Stdin)
+			text, err := reader.ReadString('\n')
+			if err == nil {
+				return &object.String{Value: text}
+			} else {
+				return NULL
 			}
 		},
 	},
