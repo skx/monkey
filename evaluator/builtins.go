@@ -198,18 +198,34 @@ var builtins = map[string]*object.Builtin{
 	},
 	"split": {
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1 {
-				return newError("wrong number of arguments. got=%d, want=1",
+			//
+			// Default separator.
+			//
+			sep := " "
+
+			if len(args) != 1 && len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1 or 2.",
 					len(args))
 			}
 			if args[0].Type() != object.STRING_OBJ {
 				return newError("argument to `split` must be a string, got=%s",
 					args[0].Type())
 			}
+			if len(args) == 2 {
+				if args[1].Type() != object.STRING_OBJ {
+					return newError("argument to `split` must be a string, got=%s",
+						args[0].Type())
+				}
+				sep = args[1].(*object.String).Value
 
-			fields := strings.Fields(args[0].(*object.String).Value)
+			}
 
-			result := make([]object.Object, len(fields), len(fields))
+			// split by separator
+			fields := strings.Split(args[0].(*object.String).Value, sep)
+
+			// make results
+			l := len(fields)
+			result := make([]object.Object, l, l)
 			for i, txt := range fields {
 				result[i] = &object.String{Value: txt}
 			}
