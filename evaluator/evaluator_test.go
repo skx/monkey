@@ -548,3 +548,41 @@ sum
 	evaluated := testEval(input)
 	testDecimalObject(t, evaluated, 4950)
 }
+
+func TestTypeBuiltin(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			"type( \"Steve\" );",
+			"string",
+		},
+		{
+			"type( 1 );",
+			"integer",
+		},
+		{
+			"type( 3.14159 );",
+			"float",
+		},
+		{
+			"type( [1,2,3] );",
+			"array",
+		},
+		{
+			"type( { \"name\":\"monkey\", true:1, 7:\"sevent\"} );",
+			"hash",
+		},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		str, ok := tt.expected.(string)
+		if ok {
+			testStringObject(t, evaluated, str)
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}

@@ -133,4 +133,31 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	"type": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			switch args[0].(type) {
+			case *object.String:
+				return &object.String{Value: "string"}
+			case *object.Boolean:
+				return &object.String{Value: "bool"}
+			case *object.Array:
+				return &object.String{Value: "array"}
+			case *object.Function:
+				return &object.String{Value: "function"}
+			case *object.Integer:
+				return &object.String{Value: "integer"}
+			case *object.Float:
+				return &object.String{Value: "float"}
+			case *object.Hash:
+				return &object.String{Value: "hash"}
+			default:
+				return newError("argument to `type` not supported, got=%s",
+					args[0].Type())
+			}
+		},
+	},
 }
