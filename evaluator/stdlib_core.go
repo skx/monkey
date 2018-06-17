@@ -3,8 +3,44 @@ package evaluator
 import (
 	"fmt"
 	"monkey/object"
+	"strconv"
 )
 
+// convert a double/string to an int
+func intFun(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	switch args[0].(type) {
+	case *object.String:
+		input := args[0].(*object.String).Value
+		i, err := strconv.Atoi(input)
+		if err == nil {
+			return &object.Integer{Value: int64(i)}
+		} else {
+			return newError("Converting string '%s' to int failed %s", input, err.Error())
+		}
+	case *object.Boolean:
+		input := args[0].(*object.Boolean).Value
+		if input {
+			return &object.Integer{Value: 1}
+
+		}
+		return &object.Integer{Value: 0}
+	case *object.Integer:
+		// nop
+		return args[0]
+	case *object.Float:
+		input := args[0].(*object.Float).Value
+		return &object.Integer{Value: int64(input)}
+	default:
+		return newError("argument to `int` not supported, got=%s",
+			args[0].Type())
+	}
+}
+
+// the first item in an array.
 func firstFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -22,6 +58,7 @@ func firstFun(args ...object.Object) object.Object {
 	return NULL
 }
 
+// last item in an array
 func lastFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -38,6 +75,8 @@ func lastFun(args ...object.Object) object.Object {
 	}
 	return NULL
 }
+
+// length of item
 func lenFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -53,6 +92,8 @@ func lenFun(args ...object.Object) object.Object {
 			args[0].Type())
 	}
 }
+
+// push something onto an array
 func pushFun(args ...object.Object) object.Object {
 	if len(args) != 2 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -69,12 +110,16 @@ func pushFun(args ...object.Object) object.Object {
 	newElements[length] = args[1]
 	return &object.Array{Elements: newElements}
 }
+
+// output a string to stdout
 func putsFun(args ...object.Object) object.Object {
 	for _, arg := range args {
 		fmt.Print(arg.Inspect())
 	}
 	return NULL
 }
+
+// rest of an array.
 func restFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -94,6 +139,8 @@ func restFun(args ...object.Object) object.Object {
 	return NULL
 
 }
+
+// set a hash-field
 func setFun(args ...object.Object) object.Object {
 	if len(args) != 3 {
 		return newError("wrong number of arguments. got=%d, want=2",
@@ -118,6 +165,18 @@ func setFun(args ...object.Object) object.Object {
 	newHash[newHashKey] = newHashPair
 	return &object.Hash{Pairs: newHash}
 }
+
+func strFun(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+
+	out := args[0].Inspect()
+	return &object.String{Value: out}
+}
+
+// type of an item
 func typeFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -144,6 +203,10 @@ func typeFun(args ...object.Object) object.Object {
 	}
 }
 func init() {
+	registerBuiltin("int",
+		func(args ...object.Object) object.Object {
+			return (intFun(args...))
+		})
 	registerBuiltin("last",
 		func(args ...object.Object) object.Object {
 			return (lastFun(args...))
@@ -171,6 +234,10 @@ func init() {
 	registerBuiltin("set",
 		func(args ...object.Object) object.Object {
 			return (setFun(args...))
+		})
+	registerBuiltin("string",
+		func(args ...object.Object) object.Object {
+			return (strFun(args...))
 		})
 	registerBuiltin("type",
 		func(args ...object.Object) object.Object {

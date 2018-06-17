@@ -1,7 +1,9 @@
 package evaluator
 
 import (
+	"math/rand"
 	"monkey/object"
+	"time"
 )
 
 func mathAbs(args ...object.Object) object.Object {
@@ -30,9 +32,22 @@ func mathAbs(args ...object.Object) object.Object {
 	return NULL
 }
 
+// val = math.random()
+func mathRandom(args ...object.Object) object.Object {
+	return &object.Float{Value: rand.Float64()}
+}
+
 func init() {
+	//
+	// Setup our random seed.
+	//
+	rand.Seed(time.Now().UnixNano())
 	registerBuiltin("math.abs",
 		func(args ...object.Object) object.Object {
 			return (mathAbs(args...))
+		})
+	registerBuiltin("math.random",
+		func(args ...object.Object) object.Object {
+			return (mathRandom(args...))
 		})
 }
