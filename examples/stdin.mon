@@ -5,5 +5,5 @@
 //
 
 puts( "Enter your name:" );
-let name = read( 1 );
+let name = read( 0 );
 puts( "Hello, ", name );
