@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+//
+// Global STDIN-reader.
+//
+var reader = bufio.NewReader(os.Stdin)
+
 // builtin function maps
 var builtins = map[string]*object.Builtin{
 	"len": {
@@ -183,12 +188,11 @@ var builtins = map[string]*object.Builtin{
 			//
 			// Read from STDIN
 			//
-			reader := bufio.NewReader(os.Stdin)
 			text, err := reader.ReadString('\n')
 			if err == nil {
 				return &object.String{Value: text}
 			} else {
-				return NULL
+				return &object.String{Value: ""}
 			}
 		},
 	},

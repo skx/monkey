@@ -1,0 +1,31 @@
+//
+// A simple script to read a file and count the characters.
+//
+// Unfortunately we have no file-reading primitives, but you can
+// test like this:
+//
+//   $ cat /etc/passwd | ./monkey -file wc.mon
+//   Read 2572 characters
+//
+// That maches :)
+//
+//   $ wc -c /etc/passwd
+//   2572
+//
+
+let c = 0;
+let run = true;
+
+for( run == true ) {
+
+   let r = read();
+   let l = len(r);
+   if ( l > 0 ) {
+        let c = c + l;
+   }
+   else {
+        let run = false;
+   }
+};
+
+puts( "Read " , c , " characters" );
