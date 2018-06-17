@@ -87,6 +87,19 @@ func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
 	}
 	return true
 }
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	result, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("obj is not String. got=%T(%+v)", obj, obj)
+		return false
+	}
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%s, want=%s",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
 
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
@@ -209,9 +222,9 @@ func TestErrorHandling(t *testing.T) {
 		{"true+false", "unknown operator: BOOLEAN + BOOLEAN"},
 		{"5;true+false;5", "unknown operator: BOOLEAN + BOOLEAN"},
 		{"if (10>1) { true+false;}", "unknown operator: BOOLEAN + BOOLEAN"},
-		{`if (10 > 1) { 
+		{`if (10 > 1) {
       if (10>1) {
-			return true+false;	
+			return true+false;
 			}
 			return 1;
 }`, "unknown operator: BOOLEAN + BOOLEAN"},
@@ -410,6 +423,35 @@ func TestArrayIndexExpression(t *testing.T) {
 	}
 }
 
+func TestStringIndexExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			"\"Steve\"[0]",
+			"S",
+		},
+		{
+			"\"Steve\"[1]",
+			"t",
+		},
+		{
+			"\"Steve\"[101]",
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		str, ok := tt.expected.(string)
+		if ok {
+			testStringObject(t, evaluated, str)
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
 func TestHashLiterals(t *testing.T) {
 	input := `let two="two";
 	{

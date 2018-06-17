@@ -12,6 +12,7 @@ var (
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
 )
+
 // Eval: entry point of environment
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
@@ -63,6 +64,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 		env.Set(node.Name.Value, val)
+		return val
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -399,6 +401,8 @@ func evalIndexExpression(left, index object.Object) object.Object {
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
+	case left.Type() == object.STRING_OBJ:
+		return evalStringIndexExpression(left, index)
 	default:
 		return newError("index operator not support:%s", left.Type())
 
@@ -425,6 +429,16 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 		return NULL
 	}
 	return pair.Value
+}
+
+func evalStringIndexExpression(input, index object.Object) object.Object {
+	str := input.(*object.String).Value
+	idx := index.(*object.Integer).Value
+	max := int64(len(str))
+	if idx < 0 || idx > max {
+		return NULL
+	}
+	return &object.String{Value: string(str[idx])}
 }
 
 func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Object {
