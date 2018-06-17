@@ -1,0 +1,8 @@
+//
+// Sample function showing some simple math operations
+//
+
+puts( "maths.abs(1)     -> " ,math.abs( 1 ),     "\n" );
+puts( "maths.abs(-1)    -> " ,math.abs( -1 ),    "\n" );
+puts( "maths.abs(3.13)  -> " ,math.abs( 3.13 ),  "\n" );
+puts( "maths.abs(-3.13) -> " ,math.abs( -3.13 ), "\n" );

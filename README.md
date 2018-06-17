@@ -110,26 +110,19 @@ insert key value pair into the map
 
 print literal value of objects.
 
-- `fopen(path)`
-
-return a filehandle to read from the given file.  See [examples/file.mon](examples/file.mon).
-
-- `fclose(handle)`
-
-close the given filehandle.  See [examples/file.mon](examples/file.mon).
-
-- `read(handle)`
-
-read a single line from the open-filehandle.  See [examples/file.mon](examples/file.mon) + [examples/stdin.mon](examples/stdin.mon).
-
-- `split`
-
-Split a string, (by default on "` `", but you can give it a different field), and return an array of the resulting pieces.
-
 - `type`
 
 returns the type of a variable.
 
+
+## 2.4.1 The Standard Library
+
+In addition to the built-in functions which are documented above we also
+have a minimal-standard library.  The library includes some string/file
+primitives as well as maths-helpers.
+
+You can see the implementations beneath [evaluator/stdlib*](evaluator/),
+and several of these things are documented in [examples/](examples/).
 
 
 ## 2.5 Function

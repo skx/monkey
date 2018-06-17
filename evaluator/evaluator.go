@@ -13,6 +13,9 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
+// The built-in functions / standard-library methods are stored here.
+var builtins = map[string]*object.Builtin{}
+
 // Eval: entry point of environment
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
@@ -496,4 +499,9 @@ func upwrapReturnValue(obj object.Object) object.Object {
 		return returnValue.Value
 	}
 	return obj
+}
+
+// Register a built-in function.  Used to register our "standard library".
+func registerBuiltin(name string, fun object.BuiltinFunction) {
+	builtins[name] = &object.Builtin{Fn: fun}
 }

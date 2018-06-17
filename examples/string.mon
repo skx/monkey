@@ -1,0 +1,8 @@
+//
+// Showcase the stdlib string-functions
+//
+
+
+puts( string.toupper( "Steve Kemp" ), "\n" )
+puts( string.tolower( "Steve Kemp" ), "\n" )
+puts( string.trim( "  This should have no leading/trailing spaces. \t" ), "\n" )

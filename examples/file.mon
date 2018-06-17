@@ -1,7 +1,7 @@
 // This example opens a file for reading, and shows each line.
 
 
-let fd = fopen( "/etc/passwd" );
+let fd = file.open( "/etc/passwd" );
 let lines = 0;
 let run   = true;
 
@@ -16,5 +16,6 @@ for( run == true ) {
         let run = false;
    }
 };
+file.close(fd);
 
 puts( "Read:" , lines, " lines.\n" );

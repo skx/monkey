@@ -12,7 +12,7 @@
 
 // Open the file
 let path = "/etc/passwd";
-let handle = fopen(path);
+let handle = file.open(path);
 if ( handle < 0 ) {
    puts( "Failed to open file" )
 }
@@ -33,4 +33,4 @@ for( run == true ) {
 };
 
 puts( "Read " , c , " characters from ", path , "\n" );
-fclose(handle);
+file.close(handle);
