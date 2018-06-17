@@ -1,0 +1,20 @@
+// This example opens a file for reading, and shows each line.
+
+
+let fd = fopen( "/etc/passwd" );
+let lines = 0;
+let run   = true;
+
+for( run == true ) {
+   let r = read(fd);
+   let l = len(r);
+   if ( l > 0 ) {
+        let lines = lines + 1;
+        puts( "\tRead: ", r);
+   }
+   else {
+        let run = false;
+   }
+};
+
+puts( "Read:" , lines, " lines.\n" );

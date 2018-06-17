@@ -13,6 +13,29 @@ import (
 //
 var reader = bufio.NewReader(os.Stdin)
 
+//
+// Mapping of file-IDs to file-handles
+//
+var file_handles = make(map[uintptr]*os.File)
+var file_readers = make(map[uintptr]*bufio.Reader)
+
+//
+// Horrid hack - setup STDIN/STDOUT/STDERR
+//
+func setupHandles() {
+	if file_handles[0] != nil {
+		fmt.Printf("Already setup..")
+		return
+	}
+	file_handles[0] = os.Stdin
+	file_handles[1] = os.Stdout
+	file_handles[2] = os.Stderr
+
+	file_readers[0] = bufio.NewReader(os.Stdin)
+	file_readers[1] = bufio.NewReader(os.Stdout)
+	file_readers[2] = bufio.NewReader(os.Stderr)
+}
+
 // builtin function maps
 var builtins = map[string]*object.Builtin{
 	"len": {
@@ -170,27 +193,18 @@ var builtins = map[string]*object.Builtin{
 	},
 	"read": {
 		Fn: func(args ...object.Object) object.Object {
-			//
-			// If there is one argument, and it is a string,
-			// then that is the prompt to display
-			//
-			prompt := ""
-			if len(args) == 1 {
-				switch args[0].(type) {
-				case *object.String:
-					prompt = args[0].(*object.String).Value
-				}
-			}
-			if len(prompt) > 0 {
-				fmt.Print(prompt)
+			setupHandles()
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
 			}
 
-			//
-			// Read from STDIN
-			//
-			text, err := reader.ReadString('\n')
+			id := args[0].(*object.Integer).Value
+			reader := file_readers[uintptr(id)]
+
+			line, err := reader.ReadString('\n')
 			if err == nil {
-				return &object.String{Value: text}
+				return &object.String{Value: line}
 			} else {
 				return &object.String{Value: ""}
 			}
@@ -230,6 +244,44 @@ var builtins = map[string]*object.Builtin{
 				result[i] = &object.String{Value: txt}
 			}
 			return &object.Array{Elements: result}
+		},
+	},
+	"fopen": {
+		Fn: func(args ...object.Object) object.Object {
+			setupHandles()
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+
+			path := args[0].(*object.String).Value
+			file, err := os.Open(path)
+			if err != nil {
+				return &object.Integer{Value: -1}
+			}
+
+			// convert handle to integer to return it
+			file_handles[file.Fd()] = file
+			// but also store a reader
+			file_readers[file.Fd()] = bufio.NewReader(file)
+
+			return &object.Integer{Value: int64(file.Fd())}
+		},
+	},
+	"fclose": {
+		Fn: func(args ...object.Object) object.Object {
+			setupHandles()
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+
+			handle := args[0].(*object.Integer).Value
+
+			file_handles[uintptr(handle)].Close()
+			delete(file_handles, uintptr(handle))
+			delete(file_readers, uintptr(handle))
+			return NULL
 		},
 	},
 }

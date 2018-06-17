@@ -1,0 +1,3 @@
+puts( "Enter your name:" );
+let name = read( 1 );
+puts( "Hello, ", name );
