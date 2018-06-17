@@ -18,6 +18,9 @@ Enter "exit()" or CTRL+C to quit command interface
 
 # 2 Syntax
 
+**NOTE**: Example-programs can be found beneath [examples/](examples/).
+
+
 ## 2.1 Definition
 using `let` as keyword, each line ends with `;`.
 ```
