@@ -15,7 +15,7 @@ type Lexer struct {
 
 // New a Lexer instance from string input.
 func New(input string) *Lexer {
-	l := &Lexer{characters: []rune(input)}
+	l := &Lexer{characters: []rune("  // test\n" + input)}
 	l.readChar()
 	return l
 }
@@ -37,19 +37,20 @@ func (l *Lexer) NextToken() token.Token {
 	l.skipWhitespace()
 
 	// skip single-line comments
-	if l.ch == '/' && l.peekChar() == '/' {
+	if l.ch == rune('/') && l.peekChar() == rune('/') {
 		l.skipComment()
+		return (l.NextToken())
 	}
 
 	// multi-line comments
-	if l.ch == '/' && l.peekChar() == '*' {
+	if l.ch == rune('/') && l.peekChar() == rune('*') {
 		l.skipMultiLineComment()
 	}
 
 	switch l.ch {
 	case rune('='):
 		tok = newToken(token.ASSIGN, l.ch)
-		if l.peekChar() == '=' {
+		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.EQ, Literal: string(ch) + string(l.ch)}
@@ -138,7 +139,7 @@ func (l *Lexer) skipWhitespace() {
 
 // skip comment (until the end of the line).
 func (l *Lexer) skipComment() {
-	for l.ch != '\n' && l.ch != '\r' && l.ch != rune(0) {
+	for l.ch != '\n' && l.ch != rune(0) {
 		l.readChar()
 	}
 	l.skipWhitespace()
