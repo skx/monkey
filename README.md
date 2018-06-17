@@ -110,9 +110,17 @@ insert key value pair into the map
 
 print literal value of objects.
 
-- `read`
+- `fopen(path)`
 
-read a single line from STDIN, optionally a prompt may be displayed for example `read( "Enter your name:" )`.
+return a filehandle to read from the given file.  See [examples/file.mon](examples/file.mon).
+
+- `fclose(handle)`
+
+close the given filehandle.  See [examples/file.mon](examples/file.mon).
+
+- `read(handle)`
+
+read a single line from the open-filehandle.  See [examples/file.mon](examples/file.mon) + [examples/stdin.mon](examples/stdin.mon).
 
 - `split`
 
