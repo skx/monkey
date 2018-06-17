@@ -6,14 +6,11 @@ A interpreter language implementation in Go
 
 [中文翻译](book/README.md)
 
-**Monkey** interpreter language which is implemented Go language. After typing `monkey` in terminal, you get into the `monkey` programming language.
-
+**Monkey** interpreter language which is implemented Go language.
 ```
-$ ./monkey
-Hello $Username! This is Monkey programming language!
-Feel free to type in commnd
-Enter "exit()" or CTRL+C to quit command interface
->>>
+$ ./monkey ./examples/stdin.mon
+Enter your name:Steve
+Hello, Steve
 ```
 
 # 2 Syntax
@@ -109,6 +106,14 @@ insert key value pair into the map
 - `puts`
 
 print literal value of objects.
+
+- `string`
+
+convert the given item to a string
+
+- `int`
+
+conver the given float/string to an integer.  (Useful when using `math.random()`.)
 
 - `type`
 
