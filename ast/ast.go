@@ -242,6 +242,31 @@ func (fl *FunctionLiteral) String() string {
 
 }
 
+type FunctionDefineLiteral struct {
+	Token      token.Token
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (fl *FunctionDefineLiteral) expressionNode() {}
+func (fl *FunctionDefineLiteral) TokenLiteral() string {
+	return fl.Token.Literal
+}
+func (fl *FunctionDefineLiteral) String() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range fl.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") ")
+	out.WriteString(fl.Body.String())
+	return out.String()
+
+}
+
 type CallExpression struct {
 	Token     token.Token
 	Function  Expression

@@ -11,51 +11,53 @@ type Token struct {
 
 // pre-defined TokenType
 const (
-	ILLEGAL   = "ILLEGAL"
-	EOF       = "EOF"
-	IDENT     = "IDENT"
-	INT       = "INT"
-	FLOAT     = "FLOAT"
-	ASSIGN    = "="
-	PLUS      = "+"
-	COMMA     = ","
-	SEMICOLON = ";"
-	MINUS     = "-"
-	BANG      = "!"
-	ASTERISK  = "*"
-	SLASH     = "/"
-	LT        = "<"
-	GT        = ">"
-	LPAREN    = "("
-	RPAREN    = ")"
-	LBRACE    = "{"
-	RBRACE    = "}"
-	FUNCTION  = "FUNCTION"
-	LET       = "LET"
-	TRUE      = "TRUE"
-	FALSE     = "FALSE"
-	IF        = "IF"
-	ELSE      = "ELSE"
-	RETURN    = "RETURN"
-	FOR       = "FOR"
-	EQ        = "=="
-	NOT_EQ    = "!="
-	STRING    = "STRING"
-	LBRACKET  = "["
-	RBRACKET  = "]"
-	COLON     = ":"
+	ILLEGAL         = "ILLEGAL"
+	EOF             = "EOF"
+	IDENT           = "IDENT"
+	INT             = "INT"
+	FLOAT           = "FLOAT"
+	ASSIGN          = "="
+	PLUS            = "+"
+	COMMA           = ","
+	SEMICOLON       = ";"
+	MINUS           = "-"
+	BANG            = "!"
+	ASTERISK        = "*"
+	SLASH           = "/"
+	LT              = "<"
+	GT              = ">"
+	LPAREN          = "("
+	RPAREN          = ")"
+	LBRACE          = "{"
+	RBRACE          = "}"
+	FUNCTION        = "FUNCTION"
+	DEFINE_FUNCTION = "DEFINE_FUNCTION"
+	LET             = "LET"
+	TRUE            = "TRUE"
+	FALSE           = "FALSE"
+	IF              = "IF"
+	ELSE            = "ELSE"
+	RETURN          = "RETURN"
+	FOR             = "FOR"
+	EQ              = "=="
+	NOT_EQ          = "!="
+	STRING          = "STRING"
+	LBRACKET        = "["
+	RBRACKET        = "]"
+	COLON           = ":"
 )
 
 // reversed keywords
 var keywords = map[string]TokenType{
-	"fn":     FUNCTION,
-	"let":    LET,
-	"true":   TRUE,
-	"false":  FALSE,
-	"if":     IF,
-	"else":   ELSE,
-	"return": RETURN,
-	"for":    FOR,
+	"fn":       FUNCTION,
+	"function": DEFINE_FUNCTION,
+	"let":      LET,
+	"true":     TRUE,
+	"false":    FALSE,
+	"if":       IF,
+	"else":     ELSE,
+	"return":   RETURN,
+	"for":      FOR,
 }
 
 // LookupIdentifier used to determinate whether identifier is keyword nor not
