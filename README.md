@@ -111,6 +111,10 @@ print literal value of objects.
 
 read a single line from STDIN, optionally a prompt may be displayed for example `read( "Enter your name:" )`.
 
+- `split`
+
+Split a string, based upon whitespace, and return an array of the resulting pieces.
+
 - `type`
 
 returns the type of a variable.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"monkey/object"
 	"os"
+	"strings"
 )
 
 // builtin function maps
@@ -189,6 +190,26 @@ var builtins = map[string]*object.Builtin{
 			} else {
 				return NULL
 			}
+		},
+	},
+	"split": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			if args[0].Type() != object.STRING_OBJ {
+				return newError("argument to `split` must be a string, got=%s",
+					args[0].Type())
+			}
+
+			fields := strings.Fields(args[0].(*object.String).Value)
+
+			result := make([]object.Object, len(fields), len(fields))
+			for i, txt := range fields {
+				result[i] = &object.String{Value: txt}
+			}
+			return &object.Array{Elements: result}
 		},
 	},
 }
