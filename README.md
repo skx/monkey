@@ -152,6 +152,13 @@ Hello, world
 4950
 ```
 
+## 2.7 Comments
+
+`monkey` support two kinds of comments:
+
+* Comments beginning with `//` last until the following newline.
+* Comments between `/*` and `*/` may span multiple lines.
+
 
 # 3 Extensions
 To make `monkey` interpreter language to be more powerfull, it is deserved improving it.
