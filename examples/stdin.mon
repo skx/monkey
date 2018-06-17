@@ -1,3 +1,9 @@
+//
+// This example shows reading from STDIN.
+//
+// STDIN is file-handle 1.
+//
+
 puts( "Enter your name:" );
 let name = read( 1 );
 puts( "Hello, ", name );
