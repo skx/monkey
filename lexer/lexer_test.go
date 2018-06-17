@@ -41,7 +41,7 @@ let add = fn(x, y){
   x+y;
 };
 let result = add(five, ten);
-!-/*5;
+!-/ *5;
 5<10>5;
 
 if(5<10){
@@ -187,5 +187,66 @@ func TestUnicodeLexer(t *testing.T) {
 	}
 	if tok.Literal != "世界" {
 		t.Fatalf("token literal wrong, expected=%q, got=%q", "世界", tok.Literal)
+	}
+}
+
+func TestSimpleComment(t *testing.T) {
+	input := `=+// This is a comment
+let a = 1;`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.ASSIGN, "="},
+		{token.PLUS, "+"},
+		{token.LET, "let"},
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.INT, "1"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+func TestMultiLineComment(t *testing.T) {
+	input := `=+/* This is a comment
+
+We're still in a comment
+let c = 2; */
+let a = 1;`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.ASSIGN, "="},
+		{token.PLUS, "+"},
+		{token.LET, "let"},
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.INT, "1"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
 	}
 }
