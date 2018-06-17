@@ -124,7 +124,7 @@ read a single line from the open-filehandle.  See [examples/file.mon](examples/f
 
 - `split`
 
-Split a string, based upon whitespace, and return an array of the resulting pieces.
+Split a string, (by default on "` `", but you can give it a different field), and return an array of the resulting pieces.
 
 - `type`
 
