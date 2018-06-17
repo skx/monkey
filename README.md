@@ -63,7 +63,7 @@ array is a list which organizes items by linear sequence. But types of items can
 map is treated as `key-value` container. please attention to that only `boolean`, `int` and `string` types can be used as key.
 
 ```
->>> let a = {"name":"monkey", true:1, 7:"sevent"};
+>>> let a = {"name":"monkey", true:1, 7:"seven"};
 >>> a
 {name: monkey, true: 1, 7: seven}
 >>> a["name"]
