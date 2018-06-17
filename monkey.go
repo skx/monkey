@@ -2,20 +2,39 @@ package main
 
 import (
 	"fmt"
-	"monkey/repl"
+	"io/ioutil"
 	"os"
-	"os/user"
+
+	"monkey/evaluator"
+	"monkey/lexer"
+	"monkey/object"
+	"monkey/parser"
 )
 
-func main() {
-	user, err := user.Current()
+func Execute(filename string) int {
+	body, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		fmt.Print(err)
+		return 1
 	}
-	fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
-	fmt.Printf("Feel free to type in command\n")
-	fmt.Printf(`Enter "exit()" or CTRL+C to quit command interface`)
-	fmt.Printf("\n")
-	repl.Start(os.Stdin, os.Stdout)
 
+	env := object.NewEnvironment()
+	l := lexer.New(string(body))
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		for _, msg := range p.Errors() {
+			fmt.Printf("\t%s\n", msg)
+		}
+		os.Exit(1)
+	}
+	evaluator.Eval(program, env)
+	return 0
+}
+
+func main() {
+	for _, file := range os.Args[1:] {
+		Execute(file)
+	}
 }
