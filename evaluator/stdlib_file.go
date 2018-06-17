@@ -59,6 +59,9 @@ func fileClose(args ...object.Object) object.Object {
 	}
 
 	handle := args[0].(*object.Integer).Value
+	if reader == nil {
+		return newError("Closing an unopened file-handle.")
+	}
 
 	file_handles[uintptr(handle)].Close()
 	delete(file_handles, uintptr(handle))
@@ -106,6 +109,9 @@ func readInput(args ...object.Object) object.Object {
 
 	id := args[0].(*object.Integer).Value
 	reader := file_readers[uintptr(id)]
+	if reader == nil {
+		return newError("Reading from an unopened file-handle.")
+	}
 
 	line, err := reader.ReadString('\n')
 	if err == nil {
