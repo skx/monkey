@@ -192,7 +192,10 @@ func TestUnicodeLexer(t *testing.T) {
 
 func TestSimpleComment(t *testing.T) {
 	input := `=+// This is a comment
-let a = 1;`
+// This is still a comment
+let a = 1;
+// This is a final
+// comment on two-lines`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -224,7 +227,12 @@ func TestMultiLineComment(t *testing.T) {
 
 We're still in a comment
 let c = 2; */
-let a = 1;`
+let a = 1;
+// This isa comment
+// This is still a comment.
+/* Now a multi-line again
+   Which is two-lines
+ */`
 
 	tests := []struct {
 		expectedType    token.TokenType
