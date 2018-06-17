@@ -1,8 +1,8 @@
 # Monkey
-A interpreter language implementation in Go 
+A interpreter language implementation in Go
 
 # 1 Introduction
-[Write an Interpreter in Go](https://interpreterbook.com) source code. 
+[Write an Interpreter in Go](https://interpreterbook.com) source code.
 
 [中文翻译](book/README.md)
 
@@ -14,7 +14,7 @@ Hello $Username! This is Monkey programming language!
 Feel free to type in commnd
 Enter "exit()" or CTRL+C to quit command interface
 >>>
-``` 
+```
 
 # 2 Syntax
 
@@ -37,24 +37,24 @@ using `let` as keyword, each line ends with `;`.
 4.2
 >>> a - b
 1.8
->>> a * b 
+>>> a * b
 3.6
->>> a / b 
+>>> a / b
 2.5
 ```
 
 ## 2.3 Builtin containers
-`monkey` contains two builtin containers: `array` and `map`. 
+`monkey` contains two builtin containers: `array` and `map`.
 - array
 
 array is a list which organizes items by linear sequence. But types of items can be different from each other.
 
 ```
 >>> let a = [1, 2.3, "array"];
->>> a 
+>>> a
 [1, 2.3, array]
 >>> let b = push(a, "another");
->>> b 
+>>> b
 [1, 2.3, array, another]
 ```
 
@@ -73,7 +73,7 @@ monkey
 >> a[7]
 seven
 >>>let b = set(a, 8, "eight");
->>> b 
+>>> b
 {name: moneky, true: 1, 7: sevent, 8: eight}
 ```
 
@@ -107,6 +107,11 @@ insert key value pair into the map
 
 print literal value of objects.
 
+- `type`
+
+returns the type of a variable.
+
+
 
 ## 2.5 Function
 
@@ -120,6 +125,13 @@ print literal value of objects.
 >>>addTwo(1,2, add)
 5
 ```
+
+It is also possible to define a function without using `let` via the `function` keyword:
+
+>>>function hello() { puts "Hello, world" ; };
+>>> hello()
+Hello, world
+
 
 ## 2.5 If-else statements
 
@@ -148,4 +160,4 @@ To make `monkey` interpreter language to be more powerfull, it is deserved impro
 - [x] unicode literal
 - [x] loop branch
 - [ ] translate into Chinese
-- [ ] ... 
+- [ ] ...
