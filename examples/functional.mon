@@ -41,9 +41,9 @@ function is_prime(n) {
    // 0, 1, 2 are prime
    if ( n < 3 ) { return true ; }
 
-   // Now the rest - we're testing all factors
-   // though ideally we'd just test from 2->SQRT(n).
-   let i = n;
+   // Now the rest - we're testing all factors between 2 & SQRT(n).
+   let i = int(math.sqrt(n)) + 1;
+
    for( i > 2 ) {
      let i = i - 1;
      if (n % i == 0) {
