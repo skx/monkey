@@ -42,6 +42,12 @@ func (l *Lexer) NextToken() token.Token {
 		return (l.NextToken())
 	}
 
+	// skip shebang
+	if l.ch == rune('#') && l.peekChar() == rune('!') {
+		l.skipComment()
+		return (l.NextToken())
+	}
+
 	// multi-line comments
 	if l.ch == rune('/') && l.peekChar() == rune('*') {
 		l.skipMultiLineComment()
