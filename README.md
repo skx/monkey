@@ -101,7 +101,7 @@ push an elements into the array.
 
 - `set`
 
-insert key value pair into the map
+insert key value pair into the map.
 
 - `puts`
 
@@ -109,11 +109,11 @@ print literal value of objects.
 
 - `string`
 
-convert the given item to a string
+convert the given item to a string.
 
 - `int`
 
-conver the given float/string to an integer.  (Useful when using `math.random()`.)
+convert the given float/string to an integer.  (Useful when using `math.random()`, etc.)
 
 - `type`
 
