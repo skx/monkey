@@ -1,6 +1,6 @@
 // A simple script to read a file and count the characters.
 //
-//   $ ./monkey -file wc2.mon
+//   $ ./monkey wc2.mon
 //
 //   Read 47 lines
 //
