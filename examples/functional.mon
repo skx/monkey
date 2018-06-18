@@ -1,0 +1,116 @@
+//
+// Some functional programming examples.
+//
+
+
+//
+// Return true if the given number is even
+//
+function is_even(n) {
+  return( n % 2 == 0 );
+}
+
+//
+// Return true if the given number is odd.
+//
+function is_odd(n) {
+  return( n % 2 == 1 );
+}
+
+
+//
+// Return true if the given number is prime
+//
+function is_prime(n) {
+   // negative numbers are not prime
+   if ( n < 0 ) { return false ; }
+
+   // 0, 1, 2 are prime
+   if ( n < 3 ) { return true ; }
+
+   // Now the rest - we're testing all factors
+   // though ideally we'd just test from 2->SQRT(n).
+   let i = n;
+   for( i > 2 ) {
+     let i = i - 1;
+     if (n % i == 0) {
+        return false;
+     }
+   }
+   return true;
+}
+
+//
+// Square the given number.
+//
+function square(n) { return n * n ; };
+
+
+//
+// Call the given function on each entry, and return an array of the
+// items for which the predicate returned true.
+//
+function filter( array, predicate ) {
+   let i = 0;
+   let result = [];
+
+   for( i < len(array) ) {
+      let entry = array[i];
+      let tmp = predicate(entry);
+      if ( tmp ) {
+         let result = push( result, entry );
+      }
+      let i = i + 1;
+   }
+
+   return result;
+};
+
+//
+// Return an array containing the result of applying
+// the given function to each item in the list
+//
+function map( array, fnc ) {
+   let i = 0;
+   let result = [];
+
+   for( i < len(array) ) {
+      let tmp = fnc(array[i]);
+      let result = push( result, tmp);
+      let i = i + 1;
+   }
+
+   return result;
+}
+
+//
+// Build up a list of the integers beneath 20
+//
+let ints = [];
+let i = 0;
+for( i < 21 ) {
+   let ints = push( ints, i );
+   let i = i + 1;
+}
+
+//
+// Show the numbers..
+//
+puts( "Integers:\n" );
+puts( "\t", string( ints ), "\n" );
+
+//
+// Show their squares ..
+//
+puts( "Squares:\n" );
+puts( "\t", string( map( ints, square ) ) , "\n");
+
+//
+// Now the odds / evens
+//
+puts( "Odd numbers:\n" );
+puts( "\t", string( filter( ints, is_odd ) ) , "\n");
+puts( "Even numbers:\n" );
+puts( "\t", string( filter( ints, is_even ) ) , "\n");
+puts( "Prime numbers:\n" );
+puts( "\t", string( filter( ints, is_prime ) ) , "\n");
