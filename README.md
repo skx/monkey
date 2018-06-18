@@ -198,6 +198,6 @@ Hello, world
 The `++` and `--` modifiers are permitted for integer-variables, for examle:
 
     let i = 0;
-    for ( i < 5 ) {
+    for ( i <= 5 ) {
        i++;
     }
