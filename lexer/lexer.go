@@ -98,9 +98,21 @@ func (l *Lexer) NextToken() token.Token {
 	case rune('*'):
 		tok = newToken(token.ASTERISK, l.ch)
 	case rune('<'):
-		tok = newToken(token.LT, l.ch)
+		if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.LT_EQUALS, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.LT, l.ch)
+		}
 	case rune('>'):
-		tok = newToken(token.GT, l.ch)
+		if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.GT_EQUALS, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.GT, l.ch)
+		}
 	case rune('!'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
