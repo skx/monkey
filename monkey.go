@@ -18,6 +18,16 @@ func versionFun(args ...object.Object) object.Object {
 	return &object.String{Value: VERSION}
 }
 
+// Implemention of "args()" function.
+func argsFun(args ...object.Object) object.Object {
+	l := len(os.Args[1:])
+	result := make([]object.Object, l, l)
+	for i, txt := range os.Args[1:] {
+		result[i] = &object.String{Value: txt}
+	}
+	return &object.Array{Elements: result}
+}
+
 func Execute(filename string) int {
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -44,12 +54,18 @@ func Execute(filename string) int {
 			return (versionFun(args...))
 		})
 
+	// Access to the command-line arguments
+	evaluator.RegisterBuiltin("args",
+		func(args ...object.Object) object.Object {
+			return (argsFun(args...))
+		})
+
 	evaluator.Eval(program, env)
 	return 0
 }
 
 func main() {
-	for _, file := range os.Args[1:] {
-		Execute(file)
+	if len(os.Args) > 1 {
+		Execute(os.Args[1])
 	}
 }
