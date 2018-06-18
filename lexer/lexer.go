@@ -72,7 +72,13 @@ func (l *Lexer) NextToken() token.Token {
 	case rune(','):
 		tok = newToken(token.COMMA, l.ch)
 	case rune('+'):
-		tok = newToken(token.PLUS, l.ch)
+		if l.peekChar() == rune('+') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.PLUS_PLUS, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.PLUS, l.ch)
+		}
 	case rune('%'):
 		tok = newToken(token.MOD, l.ch)
 	case rune('{'):
@@ -80,7 +86,13 @@ func (l *Lexer) NextToken() token.Token {
 	case rune('}'):
 		tok = newToken(token.RBRACE, l.ch)
 	case rune('-'):
-		tok = newToken(token.MINUS, l.ch)
+		if l.peekChar() == rune('-') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.MINUS_MINUS, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.MINUS, l.ch)
+		}
 	case rune('/'):
 		tok = newToken(token.SLASH, l.ch)
 	case rune('*'):

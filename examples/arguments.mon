@@ -11,5 +11,5 @@ puts( "We received ", len(a), " arguments to our script.\n" );
 let i = 0;
 for( i < len(a) ) {
    puts( "\t", i, " " , a[i], "\n");
-   let i = i + 1;
+   i++
 }

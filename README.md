@@ -52,6 +52,13 @@ using `let` as keyword, each line ends with `;`.
 2.5
 ```
 
+The complete list of operators includes:
+
+* `+`, `-`, `*`, `/`
+
+When operating with integers the modulus operator is available too `%`.
+
+
 ## 2.3 Builtin containers
 `monkey` contains two builtin containers: `array` and `map`.
 - array
@@ -186,11 +193,11 @@ Hello, world
 * Comments between `/*` and `*/` may span multiple lines.
 
 
-# 3 Extensions
-To make `monkey` interpreter language to be more powerfull, it is deserved improving it.
+## 2.9 Postfix Operators
 
-- [x] float type
-- [x] unicode literal
-- [x] loop branch
-- [ ] translate into Chinese
-- [ ] ...
+The `++` and `--` modifiers are permitted for integer-variables, for examle:
+
+    let i = 0;
+    for ( i < 5 ) {
+       i++;
+    }
