@@ -203,43 +203,43 @@ func typeFun(args ...object.Object) object.Object {
 	}
 }
 func init() {
-	registerBuiltin("int",
+	RegisterBuiltin("int",
 		func(args ...object.Object) object.Object {
 			return (intFun(args...))
 		})
-	registerBuiltin("last",
+	RegisterBuiltin("last",
 		func(args ...object.Object) object.Object {
 			return (lastFun(args...))
 		})
-	registerBuiltin("len",
+	RegisterBuiltin("len",
 		func(args ...object.Object) object.Object {
 			return (lenFun(args...))
 		})
-	registerBuiltin("first",
+	RegisterBuiltin("first",
 		func(args ...object.Object) object.Object {
 			return (firstFun(args...))
 		})
-	registerBuiltin("push",
+	RegisterBuiltin("push",
 		func(args ...object.Object) object.Object {
 			return (pushFun(args...))
 		})
-	registerBuiltin("puts",
+	RegisterBuiltin("puts",
 		func(args ...object.Object) object.Object {
 			return (putsFun(args...))
 		})
-	registerBuiltin("rest",
+	RegisterBuiltin("rest",
 		func(args ...object.Object) object.Object {
 			return (restFun(args...))
 		})
-	registerBuiltin("set",
+	RegisterBuiltin("set",
 		func(args ...object.Object) object.Object {
 			return (setFun(args...))
 		})
-	registerBuiltin("string",
+	RegisterBuiltin("string",
 		func(args ...object.Object) object.Object {
 			return (strFun(args...))
 		})
-	registerBuiltin("type",
+	RegisterBuiltin("type",
 		func(args ...object.Object) object.Object {
 			return (typeFun(args...))
 		})

@@ -42,11 +42,11 @@ func init() {
 	// Setup our random seed.
 	//
 	rand.Seed(time.Now().UnixNano())
-	registerBuiltin("math.abs",
+	RegisterBuiltin("math.abs",
 		func(args ...object.Object) object.Object {
 			return (mathAbs(args...))
 		})
-	registerBuiltin("math.random",
+	RegisterBuiltin("math.random",
 		func(args ...object.Object) object.Object {
 			return (mathRandom(args...))
 		})

@@ -11,6 +11,13 @@ import (
 	"monkey/parser"
 )
 
+var VERSION = "0.2"
+
+// Implemention of "version()" function.
+func versionFun(args ...object.Object) object.Object {
+	return &object.String{Value: VERSION}
+}
+
 func Execute(filename string) int {
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -29,6 +36,14 @@ func Execute(filename string) int {
 		}
 		os.Exit(1)
 	}
+
+	// Register a function called version()
+	// that the script can call.
+	evaluator.RegisterBuiltin("version",
+		func(args ...object.Object) object.Object {
+			return (versionFun(args...))
+		})
+
 	evaluator.Eval(program, env)
 	return 0
 }

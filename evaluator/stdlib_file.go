@@ -119,19 +119,19 @@ func readInput(args ...object.Object) object.Object {
 }
 
 func init() {
-	registerBuiltin("read",
+	RegisterBuiltin("read",
 		func(args ...object.Object) object.Object {
 			return (readInput(args...))
 		})
-	registerBuiltin("file.open",
+	RegisterBuiltin("file.open",
 		func(args ...object.Object) object.Object {
 			return (fileOpen(args...))
 		})
-	registerBuiltin("file.close",
+	RegisterBuiltin("file.close",
 		func(args ...object.Object) object.Object {
 			return (fileClose(args...))
 		})
-	registerBuiltin("file.lines",
+	RegisterBuiltin("file.lines",
 		func(args ...object.Object) object.Object {
 			return (fileLines(args...))
 		})

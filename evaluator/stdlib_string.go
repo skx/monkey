@@ -118,23 +118,23 @@ func stringSplit(args ...object.Object) object.Object {
 
 func init() {
 
-	registerBuiltin("string.interpolate",
+	RegisterBuiltin("string.interpolate",
 		func(args ...object.Object) object.Object {
 			return (stringInterpolate(args...))
 		})
-	registerBuiltin("string.toupper",
+	RegisterBuiltin("string.toupper",
 		func(args ...object.Object) object.Object {
 			return (stringToUpper(args...))
 		})
-	registerBuiltin("string.tolower",
+	RegisterBuiltin("string.tolower",
 		func(args ...object.Object) object.Object {
 			return (stringToLower(args...))
 		})
-	registerBuiltin("string.trim",
+	RegisterBuiltin("string.trim",
 		func(args ...object.Object) object.Object {
 			return (stringTrim(args...))
 		})
-	registerBuiltin("string.split",
+	RegisterBuiltin("string.split",
 		func(args ...object.Object) object.Object {
 			return (stringSplit(args...))
 		})
