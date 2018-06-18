@@ -6,3 +6,7 @@
 puts( string.toupper( "Steve Kemp" ), "\n" )
 puts( string.tolower( "Steve Kemp" ), "\n" )
 puts( string.trim( "  This should have no leading/trailing spaces. \t" ), "\n" )
+
+let str = "The quick brown 狐 jumped over the lazy 犬";
+puts( "String  : " + str + "\n" );
+puts( "Reversed: " + string.reverse(str) + "\n" );

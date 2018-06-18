@@ -4,6 +4,7 @@ import (
 	"monkey/object"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 // string = string.interpolate( string, hash );
@@ -81,6 +82,26 @@ func stringTrim(args ...object.Object) object.Object {
 	return &object.String{Value: strings.TrimSpace(input)}
 }
 
+func stringReverse(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	if args[0].Type() != object.STRING_OBJ {
+		return newError("argument must be a string, got=%s",
+			args[0].Type())
+	}
+	input := args[0].(*object.String).Value
+
+	out := make([]rune, utf8.RuneCountInString(input))
+	i := len(out)
+	for _, c := range input {
+		i--
+		out[i] = c
+	}
+	return &object.String{Value: string(out)}
+}
+
 func stringSplit(args ...object.Object) object.Object {
 	//
 	// Default separator.
@@ -133,6 +154,10 @@ func init() {
 	RegisterBuiltin("string.trim",
 		func(args ...object.Object) object.Object {
 			return (stringTrim(args...))
+		})
+	RegisterBuiltin("string.reverse",
+		func(args ...object.Object) object.Object {
+			return (stringReverse(args...))
 		})
 	RegisterBuiltin("string.split",
 		func(args ...object.Object) object.Object {
