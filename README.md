@@ -15,12 +15,12 @@ Hello, Steve
 
 You can also directly execute a script, if you've installed `monkey`:
 
-   $ chmod 755 examples/arguments.mon
-   $ ./examples/arguments.mon test me
-   We received 3 arguments to our script.
-      0 ./examples/arguments.mon
-      1 test
-      2 me
+    $ chmod 755 examples/arguments.mon
+    $ ./examples/arguments.mon test me
+    We received 3 arguments to our script.
+       0 ./examples/arguments.mon
+       1 test
+       2 me
 
 # 2 Syntax
 
