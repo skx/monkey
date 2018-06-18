@@ -1,0 +1,14 @@
+//
+// This file demonstrates string interpolation - putting data
+// from a hash into a string.
+//
+// This could be useful for generating templated output, etc.
+//
+
+
+let data = { "Name":"Steve", "Contact":"+358449...",  "Age": 32 };
+let out  = string.interpolate( "My name is ${Name}, I am ${Age}\n", data );
+puts(out);
+
+let out = string.interpolate( "My ${Key} is missing!", data );
+puts(out);
