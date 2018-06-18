@@ -67,6 +67,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, l.ch)
 	case rune('+'):
 		tok = newToken(token.PLUS, l.ch)
+	case rune('%'):
+		tok = newToken(token.MOD, l.ch)
 	case rune('{'):
 		tok = newToken(token.LBRACE, l.ch)
 	case rune('}'):
@@ -264,7 +266,7 @@ func isWhitespace(ch rune) bool {
 
 // is operators
 func isOperator(ch rune) bool {
-	return ch == rune('+') || ch == rune('-') || ch == rune('/') || ch == rune('*')
+	return ch == rune('+') || ch == rune('%') || ch == rune('-') || ch == rune('/') || ch == rune('*')
 }
 
 // is comparison

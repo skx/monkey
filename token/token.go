@@ -18,6 +18,7 @@ const (
 	FLOAT           = "FLOAT"
 	ASSIGN          = "="
 	PLUS            = "+"
+	MOD             = "%"
 	COMMA           = ","
 	SEMICOLON       = ";"
 	MINUS           = "-"
