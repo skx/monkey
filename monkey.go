@@ -18,14 +18,19 @@ import (
 	"github.com/skx/monkey/parser"
 )
 
-var VERSION = "master/unreleased"
+// This version-string will be updated via travis for generated binaries.
+var version = "master/unreleased"
 
+//
 // Implemention of "version()" function.
+//
 func versionFun(args ...object.Object) object.Object {
-	return &object.String{Value: VERSION}
+	return &object.String{Value: version}
 }
 
+//
 // Implemention of "args()" function.
+//
 func argsFun(args ...object.Object) object.Object {
 	l := len(os.Args[1:])
 	result := make([]object.Object, l, l)
@@ -35,7 +40,9 @@ func argsFun(args ...object.Object) object.Object {
 	return &object.Array{Elements: result}
 }
 
-// Execute the program in the given file.
+//
+// Execute the supplied string as a program.
+//
 func Execute(input string) int {
 
 	env := object.NewEnvironment()
