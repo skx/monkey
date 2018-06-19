@@ -29,6 +29,10 @@ install the intepreter via:
     $ go get -u  github.com/skx/monkey
     $ go install github.com/skx/monkey
 
+If you're an [emacs](https://www.gnu.org/software/emacs/) user you'll
+also wish to install [monkey.el](emacs/monkey.el), which provides syntax
+highlighting for monkey-scripts.
+
 
 # 1 Introduction
  source code.
