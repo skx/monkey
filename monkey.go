@@ -18,7 +18,7 @@ import (
 	"github.com/skx/monkey/parser"
 )
 
-var VERSION = "0.2"
+var VERSION = "master/unreleased"
 
 // Implemention of "version()" function.
 func versionFun(args ...object.Object) object.Object {
