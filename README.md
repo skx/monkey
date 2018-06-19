@@ -21,8 +21,8 @@ The code was originally written by [gaufung](https://github.com/gaufung/Monkey),
 If you have a working [golang](https://golang.org/) setup you can
 install the intepreter via:
 
-   $ go get -u  github.com/skx/monkey
-   $ go install github.com/skx/monkey
+    $ go get -u  github.com/skx/monkey
+    $ go install github.com/skx/monkey
 
 
 # 1 Introduction
@@ -219,7 +219,7 @@ Hello, world
 
 ## 2.9 Postfix Operators
 
-The `++` and `--` modifiers are permitted for integer-variables, for examle:
+The `++` and `--` modifiers are permitted for integer-variables, for example:
 
     let i = 0;
     for ( i <= 5 ) {
