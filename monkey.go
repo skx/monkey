@@ -7,7 +7,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -80,7 +79,7 @@ func main() {
 	var err error
 
 	if len(os.Args) > 1 {
-		input, err = ioutil.ReadFile(flag.Arg(1))
+		input, err = ioutil.ReadFile(os.Args[1])
 	} else {
 		input, err = ioutil.ReadAll(os.Stdin)
 	}
