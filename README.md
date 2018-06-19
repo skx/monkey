@@ -5,173 +5,159 @@
 
 # Monkey
 
-This repository contains an interpreter for the "Monkey" programming
-language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
+This repository contains an interpreter for the "Monkey" programming language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
 
-The code was originally written by [gaufung](https://github.com/gaufung/Monkey), but has been updated by [skx](https://github.com/skx/monkey):
+This repository started life as the implementation written by [gaufung](https://github.com/gaufung/Monkey) which extended the code in the book to add a `for` statement.
 
-* Added single & multi-line comments.
+## Changes
+
+The intepreter in this repository has been further extended:
+
+* Added single-line comments.
+* Added multi-line comments.
 * Added postfix operators (`i++`, `i--`).
-* Allow accessing bytes of a string via the index-operator
-* Added a driver to read from STDIN, or a named file.
+* Allow accessing bytes of a string via the index-operator.
+* Added a driver to read from STDIN, or a named file, rather than a repl.
 * Added a collection of standard-library functions.
-    * Including file input, type-discovery, string functions, etc.
+    * Including file input, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added `<=` + `>=` comparison functions.
-* Scripts can access their command-line arguments.
-* String interpolation is supported.
+* Added command-line handling, so that scripts can read their own arguments.
 
-# 0 Installation
 
-If you have a working [golang](https://golang.org/) setup you can
-install the intepreter via:
+## 1. Installation
+
+If you have a working [golang](https://golang.org/) setup you can install the intepreter via:
 
     $ go get -u  github.com/skx/monkey
     $ go install github.com/skx/monkey
 
-If you're an [emacs](https://www.gnu.org/software/emacs/) user you'll
-also wish to install [monkey.el](emacs/monkey.el), which provides syntax
-highlighting for monkey-scripts.
+Alternatively you could install a binary-release, from our [releases page](https://github.com/skx/monkey/releases).
 
+If you're an [emacs](https://www.gnu.org/software/emacs/) user might also wish to install [monkey.el](emacs/monkey.el), which provides syntax highlighting for monkey-scripts.
 
-# 1 Introduction
- source code.
+### 1.1 Usage
 
-[中文翻译](book/README.md)
+To execute a monkey-script simply pass the name to the intepreter:
 
-**Monkey** interpreter language which is implemented Go language.
-```
-$ ./monkey ./examples/stdin.mon
-Enter your name:Steve
-Hello, Steve
-```
+     $ monkey ./example/hello.mon
 
-You can also directly execute a script, if you've installed `monkey`:
+Scripts can be made executable by adding a suitable shebang line:
 
-    $ chmod 755 examples/arguments.mon
-    $ ./examples/arguments.mon test me
-    We received 3 arguments to our script.
-       0 ./examples/arguments.mon
-       1 test
-       2 me
+     $ cat hello.mon
+     #!/usr/bin/env monkey
+     puts( "Hello, world!\n" );
+
+Execution then works as you would expect:
+
+     $ chmod 755 hello.mon
+     $ ./hello.mon
+     Hello, world!
+
+If no script-name is passed to the intepretter it will read from STDIN and
+execute that instead.  This could be used like so:
+
+     $ echo 'puts("Read from STDIN!\n");' | monkey
+
 
 # 2 Syntax
 
-**NOTE**: Example-programs can be found beneath [examples/](examples/).
+**NOTE**: Example-programs can be found beneath [examples/](examples/) which
+demonstrate these things, as well as parts of the standard-library.
 
 
 ## 2.1 Definition
-using `let` as keyword, each line ends with `;`.
-```
->>>let a = 3;
->>>let b = 1.2;
->>>a+b
-4.2
-```
+
+Variables are defined using the `let` keyword, with each line ends with `;`.
+
+      let a = 3;
+      let b = 1.2;
+
 
 ## 2.2 Arithmetic operations
-`monkey` supports all basic arithmetic operation of `int` and `float` types. `int` type is represented by `int64` and `float` type is represented by `float64`.
 
-```
->>> let a = 3;
->>> let b = 1.2;
->>> a + b
-4.2
->>> a - b
-1.8
->>> a * b
-3.6
->>> a / b
-2.5
-```
+`monkey` supports all the basic arithmetic operation of `int` and `float` types.
 
-The complete list of operators includes:
+The `int` type is represented by `int64` and `float` type is represented by `float64`.
 
-* `+`, `-`, `*`, `/`
 
-When operating with integers the modulus operator is available too `%`.
+       let a = 3;
+       let b = 1.2;
+
+       puts( a + b ); // 4.2
+       puts( a - b ); // 1.8
+       puts( a * b ); // 3.6
+       puts( a / b ); // 2.5
+
+When operating with integers the modulus operator is available too, via `%`.
 
 
 ## 2.3 Builtin containers
-`monkey` contains two builtin containers: `array` and `map`.
-- array
 
-array is a list which organizes items by linear sequence. But types of items can be different from each other.
+`monkey` contains two builtin containers: `array` and `hash`.
 
-```
->>> let a = [1, 2.3, "array"];
->>> a
-[1, 2.3, array]
->>> let b = push(a, "another");
->>> b
-[1, 2.3, array, another]
-```
 
-- map
+### 2.3.1 Array
 
-map is treated as `key-value` container. please attention to that only `boolean`, `int` and `string` types can be used as key.
+An array is a list which organizes items by linear sequence.  Arrays can hold multiple types.
 
-```
->>> let a = {"name":"monkey", true:1, 7:"seven"};
->>> a
-{name: monkey, true: 1, 7: seven}
->>> a["name"]
-monkey
->>> a[true]
-1
->> a[7]
-seven
->>>let b = set(a, 8, "eight");
->>> b
-{name: moneky, true: 1, 7: sevent, 8: eight}
-```
+     let a = [1, 2.3, "array"];
+     let b = [false, true, "Hello World", 3, 3.13];
+
+
+Adding to an array is done via the `push` function:
+
+     let a = push(a, "another");
+
+
+### 2.3.2 Hashes
+
+A hash is a `key-value` container, but note that only `boolean`, `int` and `string` types can be used as key.
+
+
+    let a = {"name":"monkey",
+             true:1,
+             7:"seven"};
+
+    puts(a); // Outputs: {name: monkey, true: 1, 7: seven}
+
+    puts(a["name"]); // Outputs: monkey
+
+Updating a hash is done via the `set` keyword:
+
+    let b = set(a, 8, "eight");
+    puts( b);  // Outputs: {name: moneky, true: 1, 7: sevent, 8: eight}
+
 
 ## 2.4 Builtin functions
 
-- `len`
+The core primitives are:
 
-yield the length of builtin containers.
-
-- `first`
-
-yield the first element of array.
-
-- `last`
-
-yield the last element of array.
-
-- `rest`
-
-yield an array which excludes the first element.
-
-- `push`
-
-push an elements into the array.
-
-- `set`
-
-insert key value pair into the map.
-
-- `puts`
-
-print literal value of objects.
-
-- `string`
-
-convert the given item to a string.
-
-- `int`
-
-convert the given float/string to an integer.  (Useful when using `math.random()`, etc.)
-
-- `type`
-
-returns the type of a variable.
+* `len`
+  * Yield the length of builtin containers.
+* `first`
+  * yield the first element of array.
+* `last`
+  * yield the last element of array.
+* `rest`
+  * yield an array which excludes the first element.
+* `push`
+  * push an elements into the array.
+* `set`
+  * insert key value pair into the map.
+* `puts`
+  * print literal value of objects.
+* `string`
+  * convert the given item to a string.
+* `int`
+  * convert the given float/string to an integer.
+* `type`
+  * returns the type of a variable.
 
 
 ## 2.4.1 The Standard Library
 
-In addition to the built-in functions which are documented above we also
+In addition to the built-in functions, which are documented above we also
 have a minimal-standard library.  The library includes some string/file
 primitives as well as maths-helpers.
 
@@ -181,42 +167,48 @@ and several of these things are documented in [examples/](examples/).
 
 ## 2.5 Function
 
-`monkey` use `fn` as the definition of function. Apart from regular function using, `monkey` also includes high order function.
+`monkey` use `fn` to define a function which can be assigned to a varible for
+naming/invocation purposes:
 
-```
->>>let add = fn(a, b) { return a + b;};
->>> add(1,2)
-3
->>>let addTwo = fn(a,b, f) { return 2 + f(a, b);};
->>>addTwo(1,2, add)
-5
-```
 
-It is also possible to define a function without using `let` via the `function` keyword:
+    let add = fn(a, b) { return a + b;};
+    add(1,2);  // Outputs: 3
 
->>>function hello() { puts "Hello, world" ; };
->>> hello()
-Hello, world
+    // functions can be used via their variables
+    let addTwo = fn(a,b, f) { return 2 + f(a, b);};
+    puts( addTwo(1,2, add) ); // outputs: 5.
+
+It is also possible to define a function without the use of `let`, via the `function` keyword.  This was added to make the language feel more natural to C-developers:
+
+    function hello() { puts "Hello, world\n" ; };
+    hello();   // Outputs: Hello, world" to the console.
 
 
 ## 2.6 If-else statements
 
 `monkey` supports if-else statements.
-```
->>> let max = fn(a, b) { if (a > b) { return a;} else { return b; } };
->>> max(1, 2)
-2
-```
+
+    let max = fn(a, b) { if (a > b) { return a;} else { return b; } };
+    puts( max(1, 2) );  // Outputs: 2
+
 
 ## 2.7 For-loop statements
 
-`monkey` support for-loop statement.
+`monkey` supports a golang-style for-loop statement.
 
-```
->>> let sum = fn(x) { let i = 1; let sum = 0; for (i < x) { let sum = sum + i; let i = i+1; } return sum; };
->>> sum(100)
-4950
-```
+     let sum = fn(x) {
+        let i = 1;
+        let sum = 0;
+
+        for (i < x) {
+           let sum = sum + i;
+           i++;
+        }
+        return sum;
+     }
+
+     puts(sum(100));  // Outputs: 4950
+
 
 ## 2.8 Comments
 
@@ -234,3 +226,9 @@ The `++` and `--` modifiers are permitted for integer-variables, for example:
     for ( i <= 5 ) {
        i++;
     }
+
+They update the contents of the named variable to increase/decrease it by one.
+
+
+Steve
+--
