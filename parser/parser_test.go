@@ -153,7 +153,7 @@ func TestBooleanExpression(t *testing.T) {
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain %d statment. got=%d", 1, len(program.Statements))
+			t.Fatalf("program.Statements does not contain %d statement. got=%d", 1, len(program.Statements))
 		}
 		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
 		if !ok {
