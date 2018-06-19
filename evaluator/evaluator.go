@@ -501,7 +501,15 @@ func evalStringIndexExpression(input, index object.Object) object.Object {
 	if idx < 0 || idx > max {
 		return NULL
 	}
-	return &object.String{Value: string(str[idx])}
+
+	// Get the characters as an array of runes
+	chars := []rune(str)
+
+	// Now index
+	ret := chars[idx]
+
+	// And return as a string.
+	return &object.String{Value: string(ret)}
 }
 
 func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Object {

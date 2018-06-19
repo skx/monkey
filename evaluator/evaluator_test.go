@@ -442,6 +442,14 @@ func TestStringIndexExpression(t *testing.T) {
 			"\"Steve\"[101]",
 			nil,
 		},
+		{
+			"\"狐犬\"[0]",
+			"狐",
+		},
+		{
+			"\"狐犬\"[1]",
+			"犬",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
