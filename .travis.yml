@@ -9,3 +9,13 @@ script:
 - ".travis/build-all"
 - go get golang.org/x/tools/cmd/cover
 - go test -coverprofile fmt
+deploy:
+  provider: releases
+  api_key:
+    secure: JIqNrvY0ERWzrXsfCZ/NM3VktVtcsCnjQAvy4fZQqnFWLEUqUMRnzD6EoMDfqaGKuZrxB6no0l55ARGcz+G5soHycKjwDD7z5yxvtskUGJ+UF2JjLjiY88MJnIrTHtA6JscfpJrGf9DQVPmWWYX0g6+rSQug+bttap93pJmkpdICsnkGjR3A9MZ8u94vM5daWZ5GV25K7dxiWMF3yhsfaMR0mWTsaYSskt1/eOw0UbdBhpYV8P+YoFfT4OoRLVXp5KvQmsmcIp/TyM88pVT5rsJk9iSCAIyPQardTCK4z9hx07eNEBPC+T9Wyc2BXyFVJ61hUrcB2L7MS28Q35b/5aTt9WoBnP1NG6zjNEi6/xe2aGenmttSThPt1VyV2GrcxbmD50GihQFmDAnA8cxbiLOqJRneUxy7Ieuxh+g6TZP9Q3i+oEfY2qMcbIGIN81is4wy1oUSxQtsOpysHG3lZD+Q4QlF25cS/HKVFlunMz/qq4FIHxaBzkPnaowAnLJS/SbBZMOCghUHA7QLI0242otPOY04dA/pxL/cqqEJfMKehfowOQLfImeAbQ4QtO0b15kwz9FJenfs1Jn9Ny48HtYv5Q+6LkH9kEGy2W+NoiSY3W+Axkcx3Z+l3u8Y6rg7+cLFZHBQpPM5pLv+aWajWdhJdbn6ba4mqjaudHYs+CQ=
+  file_glob: true
+  file:
+    - "monkey-*"
+  skip_cleanup: true
+  on:
+    tags: true
