@@ -25,6 +25,7 @@ const (
 	LESSGREATER // > or <
 	SUM         // + or -
 	PRODUCT     // * or /
+	MOD         // %
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
 	INDEX       // array[index], map[key]
@@ -42,7 +43,7 @@ var precedences = map[token.TokenType]int{
 	token.MINUS:     SUM,
 	token.SLASH:     PRODUCT,
 	token.ASTERISK:  PRODUCT,
-	token.MOD:       PRODUCT,
+	token.MOD:       MOD,
 	token.LPAREN:    CALL,
 	token.LBRACKET:  INDEX,
 }
@@ -65,6 +66,7 @@ func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 	p.nextToken()
 	p.nextToken()
+
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
