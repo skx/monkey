@@ -180,6 +180,8 @@ func TestIfElseExpression(t *testing.T) {
 		{"if (1<2) {10}", 10},
 		{"if (1<2) { 10} else {20}", 10},
 		{"if (1>2) {10} else {20}", 20},
+		{"if (1>=1) {10} else {100}", 10},
+		{"if (1<=1) {10} else {100}", 10},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
