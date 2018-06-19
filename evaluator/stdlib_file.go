@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"os"
 
-	"github.com/skx/Monkey/object"
+	"github.com/skx/monkey/object"
 )
 
 //

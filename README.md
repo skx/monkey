@@ -3,7 +3,7 @@
 This repository contains an interpreter for the "Monkey" programming
 language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
 
-The code was originally written by [gaufung](https://github.com/gaufung/Monkey), but has been updated by [skx](https://github.com/skx/Monkey):
+The code was originally written by [gaufung](https://github.com/gaufung/Monkey), but has been updated by [skx](https://github.com/skx/monkey):
 
 * Added single & multi-line comments.
 * Added postfix operators (`i++`, `i--`).
@@ -21,8 +21,8 @@ The code was originally written by [gaufung](https://github.com/gaufung/Monkey),
 If you have a working [golang](https://golang.org/) setup you can
 install the intepreter via:
 
-   $ go get -u  github.com/skx/Monkey
-   $ go install github.com/skx/Monkey
+   $ go get -u  github.com/skx/monkey
+   $ go install github.com/skx/monkey
 
 
 # 1 Introduction

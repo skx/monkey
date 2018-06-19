@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/skx/Monkey/token"
+	"github.com/skx/monkey/token"
 )
 
 type Node interface {

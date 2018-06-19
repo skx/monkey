@@ -3,8 +3,8 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/skx/Monkey/ast"
-	"github.com/skx/Monkey/object"
+	"github.com/skx/monkey/ast"
+	"github.com/skx/monkey/object"
 )
 
 // pre-defined object including Null, True and False

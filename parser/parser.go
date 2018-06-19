@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/skx/Monkey/ast"
-	"github.com/skx/Monkey/lexer"
-	"github.com/skx/Monkey/token"
+	"github.com/skx/monkey/ast"
+	"github.com/skx/monkey/lexer"
+	"github.com/skx/monkey/token"
 )
 
 // prefix Parse function

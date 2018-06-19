@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/skx/Monkey/object"
+	"github.com/skx/monkey/object"
 )
 
 // convert a double/string to an int

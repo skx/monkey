@@ -4,9 +4,9 @@ import (
 	"math"
 	"testing"
 
-	"github.com/skx/Monkey/lexer"
-	"github.com/skx/Monkey/object"
-	"github.com/skx/Monkey/parser"
+	"github.com/skx/monkey/lexer"
+	"github.com/skx/monkey/object"
+	"github.com/skx/monkey/parser"
 )
 
 func TestEvalArithmeticExpression(t *testing.T) {

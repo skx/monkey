@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/skx/Monkey/ast"
+	"github.com/skx/monkey/ast"
 )
 
 type ObjectType string

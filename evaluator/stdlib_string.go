@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/skx/Monkey/object"
+	"github.com/skx/monkey/object"
 )
 
 // string = string.interpolate( string, hash );

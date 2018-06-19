@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/skx/Monkey/object"
+	"github.com/skx/monkey/object"
 )
 
 func mathAbs(args ...object.Object) object.Object {
