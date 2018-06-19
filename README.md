@@ -86,10 +86,10 @@ The `int` type is represented by `int64` and `float` type is represented by `flo
        let a = 3;
        let b = 1.2;
 
-       puts( a + b ); // 4.2
-       puts( a - b ); // 1.8
-       puts( a * b ); // 3.6
-       puts( a / b ); // 2.5
+       puts( a + b ); // Outputs: 4.2
+       puts( a - b ); // Outputs: 1.8
+       puts( a * b ); // Outputs: 3.6
+       puts( a / b ); // Outputs: 2.5
 
 When operating with integers the modulus operator is available too, via `%`.
 
@@ -111,10 +111,25 @@ Adding to an array is done via the `push` function:
 
      let a = push(a, "another");
 
+You can iterate over the contents of an array like so:
+
+     let i = 0;
+     for( i < len(a) ) {
+        puts( "Array index ", i, " contains ", a[i], "n");
+        i++
+     }
+
+With the definition we included that produces this output:
+
+     Array index 0 contains 1
+     Array index 1 contains 2.3
+     Array index 2 contains array
+     Array index 3 contains another
+
 
 ### 2.3.2 Hashes
 
-A hash is a `key-value` container, but note that only `boolean`, `int` and `string` types can be used as key.
+A hash is a key/value container, but note that keys may only be of type `boolean`, `int` and `string`.
 
 
     let a = {"name":"monkey",
@@ -167,14 +182,14 @@ You can see the implementations beneath [evaluator/stdlib*](evaluator/),
 and several of these things are documented in [examples/](examples/).
 
 
-## 2.5 Function
+## 2.5 Functions
 
-`monkey` use `fn` to define a function which can be assigned to a varible for
+`monkey` use `fn` to define a function which will be assigned to a variable for
 naming/invocation purposes:
 
 
     let add = fn(a, b) { return a + b;};
-    add(1,2);  // Outputs: 3
+    puts(add(1,2));  // Outputs: 3
 
     // functions can be used via their variables
     let addTwo = fn(a,b, f) { return 2 + f(a, b);};
@@ -190,7 +205,14 @@ It is also possible to define a function without the use of `let`, via the `func
 
 `monkey` supports if-else statements.
 
-    let max = fn(a, b) { if (a > b) { return a;} else { return b; } };
+    let max = fn(a, b) {
+      if (a > b) {
+        return a;
+      } else {
+        return b;
+        }
+    };
+
     puts( max(1, 2) );  // Outputs: 2
 
 
@@ -229,7 +251,7 @@ The `++` and `--` modifiers are permitted for integer-variables, for example:
        i++;
     }
 
-They update the contents of the named variable to increase/decrease it by one.
+These postfix-operators update the contents of the named variable to increase/decrease it by one.
 
 
 Steve
