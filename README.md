@@ -1,8 +1,23 @@
 # Monkey
-A interpreter language implementation in Go
+
+This repository contains an interpreter for the "Monkey" programming
+language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
+
+The code was originally written by [gaufung](https://github.com/gaufung/Monkey), but has been updated by [skx](https://github.com/skx/Monkey):
+
+* Added single & multi-line comments.
+* Added postfix operators (`i++`, `i--`).
+* Allow accessing bytes of a string via the index-operator
+* Added a driver to read from STDIN, or a named file.
+* Added a collection of standard-library functions.
+    * Including file input, type-discovery, string functions, etc.
+* Added a new way to define functions, via `function`.
+* Added `<=` + `>=` comparison functions.
+* Scripts can access their command-line arguments.
+* String interpolation is supported.
 
 # 1 Introduction
-[Write an Interpreter in Go](https://interpreterbook.com) source code.
+ source code.
 
 [中文翻译](book/README.md)
 
