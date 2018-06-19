@@ -7,8 +7,6 @@ matrix:
   - go: tip
 script:
 - ".travis/build-all"
-- go get golang.org/x/tools/cmd/cover
-- go test -coverprofile fmt
 deploy:
   provider: releases
   api_key:
