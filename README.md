@@ -9,7 +9,7 @@ This repository contains an interpreter for the "Monkey" programming language, a
 
 This repository started life as the implementation written by [gaufung](https://github.com/gaufung/Monkey) which extended the code in the book to add a `for` statement.
 
-## Changes
+#### My changes
 
 The intepreter in this repository has been further extended:
 
@@ -66,12 +66,14 @@ execute that instead.  This could be used like so:
 demonstrate these things, as well as parts of the standard-library.
 
 
-## 2.1 Definition
+## 2.1 Definitions
 
 Variables are defined using the `let` keyword, with each line ends with `;`.
 
       let a = 3;
       let b = 1.2;
+
+Variables may be integers, floats, strings, or arrays/hashes (which are discussed later).
 
 
 ## 2.2 Arithmetic operations
