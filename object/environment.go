@@ -4,6 +4,7 @@ type Environment struct {
 	store map[string]Object
 	outer *Environment
 }
+
 // NewEnvironment creates new environment
 func NewEnvironment() *Environment {
 	s := make(map[string]Object)
@@ -16,6 +17,7 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env.outer = outer
 	return env
 }
+
 // Get object by name
 func (e *Environment) Get(name string) (Object, bool) {
 	obj, ok := e.store[name]
