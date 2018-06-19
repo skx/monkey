@@ -1,3 +1,8 @@
+[![Travis CI](https://img.shields.io/travis/skx/monkey/master.svg?style=flat-square)](https://travis-ci.org/skx/monkey)
+[![Go Report Card](https://goreportcard.com/badge/github.com/skx/monkey)](https://goreportcard.com/report/github.com/skx/monkey)
+[![license](https://img.shields.io/github/license/skx/monkey.svg)](https://github.com/skx/monkey/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/release/skx/monkey.svg)](https://github.com/skx/monkey/releases/latest)
+
 # Monkey
 
 This repository contains an interpreter for the "Monkey" programming
