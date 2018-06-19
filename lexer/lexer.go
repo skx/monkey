@@ -15,7 +15,7 @@ type Lexer struct {
 
 // New a Lexer instance from string input.
 func New(input string) *Lexer {
-	l := &Lexer{characters: []rune("  // test\n" + input)}
+	l := &Lexer{characters: []rune(input)}
 	l.readChar()
 	return l
 }
