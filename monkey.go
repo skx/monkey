@@ -1,6 +1,13 @@
+//
+// Driver for monkey.
+//
+// If no argument is given will read from stdin, otherwise from the
+// named file.
+//
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -28,15 +35,11 @@ func argsFun(args ...object.Object) object.Object {
 	return &object.Array{Elements: result}
 }
 
-func Execute(filename string) int {
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Print(err)
-		return 1
-	}
+// Execute the program in the given file.
+func Execute(input string) int {
 
 	env := object.NewEnvironment()
-	l := lexer.New(string(body))
+	l := lexer.New(input)
 	p := parser.New(l)
 
 	program := p.ParseProgram()
@@ -65,7 +68,19 @@ func Execute(filename string) int {
 }
 
 func main() {
+
+	var input []byte
+	var err error
+
 	if len(os.Args) > 1 {
-		Execute(os.Args[1])
+		input, err = ioutil.ReadFile(flag.Arg(1))
+	} else {
+		input, err = ioutil.ReadAll(os.Stdin)
 	}
+
+	if err != nil {
+		fmt.Printf("Error reading: %s\n", err.Error())
+	}
+
+	Execute(string(input))
 }
