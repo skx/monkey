@@ -162,6 +162,35 @@ func restFun(args ...object.Object) object.Object {
 
 }
 
+// Get hash keys
+func hashKeys(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	if args[0].Type() != object.HASH_OBJ {
+		return newError("argument to `keys` must be HASH, got=%s",
+			args[0].Type())
+	}
+
+	// The object we're working with
+	hash := args[0].(*object.Hash)
+	ents := len(hash.Pairs)
+
+	// Create a new array for the results.
+	array := make([]object.Object, ents, ents)
+
+	// Now copy the keys into it.
+	i := 0
+	for _, ent := range hash.Pairs {
+		array[i] = ent.Key
+		i++
+	}
+
+	// Return the array.
+	return &object.Array{Elements: array}
+}
+
 // set a hash-field
 func setFun(args ...object.Object) object.Object {
 	if len(args) != 3 {
@@ -232,6 +261,10 @@ func init() {
 	RegisterBuiltin("int",
 		func(args ...object.Object) object.Object {
 			return (intFun(args...))
+		})
+	RegisterBuiltin("keys",
+		func(args ...object.Object) object.Object {
+			return (hashKeys(args...))
 		})
 	RegisterBuiltin("last",
 		func(args ...object.Object) object.Object {

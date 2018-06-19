@@ -1,0 +1,23 @@
+//
+// Here is a sample hash
+//
+let h = { "Steve": "Kemp" , "Moi": 7, 3.14:"pi?"};
+
+//
+// We find the keys it has.
+//
+let k = keys(h);
+puts("Hash has ", len( k) , " keys.\n" );
+
+//
+// Now we can walk over them.
+//
+let i = 0;
+for( i < len(k )) {
+
+  // Show the name / type / value
+  puts( "Entry has key:" , k[i] ,
+        " (type:", type(k[i]), ")",
+        "with value:", h[k[i]], "\n");
+        i++;
+}

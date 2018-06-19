@@ -157,6 +157,8 @@ Updating a hash is done via the `set` keyword:
 
 The core primitives are:
 
+* `keys`
+  * Return the keys of the specified array.
 * `len`
   * Yield the length of builtin containers.
 * `first`
