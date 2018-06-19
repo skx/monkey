@@ -131,7 +131,7 @@ func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
 	out.WriteString("(")
 	out.WriteString(pe.Operator)
-	out.WriteString(pe.Token.Literal)
+	out.WriteString(pe.Right.String())
 	out.WriteString(")")
 	return out.String()
 }
@@ -156,8 +156,8 @@ func (ie *InfixExpression) String() string {
 }
 
 type PostfixExpression struct {
-	Token    token.Token // the postfix token, e.g. ++
-	Operator string
+	Token    token.Token // the variable we're applied to.
+	Operator string      // the postfix token, e.g. ++
 }
 
 func (pe *PostfixExpression) expressionNode()      {}
