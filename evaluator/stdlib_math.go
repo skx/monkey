@@ -31,7 +31,6 @@ func mathAbs(args ...object.Object) object.Object {
 			args[0].Type())
 	}
 
-	return NULL
 }
 
 // val = math.random()
@@ -57,7 +56,6 @@ func mathSqrt(args ...object.Object) object.Object {
 			args[0].Type())
 	}
 
-	return NULL
 }
 
 func init() {

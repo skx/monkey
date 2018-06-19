@@ -167,7 +167,6 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 			return newError("%s is not an int", node.Token.Literal)
 
 		}
-		return val
 	case "--":
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
@@ -181,7 +180,6 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 		default:
 			return newError("%s is not an int", node.Token.Literal)
 		}
-		return val
 	default:
 		return newError("unknown operator: %s", operator)
 	}
