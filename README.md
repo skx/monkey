@@ -147,16 +147,25 @@ A hash is a key/value container, but note that keys may only be of type `boolean
 
     puts(a["name"]); // Outputs: monkey
 
-Updating a hash is done via the `set` keyword:
+Updating a hash is done via the `set` function, but note that this returns
+an updated hash - rather than changing in-place:
 
     let b = set(a, 8, "eight");
-    puts( b);  // Outputs: {name: moneky, true: 1, 7: sevent, 8: eight}
+    puts( b);  // Outputs: {name: monkey, true: 1, 7: sevent, 8: eight}
+
+You can iterate over the keys in a hash via the `keys` function, or delete
+keys via `delete` (again this function returns an updated value rather than
+changing it in-place).
+
+Hash functions are demonstrated in the [examples/hash.mon](examples/hash.mon) sample.
 
 
 ## 2.4 Builtin functions
 
 The core primitives are:
 
+* `delete`
+  * Deletes a hash-key.
 * `keys`
   * Return the keys of the specified array.
 * `len`
