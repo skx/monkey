@@ -1,5 +1,9 @@
 package object
 
+import (
+	"math"
+)
+
 type Environment struct {
 	store map[string]Object
 	outer *Environment
@@ -16,6 +20,12 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()
 	env.outer = outer
 	return env
+}
+
+// Register default variables.
+func (e *Environment) RegisterDefaults() {
+	e.Set("PI", &Float{Value: math.Pi})
+	e.Set("E", &Float{Value: math.E})
 }
 
 // Get object by name

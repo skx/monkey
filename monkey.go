@@ -45,6 +45,7 @@ func argsFun(args ...object.Object) object.Object {
 func Execute(input string) int {
 
 	env := object.NewEnvironment()
+	env.RegisterDefaults()
 	l := lexer.New(input)
 	p := parser.New(l)
 

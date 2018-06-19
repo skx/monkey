@@ -75,6 +75,11 @@ Variables are defined using the `let` keyword, with each line ends with `;`.
 
 Variables may be integers, floats, strings, or arrays/hashes (which are discussed later).
 
+Two standard variables are defined by default:
+
+    puts( PI ); // Outputs: 3.14159..
+    puts( E );  // Outputs: 2.71828..
+
 
 ## 2.2 Arithmetic operations
 
