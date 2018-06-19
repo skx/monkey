@@ -1,8 +1,9 @@
 package lexer
 
 import (
-	"monkey/token"
 	"strings"
+
+	"github.com/skx/Monkey/token"
 )
 
 // Lexer used to be as lexer for monkey programming language.

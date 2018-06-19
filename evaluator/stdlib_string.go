@@ -1,10 +1,11 @@
 package evaluator
 
 import (
-	"monkey/object"
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/skx/Monkey/object"
 )
 
 // string = string.interpolate( string, hash );

@@ -2,10 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"monkey/ast"
-	"monkey/lexer"
-	"monkey/token"
 	"strconv"
+
+	"github.com/skx/Monkey/ast"
+	"github.com/skx/Monkey/lexer"
+	"github.com/skx/Monkey/token"
 )
 
 // prefix Parse function

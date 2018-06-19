@@ -2,10 +2,11 @@ package evaluator
 
 import (
 	"math"
-	"monkey/lexer"
-	"monkey/object"
-	"monkey/parser"
 	"testing"
+
+	"github.com/skx/Monkey/lexer"
+	"github.com/skx/Monkey/object"
+	"github.com/skx/Monkey/parser"
 )
 
 func TestEvalArithmeticExpression(t *testing.T) {

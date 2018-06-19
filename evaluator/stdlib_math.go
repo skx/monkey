@@ -3,8 +3,9 @@ package evaluator
 import (
 	"math"
 	"math/rand"
-	"monkey/object"
 	"time"
+
+	"github.com/skx/Monkey/object"
 )
 
 func mathAbs(args ...object.Object) object.Object {

@@ -2,8 +2,9 @@ package evaluator
 
 import (
 	"fmt"
-	"monkey/object"
 	"strconv"
+
+	"github.com/skx/Monkey/object"
 )
 
 // convert a double/string to an int

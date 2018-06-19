@@ -12,10 +12,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"monkey/evaluator"
-	"monkey/lexer"
-	"monkey/object"
-	"monkey/parser"
+	"github.com/skx/Monkey/evaluator"
+	"github.com/skx/Monkey/lexer"
+	"github.com/skx/Monkey/object"
+	"github.com/skx/Monkey/parser"
 )
 
 var VERSION = "0.2"

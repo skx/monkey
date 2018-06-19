@@ -16,6 +16,15 @@ The code was originally written by [gaufung](https://github.com/gaufung/Monkey),
 * Scripts can access their command-line arguments.
 * String interpolation is supported.
 
+# 0 Installation
+
+If you have a working [golang](https://golang.org/) setup you can
+install the intepreter via:
+
+   $ go get -u  github.com/skx/Monkey
+   $ go install github.com/skx/Monkey
+
+
 # 1 Introduction
  source code.
 

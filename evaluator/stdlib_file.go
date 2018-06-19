@@ -2,8 +2,9 @@ package evaluator
 
 import (
 	"bufio"
-	"monkey/object"
 	"os"
+
+	"github.com/skx/Monkey/object"
 )
 
 //
