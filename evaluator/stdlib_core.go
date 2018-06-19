@@ -2,10 +2,30 @@ package evaluator
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/skx/monkey/object"
 )
+
+// exit a program.
+func exitFun(args ...object.Object) object.Object {
+
+	code := 0
+
+	// Optionally an exit-code might be supplied as an argument
+	if len(args) > 0 {
+		switch arg := args[0].(type) {
+		case *object.Integer:
+			code = int(arg.Value)
+		case *object.Float:
+			code = int(arg.Value)
+		}
+	}
+
+	os.Exit(code)
+	return NULL
+}
 
 // convert a double/string to an int
 func intFun(args ...object.Object) object.Object {
@@ -204,6 +224,10 @@ func typeFun(args ...object.Object) object.Object {
 	}
 }
 func init() {
+	RegisterBuiltin("exit",
+		func(args ...object.Object) object.Object {
+			return (exitFun(args...))
+		})
 	RegisterBuiltin("int",
 		func(args ...object.Object) object.Object {
 			return (intFun(args...))
