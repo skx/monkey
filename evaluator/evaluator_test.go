@@ -443,6 +443,10 @@ func TestStringIndexExpression(t *testing.T) {
 			nil,
 		},
 		{
+			"\"Steve\"[-1]",
+			nil,
+		},
+		{
 			"\"狐犬\"[0]",
 			"狐",
 		},
