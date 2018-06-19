@@ -91,11 +91,13 @@ The `int` type is represented by `int64` and `float` type is represented by `flo
        let a = 3;
        let b = 1.2;
 
-       puts( a + b ); // Outputs: 4.2
-       puts( a - b ); // Outputs: 1.8
-       puts( a * b ); // Outputs: 3.6
-       puts( a / b ); // Outputs: 2.5
+       puts( a + b  );  // Outputs: 4.2
+       puts( a - b  );  // Outputs: 1.8
+       puts( a * b  );  // Outputs: 3.6
+       puts( a / b  );  // Outputs: 2.5
+       puts( 2 ** 3 ) ; // Outputs: 8
 
+Here `**` is used to raise the first number to the power of the second.
 When operating with integers the modulus operator is available too, via `%`.
 
 

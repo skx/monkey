@@ -26,6 +26,7 @@ const (
 	MINUS_MINUS     = "--"
 	BANG            = "!"
 	ASTERISK        = "*"
+	POW             = "**"
 	SLASH           = "/"
 	LT              = "<"
 	LT_EQUALS       = "<="

@@ -37,6 +37,9 @@ func TestEvalArithmeticExpression(t *testing.T) {
 		{"1+2.3", 3.3},
 		{"2.3*1.0", 2.3},
 		{"3.2-5.8", -2.6},
+		{"2**3", 8},
+		{"2.0**3", 8},
+		{"2**3.0", 8},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
