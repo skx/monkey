@@ -1,0 +1,6 @@
+
+//
+// STDIN / STDOUT / STDERR are available by default
+//
+let result = write( STDOUT, "This is a test to STDOUT\n" );
+let result = write( STDERR, "This is a test to STDERR\n" );

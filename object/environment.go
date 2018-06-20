@@ -26,6 +26,11 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 func (e *Environment) RegisterDefaults() {
 	e.Set("PI", &Float{Value: math.Pi})
 	e.Set("E", &Float{Value: math.E})
+
+	// For read/write operations
+	e.Set("STDIN", &Integer{Value: 0})
+	e.Set("STDOUT", &Integer{Value: 1})
+	e.Set("STDERR", &Integer{Value: 2})
 }
 
 // Get object by name

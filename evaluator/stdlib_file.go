@@ -29,6 +29,10 @@ func setupHandles() {
 	file_readers[0] = bufio.NewReader(os.Stdin)
 	file_readers[1] = bufio.NewReader(os.Stdout)
 	file_readers[2] = bufio.NewReader(os.Stderr)
+
+	file_writers[0] = bufio.NewWriter(os.Stdin)
+	file_writers[1] = bufio.NewWriter(os.Stdout)
+	file_writers[2] = bufio.NewWriter(os.Stderr)
 }
 
 // array = directory.glob( "/etc/*.conf" )
@@ -182,6 +186,7 @@ func writeOutput(args ...object.Object) object.Object {
 
 	_, err := writer.Write([]byte(txt))
 	if err == nil {
+		writer.Flush()
 		return &object.Boolean{Value: true}
 	} else {
 		return &object.Boolean{Value: false}
