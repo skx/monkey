@@ -13,16 +13,17 @@ This repository started life as the implementation written by [gaufung](https://
 
 The intepreter in this repository has been further extended:
 
-* Added single-line comments.
-* Added multi-line comments.
+* Added single-line & multi-line comments.
 * Added postfix operators (`i++`, `i--`).
 * Allow accessing bytes of a string via the index-operator.
-* Added a driver to read from STDIN, or a named file, rather than a repl.
+* Added a driver to read from STDIN, or a named file, rather than a REPL.
 * Added a collection of standard-library functions.
-    * Including file input, type-discovery, string, and math functions.
+    * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added `<=` + `>=` comparison functions.
 * Added command-line handling, so that scripts can read their own arguments.
+* Added global-constants available by default
+    * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
 
 
 ## 1. Installation
@@ -106,7 +107,7 @@ When operating with integers the modulus operator is available too, via `%`.
 `monkey` contains two builtin containers: `array` and `hash`.
 
 
-### 2.3.1 Array
+### 2.3.1 Arrays
 
 An array is a list which organizes items by linear sequence.  Arrays can hold multiple types.
 
@@ -256,8 +257,8 @@ It is also possible to define a function without the use of `let`, via the `func
 
 `monkey` support two kinds of comments:
 
-* Comments beginning with `//` last until the following newline.
-* Comments between `/*` and `*/` may span multiple lines.
+* Single-line comments begin with `//` and last until the end of the line.
+* Multiline comments between `/*` and `*/`.
 
 
 ## 2.9 Postfix Operators
