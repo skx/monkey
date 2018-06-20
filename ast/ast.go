@@ -314,6 +314,16 @@ func (sl *StringLiteral) expressionNode()      {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
+// Holds input of the form `blah`
+type BacktickLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (bl *BacktickLiteral) expressionNode()      {}
+func (bl *BacktickLiteral) TokenLiteral() string { return bl.Token.Literal }
+func (bl *BacktickLiteral) String() string       { return bl.Token.Literal }
+
 type ArrayLiteral struct {
 	Token    token.Token
 	Elements []Expression

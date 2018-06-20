@@ -47,3 +47,12 @@ let h = delete(h, "Moi" );
 let h = delete(h, 3.14 );
 puts( "After deleting two keys:\n" );
 dump( h );
+
+
+puts( "Running command: /bin/ls\n");
+let h = `/bin/ls / /fdsf`;
+dump( h);
+
+puts( "Running via bash:\n");
+let h = `/bin/sh -c "/bin/ls /etc"`;
+dump( h);

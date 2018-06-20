@@ -131,6 +131,9 @@ func (l *Lexer) NextToken() token.Token {
 	case rune('"'):
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
+	case rune('`'):
+		tok.Type = token.BACKTICK
+		tok.Literal = l.readBacktick()
 	case rune('['):
 		tok = newToken(token.LBRACKET, l.ch)
 	case rune(']'):
@@ -279,6 +282,19 @@ func (l *Lexer) readString() string {
 	out = strings.Replace(out, `\n`, "\n", -1)
 	out = strings.Replace(out, `\r`, "\r", -1)
 	out = strings.Replace(out, `\t`, "\t", -1)
+	return out
+}
+
+// read the end of a backtick-quoted string
+func (l *Lexer) readBacktick() string {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '`' {
+			break
+		}
+	}
+	out := string(l.characters[position:l.position])
 	return out
 }
 

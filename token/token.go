@@ -21,6 +21,7 @@ const (
 	PLUS_PLUS       = "++"
 	MOD             = "%"
 	COMMA           = ","
+	BACKTICK        = "`"
 	SEMICOLON       = ";"
 	MINUS           = "-"
 	MINUS_MINUS     = "--"

@@ -1,8 +1,11 @@
 package evaluator
 
 import (
+	"bytes"
 	"fmt"
 	"math"
+	"os/exec"
+	"regexp"
 
 	"github.com/skx/monkey/ast"
 	"github.com/skx/monkey/object"
@@ -101,6 +104,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Array{Elements: elements}
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+	case *ast.BacktickLiteral:
+		return backTickOperation(node.Value)
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
@@ -373,7 +378,6 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 	rightVal := right.(*object.String).Value
 	return &object.String{Value: leftVal + rightVal}
 }
-
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
 	condition := Eval(ie.Condition, env)
 	if isError(condition) {
@@ -465,6 +469,90 @@ func evalExpression(exps []ast.Expression, env *object.Environment) []object.Obj
 		result = append(result, evaluated)
 	}
 	return result
+}
+
+// Split a line of text into tokens, but keep anything "quoted"
+// together..
+//
+// So this input:
+//
+//   /bin/sh -c "ls /etc"
+//
+// Would give output of the form:
+//   /bin/sh
+//   -c
+//   ls /etc
+//
+func splitCommand(input string) []string {
+
+	//
+	// This does the split into an array
+	//
+	r := regexp.MustCompile(`[^\s"']+|"([^"]*)"|'([^']*)`)
+	res := r.FindAllString(input, -1)
+
+	//
+	// However the resulting pieces might be quoted.
+	// So we have to remove them, if present.
+	//
+	var result []string
+	for _, e := range res {
+		result = append(result, trimQuotes(e, '"'))
+	}
+	return (result)
+}
+
+// Remove balanced characters around a string.
+func trimQuotes(in string, c byte) string {
+	if len(in) >= 2 {
+		if in[0] == c && in[len(in)-1] == c {
+			return in[1 : len(in)-1]
+		}
+	}
+	return in
+}
+
+// Run a command and return a hash containing the result.
+// `stderr`, `stdout`, and `error` will be the fields
+func backTickOperation(command string) object.Object {
+
+	// split the command
+	toExec := splitCommand(command)
+	cmd := exec.Command(toExec[0], toExec[1:]...)
+
+	// get the result
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+
+	// If the command exits with a non-zero exit-code it
+	// is regarded as a failure.  Here we test for ExitError
+	// to regard that as a non-failure.
+	if err != nil && err != err.(*exec.ExitError) {
+		fmt.Printf("Failed to run '%s' -> %s\n", command, err.Error())
+		return NULL
+	}
+
+	//
+	// The result-objects to store in our hash.
+	//
+	stdout := &object.String{Value: outb.String()}
+	stderr := &object.String{Value: errb.String()}
+
+	// Create keys
+	stdoutKey := &object.String{Value: "stdout"}
+	stdoutHash := object.HashPair{Key: stdoutKey, Value: stdout}
+
+	stderrKey := &object.String{Value: "stderr"}
+	stderrHash := object.HashPair{Key: stderrKey, Value: stderr}
+
+	// Make a new hash, and populate it
+	newHash := make(map[object.HashKey]object.HashPair)
+	newHash[stdoutKey.HashKey()] = stdoutHash
+	newHash[stderrKey.HashKey()] = stderrHash
+
+	return &object.Hash{Pairs: newHash}
 }
 
 func evalIndexExpression(left, index object.Object) object.Object {

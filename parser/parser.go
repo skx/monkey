@@ -84,6 +84,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.DEFINE_FUNCTION, p.parseFunctionDefinition)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
+	p.registerPrefix(token.BACKTICK, p.parseBacktickLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 
@@ -429,6 +430,11 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 // parse string literal
 func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+// parse backtick-quoted string
+func (p *Parser) parseBacktickLiteral() ast.Expression {
+	return &ast.BacktickLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
 
 // parse array literal

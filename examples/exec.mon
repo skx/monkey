@@ -1,0 +1,24 @@
+#!/usr/bin/env monkey
+
+//
+// Run a simple command
+//
+let uptime = `/usr/bin/uptime`;
+
+if ( uptime ) {
+   puts( "STDOUT: ", string.trim(uptime["stdout"] ) , "\n");
+   puts( "STDERR: ", string.trim(uptime["stderr"] ) , "\n");
+} else {
+   puts( "Failed to run command\n");
+}
+
+//
+// Now something more complex
+//
+let ls = `/bin/sh -c "/bin/ls /etc /missing-path"`;
+if ( ls ) {
+   puts( "STDOUT: ", string.trim(ls["stdout"] ) , "\n");
+   puts( "STDERR: ", string.trim(ls["stderr"] ) , "\n");
+} else {
+   puts( "Failed to run command\n");
+}

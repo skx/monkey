@@ -272,5 +272,23 @@ The `++` and `--` modifiers are permitted for integer-variables, for example:
 These postfix-operators update the contents of the named variable to increase/decrease it by one.
 
 
+## 2.10 Command Execution
+
+As with many scripting languages commands may be executed via the backtick
+operator (`\``).
+
+      let uptime = `/usr/bin/uptime`;
+
+      if ( uptime ) {
+          puts( "STDOUT: ", string.trim(uptime["stdout"] ) , "\n");
+          puts( "STDERR: ", string.trim(uptime["stderr"] ) , "\n");
+      } else {
+          puts( "Failed to run command\n");
+      }
+
+The output will be a hash with two keys `stdout` and `stderr`.  NULL is
+returned if the execution fails.  This can be seen in [examples/exec.mon](examples/exec.mon).
+
+
 Steve
 --
