@@ -1,0 +1,23 @@
+//
+// Usually you'd open a file for reading via:
+//
+//    let handle = file.open( "/tmp/blah" )
+//
+// Or
+//
+//    let handle = file.open( "/tmp/blah", "r" )
+//
+// However you can open a file for writing by using "w" as the
+// second argument:
+//
+let handle = file.open( "/tmp/moi", "w" );
+
+//
+// Now we have a handle we can write (strings) to it:
+write(handle, "This is a test\n" );
+write(handle, string({ "Steve": "Kemp", "Age": 128}) + "\n");
+
+//
+// And close it.
+//
+file.close( handle );

@@ -5,7 +5,7 @@
 
 
 //
-// Find /etc/*.conf
+// Find all the files matching the glob-pattern "/etc/*.conf".
 //
 let pattern = "/etc/*.conf";
 let files = directory.glob( pattern );
@@ -16,9 +16,8 @@ let files = directory.glob( pattern );
 if ( files ) {
 
    puts( "Pattern ", pattern, " matched " , len(files), " files\n");
-   //
+
    // Show each result.
-   //
    let i = 0;
    for ( i < len(files) ) {
       puts( "\t" , files[i], "\n");

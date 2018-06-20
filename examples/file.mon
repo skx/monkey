@@ -1,4 +1,9 @@
 // This example opens a file for reading, and shows each line.
+//
+// If you were reading a file completely you might prefer to use
+// file.lines( "/etc/passwd"), which would return an array of the
+// line-contents.
+//
 
 
 let fd = file.open( "/etc/passwd" );
@@ -19,12 +24,3 @@ for( run == true ) {
 file.close(fd);
 
 puts( "Read:" , lines, " lines.\n" );
-
-
-//
-// Now try writing to a file
-//
-let handle = file.open( "/tmp/moi", "w" );
-write(handle, "This is a test\n" );
-write(handle, string({ "Steve": "Kemp", "Age": 128}) + "\n");
-file.close( handle );
