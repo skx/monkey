@@ -3,6 +3,7 @@ package evaluator
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 
 	"github.com/skx/monkey/object"
 )
@@ -28,6 +29,28 @@ func setupHandles() {
 	file_readers[0] = bufio.NewReader(os.Stdin)
 	file_readers[1] = bufio.NewReader(os.Stdout)
 	file_readers[2] = bufio.NewReader(os.Stderr)
+}
+
+// array = directory.glob( "/etc/*.conf" )
+func dirGlob(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	pattern := args[0].(*object.String).Value
+
+	entries, err := filepath.Glob(pattern)
+	if err != nil {
+		return NULL
+	}
+
+	// Create an array to hold the results and populate it
+	l := len(entries)
+	result := make([]object.Object, l, l)
+	for i, txt := range entries {
+		result[i] = &object.String{Value: txt}
+	}
+	return &object.Array{Elements: result}
 }
 
 // handle = file.open(path)
@@ -166,6 +189,10 @@ func writeOutput(args ...object.Object) object.Object {
 }
 
 func init() {
+	RegisterBuiltin("directory.glob",
+		func(args ...object.Object) object.Object {
+			return (dirGlob(args...))
+		})
 	RegisterBuiltin("read",
 		func(args ...object.Object) object.Object {
 			return (readInput(args...))
