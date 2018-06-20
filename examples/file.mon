@@ -19,3 +19,12 @@ for( run == true ) {
 file.close(fd);
 
 puts( "Read:" , lines, " lines.\n" );
+
+
+//
+// Now try writing to a file
+//
+let handle = file.open( "/tmp/moi", "w" );
+write(handle, "This is a test\n" );
+write(handle, string({ "Steve": "Kemp", "Age": 128}) + "\n");
+file.close( handle );

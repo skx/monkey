@@ -12,6 +12,7 @@ import (
 //
 var file_handles = make(map[uintptr]*os.File)
 var file_readers = make(map[uintptr]*bufio.Reader)
+var file_writers = make(map[uintptr]*bufio.Writer)
 
 //
 // Horrid hack - setup STDIN/STDOUT/STDERR
@@ -32,21 +33,35 @@ func setupHandles() {
 // handle = file.open(path)
 func fileOpen(args ...object.Object) object.Object {
 	setupHandles()
-	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+	if len(args) != 1 && len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=1|2",
 			len(args))
 	}
 
 	path := args[0].(*object.String).Value
-	file, err := os.Open(path)
+
+	md := os.O_RDONLY
+	if len(args) == 2 {
+		mode := args[1].(*object.String).Value
+		if mode == "w" {
+			md = os.O_WRONLY
+		}
+
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|md, 0644)
 	if err != nil {
 		return &object.Integer{Value: -1}
 	}
 
 	// convert handle to integer to return it
 	file_handles[file.Fd()] = file
-	// but also store a reader
-	file_readers[file.Fd()] = bufio.NewReader(file)
+
+	// but also store a reader / writer as appropriate
+	if md == os.O_RDONLY {
+		file_readers[file.Fd()] = bufio.NewReader(file)
+	} else {
+		file_writers[file.Fd()] = bufio.NewWriter(file)
+	}
 
 	return &object.Integer{Value: int64(file.Fd())}
 }
@@ -61,9 +76,16 @@ func fileClose(args ...object.Object) object.Object {
 
 	handle := args[0].(*object.Integer).Value
 
+	// If the file was opened for writing then we must flush
+	// it before we close the handle - otherwise our written
+	// data might be lost.
+	if file_writers[uintptr(handle)] != nil {
+		file_writers[uintptr(handle)].Flush()
+	}
 	file_handles[uintptr(handle)].Close()
 	delete(file_handles, uintptr(handle))
 	delete(file_readers, uintptr(handle))
+	delete(file_writers, uintptr(handle))
 	return NULL
 }
 
@@ -119,10 +141,38 @@ func readInput(args ...object.Object) object.Object {
 	}
 }
 
+// write(handle, text)
+func writeOutput(args ...object.Object) object.Object {
+	setupHandles()
+	if len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=2",
+			len(args))
+	}
+
+	id := args[0].(*object.Integer).Value
+	txt := args[1].(*object.String).Value
+
+	writer := file_writers[uintptr(id)]
+	if writer == nil {
+		return newError("Writing to an unopened file-handle.")
+	}
+
+	_, err := writer.Write([]byte(txt))
+	if err == nil {
+		return &object.Boolean{Value: true}
+	} else {
+		return &object.Boolean{Value: false}
+	}
+}
+
 func init() {
 	RegisterBuiltin("read",
 		func(args ...object.Object) object.Object {
 			return (readInput(args...))
+		})
+	RegisterBuiltin("write",
+		func(args ...object.Object) object.Object {
+			return (writeOutput(args...))
 		})
 	RegisterBuiltin("file.open",
 		func(args ...object.Object) object.Object {
