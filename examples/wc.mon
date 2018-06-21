@@ -15,22 +15,20 @@ let path = "/etc/passwd";
 let handle = file.open(path);
 if ( handle < 0 ) {
    puts( "Failed to open file" )
+   exit(0);
 }
 
+// Count of characters
 let c = 0;
-let run = true;
 
-for( run == true ) {
+// Read a line
+let r = read(handle);
 
+// Loop while that is none-empty
+for( len(r) > 0  ) {
+   let c = c + len(r);
    let r = read(handle);
-   let l = len(r);
-   if ( l > 0 ) {
-        let c = c + l;
-   }
-   else {
-        let run = false;
-   }
-};
+}
 
 puts( "Read " , c , " characters from ", path , "\n" );
 file.close(handle);

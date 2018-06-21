@@ -7,19 +7,24 @@
 
 
 let fd = file.open( "/etc/passwd" );
-let lines = 0;
-let run   = true;
+if ( fd < 0 ) {
+   puts( "Failed to open file\n" );
+   exit(0);
+}
 
-for( run == true ) {
-   let r = read(fd);
-   let l = len(r);
-   if ( l > 0 ) {
-        let lines = lines + 1;
-        puts( "\tRead: ", r);
-   }
-   else {
-        let run = false;
-   }
+// Count of lines
+let lines = 0;
+
+// Read a line
+let r = read(fd);
+
+// Loop while that is none-empty
+for( len(r) > 0  ) {
+     let lines = lines + 1;
+     puts( "\tRead: ", r);
+
+     // loop
+     let r = read(fd);
 };
 file.close(fd);
 
