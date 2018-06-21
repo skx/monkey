@@ -13,7 +13,7 @@ let files = directory.glob( pattern );
 //
 // If that worked
 //
-if ( files ) {
+if (len(files) >0) {
 
    puts( "Pattern ", pattern, " matched " , len(files), " files\n");
 
