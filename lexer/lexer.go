@@ -44,7 +44,7 @@ func (l *Lexer) NextToken() token.Token {
 	}
 
 	// skip shebang
-	if l.ch == rune('#') && l.peekChar() == rune('!') {
+	if l.ch == rune('#') && l.peekChar() == rune('!') && l.position == 0 {
 		l.skipComment()
 		return (l.NextToken())
 	}
