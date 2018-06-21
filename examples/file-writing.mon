@@ -10,7 +10,12 @@
 // However you can open a file for writing by using "w" as the
 // second argument:
 //
-let handle = file.open( "/tmp/moi", "w" );
+let name = "/tmp/moi";
+let handle = file.open(name, "w");
+if ( handle < 0 ) {
+   puts("Failed to open ", name, " for writing\n");
+   exit(0);
+}
 
 //
 // Now we have a handle we can write (strings) to it:
@@ -21,3 +26,8 @@ write(handle, string({ "Steve": "Kemp", "Age": 128}) + "\n");
 // And close it.
 //
 file.close( handle );
+
+//
+// Show what we did.
+//
+puts( "We wrote to ", name , "\n");
