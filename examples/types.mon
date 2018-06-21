@@ -5,7 +5,6 @@
 //
 
 function show( input ) {
-
    puts( "Type of input was ", type( input ), "\n" );
    puts( "\tAfter converting to string we found: ", string( input ), "\n" );
 }
