@@ -55,7 +55,7 @@ Execution then works as you would expect:
      $ ./hello.mon
      Hello, world!
 
-If no script-name is passed to the intepretter it will read from STDIN and
+If no script-name is passed to the intepreter it will read from STDIN and
 execute that instead.  This could be used like so:
 
      $ echo 'puts("Read from STDIN!\n");' | monkey
@@ -155,7 +155,7 @@ an updated hash - rather than changing in-place:
     puts( b);  // Outputs: {name: monkey, true: 1, 7: sevent, 8: eight}
 
 You can iterate over the keys in a hash via the `keys` function, or delete
-keys via `delete` (again this function returns an updated value rather than
+keys via `delete` (again these functions returns an updated value rather than
 changing it in-place).
 
 Hash functions are demonstrated in the [examples/hash.mon](examples/hash.mon) sample.
@@ -193,9 +193,7 @@ The core primitives are:
 
 ## 2.4.1 The Standard Library
 
-In addition to the built-in functions, which are documented above we also
-have a minimal-standard library.  The library includes some string/file
-primitives as well as maths-helpers.
+In addition to the core built-in functions we also have a minimal-standard library.  The library includes some string/file primitives as well as maths-helpers.
 
 You can see the implementations beneath [evaluator/stdlib*](evaluator/),
 and several of these things are documented in [examples/](examples/).
