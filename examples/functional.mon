@@ -1,28 +1,17 @@
 //
-// Some functional programming examples.
+// This script contains some functional programming examples.
 //
 // Launch this like so:
 //
 //  ~$ monkey examples/functional.mon
-//  Integers:
-//	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-//  Squares:
-//	[0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
-//  Cubes:
-//	[0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 4096, 4913, 5832, 6859, 8000]
-//  Odd numbers:
-//	[1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
-//  Even numbers:
-//	[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-//  Prime numbers:
-//	[0, 1, 2, 3, 5, 7, 11, 13, 17, 19]
 //
+
 
 
 //
 // Return true if the given number is even
 //
-function is_even(n) {
+function even?(n) {
   return( n % 2 == 0 );
 }
 
@@ -30,7 +19,7 @@ function is_even(n) {
 //
 // Return true if the given number is odd.
 //
-function is_odd(n) {
+function odd?(n) {
   return( n % 2 == 1 );
 }
 
@@ -40,7 +29,7 @@ function is_odd(n) {
  *
  * Remember we can use multi-line comments too!
  */
-function is_prime(n) {
+function prime?(n) {
    // negative numbers are not prime
    if ( n < 0 ) { return false ; }
 
@@ -76,8 +65,7 @@ function filter( array, predicate ) {
 
    for( i < len(array) ) {
       let entry = array[i];
-      let tmp = predicate(entry);
-      if ( tmp ) {
+      if (predicate(entry)) {
          let result = push( result, entry );
       }
       i++;
@@ -89,7 +77,7 @@ function filter( array, predicate ) {
 
 //
 // Return an array containing the result of applying
-// the given function to each item in the list
+// the given function to each element in the supplied list.
 //
 function map( array, fnc ) {
    let i = 0;
@@ -112,27 +100,30 @@ let ints = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
              11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ];
 
 // Show them ..
-puts( "Integers:\n" );
+puts( "\nIntegers:\n" );
 puts( "\t", ints, "\n" );
 
 //
 // Show their squares ..
 //
-puts( "Squares:\n" );
+puts( "\nSquares:\n" );
 puts( "\t", map(ints, square), "\n");
 
 //
 // Show their cubes, using an anonymous function
 //
-puts( "Cubes:\n" );
+puts( "\nCubes:\n" );
 puts( "\t", map(ints, fn(n) { return n * n * n; }), "\n");
+puts( "\nCubes via POW:\n" );
+puts( "\t", map(ints, fn(n) { return n ** 3; }), "\n");
 
 //
-// Now the odds / evens
+// Now use our functional-methods to show odd/even/prime
+// numbers contained in our list.
 //
-puts( "Odd numbers:\n" );
-puts( "\t", filter(ints, is_odd), "\n");
-puts( "Even numbers:\n" );
-puts( "\t", filter(ints, is_even), "\n");
-puts( "Prime numbers:\n" );
-puts( "\t", filter(ints, is_prime), "\n");
+puts( "\nOdd numbers:\n" );
+puts( "\t", filter(ints, odd?), "\n");
+puts( "\nEven numbers:\n" );
+puts( "\t", filter(ints, even?), "\n");
+puts( "\nPrime numbers:\n" );
+puts( "\t", filter(ints, prime?), "\n");
