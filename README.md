@@ -11,7 +11,7 @@ This repository started life as the implementation written by [gaufung](https://
 
 #### My changes
 
-The intepreter in this repository has been further extended:
+The interpreter in this repository has been further extended:
 
 * Added single-line & multi-line comments.
 * Added postfix operators (`i++`, `i--`).
@@ -28,7 +28,7 @@ The intepreter in this repository has been further extended:
 
 ## 1. Installation
 
-If you have a working [golang](https://golang.org/) setup you can install the intepreter via:
+If you have a working [golang](https://golang.org/) setup you can install the interpreter via:
 
     $ go get -u  github.com/skx/monkey
     $ go install github.com/skx/monkey
@@ -39,7 +39,7 @@ If you're an [emacs](https://www.gnu.org/software/emacs/) user might also wish t
 
 ### 1.1 Usage
 
-To execute a monkey-script simply pass the name to the intepreter:
+To execute a monkey-script simply pass the name to the interpreter:
 
      $ monkey ./example/hello.mon
 
@@ -55,7 +55,7 @@ Execution then works as you would expect:
      $ ./hello.mon
      Hello, world!
 
-If no script-name is passed to the intepreter it will read from STDIN and
+If no script-name is passed to the interpreter it will read from STDIN and
 execute that instead.  This could be used like so:
 
      $ echo 'puts("Read from STDIN!\n");' | monkey
@@ -152,7 +152,7 @@ Updating a hash is done via the `set` function, but note that this returns
 an updated hash - rather than changing in-place:
 
     let b = set(a, 8, "eight");
-    puts( b);  // Outputs: {name: monkey, true: 1, 7: sevent, 8: eight}
+    puts( b);  // Outputs: {name: monkey, true: 1, 7: seven, 8: eight}
 
 You can iterate over the keys in a hash via the `keys` function, or delete
 keys via `delete` (again these functions returns an updated value rather than
