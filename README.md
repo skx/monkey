@@ -167,26 +167,28 @@ The core primitives are:
 
 * `delete`
   * Deletes a hash-key.
+* `first`
+  * yield the first element of array.
+* `int`
+  * convert the given float/string to an integer.
 * `keys`
   * Return the keys of the specified array.
 * `len`
   * Yield the length of builtin containers.
-* `first`
-  * yield the first element of array.
 * `last`
   * yield the last element of array.
-* `rest`
-  * yield an array which excludes the first element.
+* `match`
+  * Regular-expression matching.
 * `push`
   * push an elements into the array.
-* `set`
-  * insert key value pair into the map.
 * `puts`
   * print literal value of objects.
+* `rest`
+  * yield an array which excludes the first element.
+* `set`
+  * insert key value pair into the map.
 * `string`
   * convert the given item to a string.
-* `int`
-  * convert the given float/string to an integer.
 * `type`
   * returns the type of a variable.
 
@@ -288,6 +290,15 @@ operator (`\``).
 The output will be a hash with two keys `stdout` and `stderr`.  NULL is
 returned if the execution fails.  This can be seen in [examples/exec.mon](examples/exec.mon).
 
+
+## 2.11 Regular Expressions
+
+The `match` function allows matching a string against a regular-expression.
+
+If a match fails NULL will be returned, otherwise a hash containing any
+capture groups in the match.
+
+This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 
 Steve
 --

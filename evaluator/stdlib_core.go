@@ -3,6 +3,7 @@ package evaluator
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"unicode/utf8"
 
@@ -113,6 +114,57 @@ func lenFun(args ...object.Object) object.Object {
 		return newError("argument to `len` not supported, got=%s",
 			args[0].Type())
 	}
+}
+
+// regular expression match
+func matchFun(args ...object.Object) object.Object {
+	if len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=2",
+			len(args))
+	}
+
+	if args[0].Type() != object.STRING_OBJ {
+		return newError("argument to `match` must be STRING, got %s",
+			args[0].Type())
+	}
+	if args[1].Type() != object.STRING_OBJ {
+		return newError("argument to `match` must be STRING, got %s",
+			args[1].Type())
+	}
+
+	//
+	// Compile and match
+	//
+	reg := regexp.MustCompile(args[0].(*object.String).Value)
+	res := reg.FindStringSubmatch(args[1].(*object.String).Value)
+
+	if len(res) > 0 {
+
+		newHash := make(map[object.HashKey]object.HashPair)
+
+		//
+		// If we get a match then the output is an array
+		// First entry is the match, any additional parts
+		// are the capture-groups.
+		//
+		if len(res) > 1 {
+			for i := 1; i < len(res); i++ {
+
+				// Capture groups start at index 0.
+				k := &object.Integer{Value: int64(i - 1)}
+				v := &object.String{Value: res[i]}
+
+				newHashPair := object.HashPair{Key: k, Value: v}
+				newHash[k.HashKey()] = newHashPair
+
+			}
+		}
+
+		return &object.Hash{Pairs: newHash}
+	}
+
+	// No match
+	return NULL
 }
 
 // push something onto an array
@@ -310,6 +362,10 @@ func init() {
 	RegisterBuiltin("len",
 		func(args ...object.Object) object.Object {
 			return (lenFun(args...))
+		})
+	RegisterBuiltin("match",
+		func(args ...object.Object) object.Object {
+			return (matchFun(args...))
 		})
 	RegisterBuiltin("first",
 		func(args ...object.Object) object.Object {
