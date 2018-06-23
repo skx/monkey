@@ -1,8 +1,6 @@
 package lexer
 
 import (
-	"strings"
-
 	"github.com/skx/monkey/token"
 )
 
@@ -269,19 +267,36 @@ func (l *Lexer) readFloat() token.Token {
 
 // read string
 func (l *Lexer) readString() string {
-	position := l.position + 1
+	out := ""
+
 	for {
 		l.readChar()
 		if l.ch == '"' {
 			break
 		}
-	}
-	out := string(l.characters[position:l.position])
 
-	// Expand newlines, linefeeds, and tabs
-	out = strings.Replace(out, `\n`, "\n", -1)
-	out = strings.Replace(out, `\r`, "\r", -1)
-	out = strings.Replace(out, `\t`, "\t", -1)
+		//
+		// Handle \n, \r, \t, \", etc.
+		//
+		if l.ch == '\\' {
+			l.readChar()
+
+			if l.ch == rune('n') {
+				l.ch = '\n'
+			}
+			if l.ch == rune('r') {
+				l.ch = '\r'
+			}
+			if l.ch == rune('t') {
+				l.ch = '\t'
+			}
+			if l.ch == rune('"') {
+				l.ch = '"'
+			}
+		}
+		out = out + string(l.ch)
+	}
+
 	return out
 }
 
