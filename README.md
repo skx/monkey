@@ -25,6 +25,8 @@ The interpreter in this repository has been further extended:
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
     * Every environmental variable will be registered by default.
+* Most errors will result in scripts continuing.
+    * To correct/detect "obvious" errors add `pragma("strict");` to your script.
 
 
 ## 1. Installation
@@ -180,6 +182,9 @@ The core primitives are:
   * yield the last element of array.
 * `match`
   * Regular-expression matching.
+* `pragma`
+  * Allow the run-time environment to be controlled.
+  * We currently support only `pragma("strict");`.
 * `push`
   * push an elements into the array.
 * `puts`

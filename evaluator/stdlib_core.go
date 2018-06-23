@@ -167,6 +167,24 @@ func matchFun(args ...object.Object) object.Object {
 	return NULL
 }
 
+// set a global pragam
+func pragmaFun(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	switch args[0].(type) {
+	case *object.String:
+		input := args[0].(*object.String).Value
+		PRAGMAS[input] = 1
+	default:
+		return newError("argument to `pragma` not supported, got=%s",
+			args[0].Type())
+	}
+
+	return &object.Boolean{Value: true}
+}
+
 // push something onto an array
 func pushFun(args ...object.Object) object.Object {
 	if len(args) != 2 {
@@ -370,6 +388,10 @@ func init() {
 	RegisterBuiltin("first",
 		func(args ...object.Object) object.Object {
 			return (firstFun(args...))
+		})
+	RegisterBuiltin("pragma",
+		func(args ...object.Object) object.Object {
+			return (pragmaFun(args...))
 		})
 	RegisterBuiltin("push",
 		func(args ...object.Object) object.Object {

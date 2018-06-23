@@ -14,9 +14,10 @@ import (
 
 // pre-defined object including Null, True and False
 var (
-	NULL  = &object.Null{}
-	TRUE  = &object.Boolean{Value: true}
-	FALSE = &object.Boolean{Value: false}
+	NULL    = &object.Null{}
+	TRUE    = &object.Boolean{Value: true}
+	FALSE   = &object.Boolean{Value: false}
+	PRAGMAS = make(map[string]int)
 )
 
 // The built-in functions / standard-library methods are stored here.
@@ -99,6 +100,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		res := applyFunction(function, args)
 		if isError(res) {
 			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s\n", node.Function, res.Inspect())
+			if PRAGMAS["strict"] == 1 {
+				os.Exit(1)
+			}
 			return NULL
 		} else {
 			return res
@@ -462,6 +466,10 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	}
 	if builtin, ok := builtins[node.Value]; ok {
 		return builtin
+	}
+	fmt.Fprintf(os.Stderr, "identifier not found: %s\n", node.Value)
+	if PRAGMAS["strict"] == 1 {
+		os.Exit(1)
 	}
 	return newError("identifier not found: " + node.Value)
 }
