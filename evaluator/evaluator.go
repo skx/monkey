@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"os"
 	"os/exec"
 	"regexp"
 
@@ -95,7 +96,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
-		return applyFunction(function, args)
+		res := applyFunction(function, args)
+		if isError(res) {
+			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s\n", node.Function, res.Inspect())
+			return NULL
+		} else {
+			return res
+		}
 	case *ast.ArrayLiteral:
 		elements := evalExpression(node.Elements, env)
 		if len(elements) == 1 && isError(elements[0]) {
