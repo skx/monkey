@@ -293,6 +293,9 @@ func (l *Lexer) readString() string {
 			if l.ch == rune('"') {
 				l.ch = '"'
 			}
+			if l.ch == rune('\\') {
+				l.ch = '\\'
+			}
 		}
 		out = out + string(l.ch)
 	}
