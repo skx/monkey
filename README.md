@@ -24,6 +24,7 @@ The interpreter in this repository has been further extended:
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
+    * Every environmental variable will be registered by default.
 
 
 ## 1. Installation
@@ -300,5 +301,25 @@ capture groups in the match.
 
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 
+## 2.12 Environmental variables
+
+Environmental variables will be imported when the intepreter is launched,
+with every existing variable registered with a `$`-prefix.
+
+For example you could walk the PATH via:
+
+     // Get the PATH from the environment
+     let path = $PATH;
+
+     // Split it into fields, based upon the `:` character
+     let paths = split( path, ":" );
+
+     // Loop over the results
+     let i = 0;
+     for( i < len(paths) ) {
+         // Print them
+         puts( i, " ", path[i] );
+         i++;
+     }
 Steve
 --
