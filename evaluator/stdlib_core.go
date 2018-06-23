@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/skx/monkey/object"
@@ -169,13 +170,32 @@ func matchFun(args ...object.Object) object.Object {
 
 // set a global pragam
 func pragmaFun(args ...object.Object) object.Object {
+
+	// no args? return the pragmas
+	if len(args) == 0 {
+		len := len(PRAGMAS)
+
+		// Create a new array for the results.
+		array := make([]object.Object, len, len)
+
+		i := 0
+		for key, _ := range PRAGMAS {
+			array[i] = &object.String{Value: key}
+			i++
+
+		}
+		return &object.Array{Elements: array}
+	}
+
+	// one arg? set the pragma
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return newError("wrong number of arguments. got=%d, want=0|1",
 			len(args))
 	}
 	switch args[0].(type) {
 	case *object.String:
 		input := args[0].(*object.String).Value
+		input = strings.ToLower(input)
 		PRAGMAS[input] = 1
 	default:
 		return newError("argument to `pragma` not supported, got=%s",
