@@ -306,20 +306,7 @@ This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 Environmental variables will be imported when the intepreter is launched,
 with every existing variable registered with a `$`-prefix.
 
-For example you could walk the PATH via:
+This is demonstrated in [examples/env.mon](examples/env.mon).
 
-     // Get the PATH from the environment
-     let path = $PATH;
-
-     // Split it into fields, based upon the `:` character
-     let paths = split( path, ":" );
-
-     // Loop over the results
-     let i = 0;
-     for( i < len(paths) ) {
-         // Print them
-         puts( i, " ", path[i] );
-         i++;
-     }
 Steve
 --
