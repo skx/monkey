@@ -11,22 +11,23 @@ This repository started life as the implementation written by [gaufung](https://
 
 #### My changes
 
-The interpreter in this repository has been further extended:
+The interpreter in _this_ repository has been further extended:
 
 * Added single-line & multi-line comments.
 * Added postfix operators (`i++`, `i--`).
-* Allow accessing bytes of a string via the index-operator.
+* Allow accessing individual characters of a string via the index-operator.
 * Added a driver to read from STDIN, or a named file, rather than a REPL.
+    * This allows executing the examples easily (for example "`./monkey examples/hello.mon`".)
 * Added a collection of standard-library functions.
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
-* Added `<=` + `>=` comparison functions.
+* Added the `<=` + `>=` comparison functions.
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
     * Every environmental variable will be registered by default.
-* Most errors will result in scripts continuing.
-    * To correct/detect "obvious" errors add `pragma("strict");` to your script.
+* Most scripts will continue running in the face of errors.
+    * To correct/detect "obvious" errors add `pragma("strict");` to your script, which will cause the interpreter to show a suitable error-message and terminate.
 
 
 ## 1. Installation
@@ -36,15 +37,16 @@ If you have a working [golang](https://golang.org/) setup you can install the in
     $ go get -u  github.com/skx/monkey
     $ go install github.com/skx/monkey
 
-Alternatively you could install a binary-release, from our [releases page](https://github.com/skx/monkey/releases).
+Alternatively you could install a binary-release, from the [release page](https://github.com/skx/monkey/releases).
 
-If you're an [emacs](https://www.gnu.org/software/emacs/) user might also wish to install [monkey.el](emacs/monkey.el), which provides syntax highlighting for monkey-scripts.
+If you're an [emacs](https://www.gnu.org/software/emacs/) user might also wish to install the [monkey.el](emacs/monkey.el) file, which provides syntax highlighting for monkey-scripts.
+
 
 ### 1.1 Usage
 
 To execute a monkey-script simply pass the name to the interpreter:
 
-     $ monkey ./example/hello.mon
+     $ monkey ./[example/hello.mon](example/hello.mon)
 
 Scripts can be made executable by adding a suitable shebang line:
 
