@@ -46,7 +46,7 @@ If you're an [emacs](https://www.gnu.org/software/emacs/) user might also wish t
 
 To execute a monkey-script simply pass the name to the interpreter:
 
-     $ monkey ./[example/hello.mon](example/hello.mon)
+     $ monkey ./example/hello.mon
 
 Scripts can be made executable by adding a suitable shebang line:
 
