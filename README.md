@@ -25,7 +25,6 @@ The interpreter in _this_ repository has been further extended:
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
-    * Every environmental variable will be registered by default.
 * Most scripts will continue running in the face of errors.
     * To correct/detect "obvious" errors add `pragma("strict");` to your script, which will cause the interpreter to show a suitable error-message and terminate.
 
@@ -81,7 +80,7 @@ Variables are defined using the `let` keyword, with each line ends with `;`.
 
 Variables may be integers, floats, strings, or arrays/hashes (which are discussed later).
 
-Two standard variables are defined by default:
+Some variables are defined by default, for example:
 
     puts( PI ); // Outputs: 3.14159..
     puts( E );  // Outputs: 2.71828..
@@ -308,12 +307,6 @@ capture groups in the match.
 
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 
-## 2.12 Environmental variables
-
-Environmental variables will be imported when the intepreter is launched,
-with every existing variable registered with a `$`-prefix.
-
-This is demonstrated in [examples/env.mon](examples/env.mon).
 
 Steve
 --

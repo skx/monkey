@@ -2,8 +2,6 @@ package object
 
 import (
 	"math"
-	"os"
-	"strings"
 )
 
 type Environment struct {
@@ -34,12 +32,6 @@ func (e *Environment) RegisterDefaults() {
 	e.Set("STDIN", &Integer{Value: 0})
 	e.Set("STDOUT", &Integer{Value: 1})
 	e.Set("STDERR", &Integer{Value: 2})
-
-	// Setup each environmental variable.
-	for _, env := range os.Environ() {
-		pair := strings.Split(env, "=")
-		e.Set("$"+pair[0], &String{Value: pair[1]})
-	}
 }
 
 // Get object by name
