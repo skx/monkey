@@ -103,7 +103,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			if PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
-			return NULL
+			return res
 		} else {
 			return res
 		}

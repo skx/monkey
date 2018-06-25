@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -352,14 +353,19 @@ func TestBuiltinFunction(t *testing.T) {
 		case int:
 			testDecimalObject(t, evaluated, int64(expected))
 		case string:
-			errObj, ok := evaluated.(*object.Error)
-			if !ok {
-				t.Errorf("object is not Error, got=%T(%+v)",
-					evaluated, evaluated)
-			}
-			if errObj.Message != expected {
-				t.Errorf("wrong err messsage. expected=%q, got=%q",
-					expected, errObj.Message)
+			if evaluated == NULL {
+				t.Errorf("Got NULL output on input of '%s'\n", tt.input)
+			} else {
+				errObj, ok := evaluated.(*object.Error)
+				if !ok {
+					fmt.Printf("Input: %s\n", tt.input)
+					t.Errorf("object is not Error, got=%T(%+v)",
+						evaluated, evaluated)
+				}
+				if errObj.Message != expected {
+					t.Errorf("wrong err messsage. expected=%q, got=%q",
+						expected, errObj.Message)
+				}
 			}
 		}
 	}
