@@ -411,7 +411,116 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		return evaluated
 	}
 
-	env.Set(a.Name.String(), evaluated)
+	//
+	// An assignment is generally:
+	//
+	//    variable = value
+	//
+	// But we cheat and reuse the implementation for:
+	//
+	//    i += 4
+	//
+	// In this case we record the "operator" as "+="
+	//
+	switch a.Operator {
+	case "+=":
+
+		// Get the current value
+		current, ok := env.Get(a.Name.String())
+		if !ok {
+			return newError("%s is unknown", a.Name.String())
+		}
+
+		// Ensure that it is an int.
+		switch arg := current.(type) {
+		case *object.Integer:
+
+			// The existing value.
+			v := arg.Value
+
+			// The evaluated value.
+			x := evaluated.(*object.Integer).Value
+			env.Set(a.Name.String(), &object.Integer{Value: v + x})
+			return arg
+		default:
+			fmt.Printf("Object is not an integer!\n")
+			return newError("%s is not an int", a.Name.String())
+		}
+
+	case "-=":
+
+		// Get the current value
+		current, ok := env.Get(a.Name.String())
+		if !ok {
+			return newError("%s is unknown", a.Name.String())
+		}
+
+		// Ensure that it is an int.
+		switch arg := current.(type) {
+		case *object.Integer:
+
+			// The existing value.
+			v := arg.Value
+
+			// The evaluated value.
+			x := evaluated.(*object.Integer).Value
+			env.Set(a.Name.String(), &object.Integer{Value: v - x})
+			return arg
+		default:
+			fmt.Printf("Object is not an integer!\n")
+			return newError("%s is not an int", a.Name.String())
+		}
+	case "*=":
+
+		// Get the current value
+		current, ok := env.Get(a.Name.String())
+		if !ok {
+			return newError("%s is unknown", a.Name.String())
+		}
+
+		// Ensure that it is an int.
+		switch arg := current.(type) {
+		case *object.Integer:
+
+			// The existing value.
+			v := arg.Value
+
+			// The evaluated value.
+			x := evaluated.(*object.Integer).Value
+			env.Set(a.Name.String(), &object.Integer{Value: v * x})
+			return arg
+		default:
+			fmt.Printf("Object is not an integer!\n")
+			return newError("%s is not an int", a.Name.String())
+		}
+
+	case "/=":
+
+		// Get the current value
+		current, ok := env.Get(a.Name.String())
+		if !ok {
+			return newError("%s is unknown", a.Name.String())
+		}
+
+		// Ensure that it is an int.
+		switch arg := current.(type) {
+		case *object.Integer:
+
+			// The existing value.
+			v := arg.Value
+
+			// The evaluated value.
+			x := evaluated.(*object.Integer).Value
+			env.Set(a.Name.String(), &object.Integer{Value: v / x})
+			return arg
+		default:
+			fmt.Printf("Object is not an integer!\n")
+			return newError("%s is not an int", a.Name.String())
+		}
+
+	case "=":
+		env.Set(a.Name.String(), evaluated)
+	}
 	return evaluated
 }
 

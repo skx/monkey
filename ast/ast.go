@@ -380,10 +380,18 @@ func (hl *HashLiteral) String() string {
 	return out.String()
 }
 
+// AssignStatement is generally used for a (let-less) assignment,
+// such as "x = y", however we allow an operator to be stored ("=" in that
+// example), such that we can do self-operations.
+//
+// Specifically "x += y" is defined as an assignment-statement with
+// the operator set to "+=".  The same applies for "+=", "-=", "*=", and
+// "/=".
 type AssignStatement struct {
-	Token token.Token
-	Name  *Identifier
-	Value Expression
+	Token    token.Token
+	Name     *Identifier
+	Operator string
+	Value    Expression
 }
 
 func (as *AssignStatement) expressionNode()      {}
@@ -392,7 +400,7 @@ func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
 func (as *AssignStatement) String() string {
 	var out bytes.Buffer
 	out.WriteString(as.Name.String())
-	out.WriteString(" = ")
+	out.WriteString(as.Operator)
 	out.WriteString(as.Value.String())
 	return out.String()
 }

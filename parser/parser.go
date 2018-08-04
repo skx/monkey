@@ -36,21 +36,25 @@ const (
 
 // each token precedence
 var precedences = map[token.TokenType]int{
-	token.ASSIGN:    ASSIGN,
-	token.EQ:        EQUALS,
-	token.NOT_EQ:    EQUALS,
-	token.LT:        LESSGREATER,
-	token.LT_EQUALS: LESSGREATER,
-	token.GT:        LESSGREATER,
-	token.GT_EQUALS: LESSGREATER,
-	token.PLUS:      SUM,
-	token.MINUS:     SUM,
-	token.SLASH:     PRODUCT,
-	token.ASTERISK:  PRODUCT,
-	token.POW:       POWER,
-	token.MOD:       MOD,
-	token.LPAREN:    CALL,
-	token.LBRACKET:  INDEX,
+	token.ASSIGN:          ASSIGN,
+	token.EQ:              EQUALS,
+	token.NOT_EQ:          EQUALS,
+	token.LT:              LESSGREATER,
+	token.LT_EQUALS:       LESSGREATER,
+	token.GT:              LESSGREATER,
+	token.GT_EQUALS:       LESSGREATER,
+	token.PLUS:            SUM,
+	token.PLUS_EQUALS:     SUM,
+	token.MINUS:           SUM,
+	token.MINUS_EQUALS:    SUM,
+	token.SLASH:           PRODUCT,
+	token.SLASH_EQUALS:    PRODUCT,
+	token.ASTERISK:        PRODUCT,
+	token.ASTERISK_EQUALS: PRODUCT,
+	token.POW:             POWER,
+	token.MOD:             MOD,
+	token.LPAREN:          CALL,
+	token.LBRACKET:        INDEX,
 }
 
 // Parser object
@@ -106,6 +110,11 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+
+	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.MINUS_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.ASTERISK_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
 
 	p.postfixParseFns = make(map[token.TokenType]postfixParseFn)
 	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
@@ -303,6 +312,7 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Operator: p.curToken.Literal,
 		Left:     left,
 	}
+
 	precedence := p.curPrecedence()
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
@@ -487,7 +497,33 @@ func (p *Parser) parseAssignExpression(name ast.Expression) ast.Expression {
 		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead", name.TokenLiteral())
 		p.errors = append(p.errors, msg)
 	}
+
+	oper := p.curToken
 	p.nextToken()
+
+	//
+	// An assignment is generally:
+	//
+	//    variable = value
+	//
+	// But we cheat and reuse the implementation for:
+	//
+	//    i += 4
+	//
+	// In this case we record the "operator" as "+="
+	//
+	switch oper.Type {
+	case token.PLUS_EQUALS:
+		stmt.Operator = "+="
+	case token.MINUS_EQUALS:
+		stmt.Operator = "-="
+	case token.SLASH_EQUALS:
+		stmt.Operator = "/="
+	case token.ASTERISK_EQUALS:
+		stmt.Operator = "*="
+	default:
+		stmt.Operator = "="
+	}
 	stmt.Value = p.parseExpression(LOWEST)
 	return stmt
 }

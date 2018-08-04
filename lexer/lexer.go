@@ -75,6 +75,10 @@ func (l *Lexer) NextToken() token.Token {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.PLUS_PLUS, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.PLUS_EQUALS, Literal: string(ch) + string(l.ch)}
 		} else {
 			tok = newToken(token.PLUS, l.ch)
 		}
@@ -89,16 +93,30 @@ func (l *Lexer) NextToken() token.Token {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.MINUS_MINUS, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.MINUS_EQUALS, Literal: string(ch) + string(l.ch)}
 		} else {
 			tok = newToken(token.MINUS, l.ch)
 		}
 	case rune('/'):
-		tok = newToken(token.SLASH, l.ch)
+		if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.SLASH_EQUALS, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.SLASH, l.ch)
+		}
 	case rune('*'):
 		if l.peekChar() == rune('*') {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.POW, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.ASTERISK_EQUALS, Literal: string(ch) + string(l.ch)}
 		} else {
 			tok = newToken(token.ASTERISK, l.ch)
 		}

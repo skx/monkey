@@ -23,6 +23,7 @@ The interpreter in _this_ repository has been further extended:
 * Added a new way to define functions, via `function`.
 * Added the `<=` + `>=` comparison functions.
 * Allow assignments without `let` (after initial declaration).
+    * This allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
@@ -74,7 +75,7 @@ demonstrate these things, as well as parts of the standard-library.
 
 ## 2.1 Definitions
 
-Variables are defined using the `let` keyword, with each line ends with `;`.
+Variables are defined using the `let` keyword, with each line ending with `;`.
 
       let a = 3;
       let b = 1.2;
@@ -91,6 +92,7 @@ Once defined variables may be updated without the need for `let`, for example:
     let world = "Earth";
     world = "world";
     puts( "Hello, " + world + "!\n");
+
 
 
 ## 2.2 Arithmetic operations
@@ -281,10 +283,19 @@ The `++` and `--` modifiers are permitted for integer-variables, for example:
 
     let i = 0;
     for ( i <= 5 ) {
+       puts( i, "\n" );
        i++;
     }
 
-These postfix-operators update the contents of the named variable to increase/decrease it by one.
+These postfix-operators update the contents of the named variable to increase/decrease it by one.  We also allow variables to be updated in-place via `+=`, `-=`, `*=`, & `/=`.
+
+Using `+=` our previous example could be rewritten as:
+
+    let i = 0;
+    for ( i <= 5 ) {
+       puts( i, "\n" );
+       i += 1;
+    }
 
 
 ## 2.10 Command Execution
