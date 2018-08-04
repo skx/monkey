@@ -127,6 +127,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return index
 		}
 		return evalIndexExpression(left, index)
+	case *ast.AssignStatement:
+		return evalAssignStatement(node, env)
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	}
@@ -401,6 +403,16 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else {
 		return NULL
 	}
+}
+
+func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val object.Object) {
+	evaluated := Eval(a.Value, env)
+	if isError(evaluated) {
+		return evaluated
+	}
+
+	env.Set(a.Name.String(), evaluated)
+	return evaluated
 }
 
 func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {

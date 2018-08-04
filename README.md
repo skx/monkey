@@ -22,6 +22,7 @@ The interpreter in _this_ repository has been further extended:
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added the `<=` + `>=` comparison functions.
+* Allow assignments without `let` (after initial declaration).
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
@@ -84,6 +85,12 @@ Some variables are defined by default, for example:
 
     puts( PI ); // Outputs: 3.14159..
     puts( E );  // Outputs: 2.71828..
+
+Once defined variables may be updated without the need for `let`, for example:
+
+    let world = "Earth";
+    world = "world";
+    puts( "Hello, " + world + "!\n");
 
 
 ## 2.2 Arithmetic operations
@@ -251,11 +258,11 @@ It is also possible to define a function without the use of `let`, via the `func
         let sum = 0;
 
         for (i < x) {
-           let sum = sum + i;
+           sum = sum + i;
            i++;
         }
         return sum;
-     }
+     };
 
      puts(sum(100));  // Outputs: 4950
 
