@@ -22,8 +22,8 @@ The interpreter in _this_ repository has been further extended:
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added the `<=` + `>=` comparison functions.
-* Allow assignments without `let` (after initial declaration).
-    * This allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
+* Allow assignments without `let`.
+    * This also allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
 * Added command-line handling, so that scripts can read their own arguments.
 * Added global-constants available by default
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
@@ -87,12 +87,19 @@ Some variables are defined by default, for example:
     puts( PI ); // Outputs: 3.14159..
     puts( E );  // Outputs: 2.71828..
 
-Once defined variables may be updated without the need for `let`, for example:
+Variables may be updated without the need for `let`, for example this works
+as you would expect:
 
     let world = "Earth";
     world = "world";
     puts( "Hello, " + world + "!\n");
 
+If you're __not__ running with `pragma("strict");` you can also declare and
+use variables without the need for `let`, but that should be avoided as
+typos will cause much confusion!
+
+     name = "Steve";
+     puts( "Hello, " + name + "\n");
 
 
 ## 2.2 Arithmetic operations

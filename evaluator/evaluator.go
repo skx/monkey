@@ -519,6 +519,15 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		}
 
 	case "=":
+		// If we're running with the strict-pragma it is
+		// a bug to set a variable which wasn't declared (via let).
+		if PRAGMAS["strict"] == 1 {
+			_, ok := env.Get(a.Name.String())
+			if !ok {
+				fmt.Printf("Setting unknown variable '%s' is a bug under strict-pragma!\n", a.Name.String())
+				os.Exit(1)
+			}
+		}
 		env.Set(a.Name.String(), evaluated)
 	}
 	return evaluated
