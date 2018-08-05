@@ -20,11 +20,12 @@ let r = read(fd);
 
 // Loop while that is none-empty
 for( len(r) > 0  ) {
-     let lines = lines + 1;
+
+     lines++;
      puts( "\tRead: ", r);
 
      // loop
-     let r = read(fd);
+     r = read(fd);
 };
 file.close(fd);
 

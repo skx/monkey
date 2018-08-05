@@ -26,9 +26,13 @@ let r = read(handle);
 
 // Loop while that is none-empty
 for( len(r) > 0  ) {
-   let c = c + len(r);
-   let r = read(handle);
+
+   // Add this line
+   c += len(r);
+
+   // Read the next one.
+   r = read(handle);
 }
 
-puts( "Read " , c , " characters from ", path , "\n" );
+puts( "Read " , c, " characters from ", path , "\n" );
 file.close(handle);
