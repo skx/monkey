@@ -395,7 +395,6 @@ type AssignStatement struct {
 }
 
 func (as *AssignStatement) expressionNode()      {}
-func (as *AssignStatement) statementNode()       {}
 func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
 func (as *AssignStatement) String() string {
 	var out bytes.Buffer
