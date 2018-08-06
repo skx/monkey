@@ -259,15 +259,23 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	switch operator {
 	case "+":
 		return &object.Integer{Value: leftVal + rightVal}
+	case "+=":
+		return &object.Integer{Value: leftVal + rightVal}
 	case "%":
 		return &object.Integer{Value: leftVal % rightVal}
 	case "**":
 		return &object.Integer{Value: int64(math.Pow(float64(leftVal), float64(rightVal)))}
 	case "-":
 		return &object.Integer{Value: leftVal - rightVal}
+	case "-=":
+		return &object.Integer{Value: leftVal - rightVal}
 	case "*":
 		return &object.Integer{Value: leftVal * rightVal}
+	case "*=":
+		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
+		return &object.Integer{Value: leftVal / rightVal}
+	case "/=":
 		return &object.Integer{Value: leftVal / rightVal}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
@@ -292,13 +300,21 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	switch operator {
 	case "+":
 		return &object.Float{Value: leftVal + rightVal}
+	case "+=":
+		return &object.Float{Value: leftVal + rightVal}
 	case "-":
 		return &object.Float{Value: leftVal - rightVal}
+	case "-=":
+		return &object.Float{Value: leftVal - rightVal}
 	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	case "*=":
 		return &object.Float{Value: leftVal * rightVal}
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		return &object.Float{Value: leftVal / rightVal}
+	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
@@ -324,13 +340,21 @@ func evalFloatIntegerInfixExpression(operator string, left, right object.Object)
 	switch operator {
 	case "+":
 		return &object.Float{Value: leftVal + rightVal}
+	case "+=":
+		return &object.Float{Value: leftVal + rightVal}
 	case "-":
 		return &object.Float{Value: leftVal - rightVal}
+	case "-=":
+		return &object.Float{Value: leftVal - rightVal}
 	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	case "*=":
 		return &object.Float{Value: leftVal * rightVal}
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		return &object.Float{Value: leftVal / rightVal}
+	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
@@ -356,13 +380,21 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 	switch operator {
 	case "+":
 		return &object.Float{Value: leftVal + rightVal}
+	case "+=":
+		return &object.Float{Value: leftVal + rightVal}
 	case "-":
 		return &object.Float{Value: leftVal - rightVal}
+	case "-=":
+		return &object.Float{Value: leftVal - rightVal}
 	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	case "*=":
 		return &object.Float{Value: leftVal * rightVal}
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		return &object.Float{Value: leftVal / rightVal}
+	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
@@ -383,7 +415,7 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 }
 
 func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
-	if operator != "+" {
+	if operator != "+" && operator != "+=" {
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
@@ -424,99 +456,65 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 	//
 	switch a.Operator {
 	case "+=":
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		// Ensure that it is an int.
-		switch arg := current.(type) {
-		case *object.Integer:
-
-			// The existing value.
-			v := arg.Value
-
-			// The evaluated value.
-			x := evaluated.(*object.Integer).Value
-			env.Set(a.Name.String(), &object.Integer{Value: v + x})
-			return arg
-		default:
-			fmt.Printf("Object is not an integer!\n")
-			return newError("%s is not an int", a.Name.String())
+		res := evalInfixExpression("+=", current, evaluated)
+		if isError(res) {
+			fmt.Printf("Error handling += %s\n", res.Inspect())
+			return res
 		}
+		env.Set(a.Name.String(), res)
+		return res
 
 	case "-=":
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		// Ensure that it is an int.
-		switch arg := current.(type) {
-		case *object.Integer:
-
-			// The existing value.
-			v := arg.Value
-
-			// The evaluated value.
-			x := evaluated.(*object.Integer).Value
-			env.Set(a.Name.String(), &object.Integer{Value: v - x})
-			return arg
-		default:
-			fmt.Printf("Object is not an integer!\n")
-			return newError("%s is not an int", a.Name.String())
+		res := evalInfixExpression("-=", current, evaluated)
+		if isError(res) {
+			fmt.Printf("Error handling -= %s\n", res.Inspect())
+			return res
 		}
+		env.Set(a.Name.String(), res)
+		return res
+
 	case "*=":
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		// Ensure that it is an int.
-		switch arg := current.(type) {
-		case *object.Integer:
-
-			// The existing value.
-			v := arg.Value
-
-			// The evaluated value.
-			x := evaluated.(*object.Integer).Value
-			env.Set(a.Name.String(), &object.Integer{Value: v * x})
-			return arg
-		default:
-			fmt.Printf("Object is not an integer!\n")
-			return newError("%s is not an int", a.Name.String())
+		res := evalInfixExpression("*=", current, evaluated)
+		if isError(res) {
+			fmt.Printf("Error handling *= %s\n", res.Inspect())
+			return res
 		}
+		env.Set(a.Name.String(), res)
+		return res
 
 	case "/=":
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		// Ensure that it is an int.
-		switch arg := current.(type) {
-		case *object.Integer:
-
-			// The existing value.
-			v := arg.Value
-
-			// The evaluated value.
-			x := evaluated.(*object.Integer).Value
-			env.Set(a.Name.String(), &object.Integer{Value: v / x})
-			return arg
-		default:
-			fmt.Printf("Object is not an integer!\n")
-			return newError("%s is not an int", a.Name.String())
+		res := evalInfixExpression("/=", current, evaluated)
+		if isError(res) {
+			fmt.Printf("Error handling /= %s\n", res.Inspect())
+			return res
 		}
+
+		env.Set(a.Name.String(), res)
+		return res
 
 	case "=":
 		// If we're running with the strict-pragma it is

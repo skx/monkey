@@ -286,7 +286,7 @@ It is also possible to define a function without the use of `let`, via the `func
 
 ## 2.9 Postfix Operators
 
-The `++` and `--` modifiers are permitted for integer-variables, for example:
+The `++` and `--` modifiers are permitted for integer-variables, for example the following works as you would expect showing the numbers from `0` to `5`:
 
     let i = 0;
     for ( i <= 5 ) {
@@ -294,7 +294,7 @@ The `++` and `--` modifiers are permitted for integer-variables, for example:
        i++;
     }
 
-These postfix-operators update the contents of the named variable to increase/decrease it by one.  We also allow variables to be updated in-place via `+=`, `-=`, `*=`, & `/=`.
+Another feature borrowed from C allows variables to be updated in-place via the operators `+=`, `-=`, `*=`, & `/=`.
 
 Using `+=` our previous example could be rewritten as:
 
@@ -303,6 +303,13 @@ Using `+=` our previous example could be rewritten as:
        puts( i, "\n" );
        i += 1;
     }
+
+The update-operators work with integers and doubles by default, when it comes to strings the only operator supported is `+=`, allowing for a string-append:
+
+    let str = "Forename";
+    str += " Surname";
+    str += "\n";
+    puts( str );           // -> "Forename Surname\n"
 
 
 ## 2.10 Command Execution
