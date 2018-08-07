@@ -179,7 +179,7 @@ func pragmaFun(args ...object.Object) object.Object {
 		array := make([]object.Object, len, len)
 
 		i := 0
-		for key, _ := range PRAGMAS {
+		for key := range PRAGMAS {
 			array[i] = &object.String{Value: key}
 			i++
 
