@@ -394,7 +394,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
-	lit.Parameters = p.parseFunctionParameters()
+	lit.Defaults, lit.Parameters = p.parseFunctionParameters()
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
@@ -409,7 +409,7 @@ func (p *Parser) parseFunctionDefinition() ast.Expression {
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
-	lit.Parameters = p.parseFunctionParameters()
+	lit.Defaults, lit.Parameters = p.parseFunctionParameters()
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
@@ -418,26 +418,45 @@ func (p *Parser) parseFunctionDefinition() ast.Expression {
 }
 
 // parse function parameters
-func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+func (p *Parser) parseFunctionParameters() (map[string]ast.Expression, []*ast.Identifier) {
+
+	// Any default parameters.
+	m := make(map[string]ast.Expression)
+
+	// The argument-definitions.
 	identifiers := make([]*ast.Identifier, 0)
+
+	// Is the next parameter ")" ?  If so we're done. No args.
 	if p.peekTokenIs(token.RPAREN) {
 		p.nextToken()
-		return identifiers
+		return m, identifiers
 	}
 	p.nextToken()
-	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
-	identifiers = append(identifiers, ident)
 
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
-		p.nextToken()
+	// Keep going until we find a ")"
+	for !p.curTokenIs(token.RPAREN) {
+
+		// Get the identifier.
 		ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 		identifiers = append(identifiers, ident)
+		p.nextToken()
+
+		// If there is "=xx" after the name then that's
+		// the default parameter.
+		if p.curTokenIs(token.ASSIGN) {
+			p.nextToken()
+			// Save the default value.
+			m[ident.Value] = p.parseExpressionStatement().Expression
+			p.nextToken()
+		}
+
+		// Skip any comma.
+		if p.curTokenIs(token.COMMA) {
+			p.nextToken()
+		}
 	}
-	if !p.expectPeek(token.RPAREN) {
-		return nil
-	}
-	return identifiers
+
+	return m, identifiers
 }
 
 // parse string literal

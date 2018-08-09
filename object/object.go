@@ -104,6 +104,7 @@ func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
 type Function struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
+	Defaults   map[string]ast.Expression
 	Env        *Environment
 }
 

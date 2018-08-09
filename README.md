@@ -29,6 +29,8 @@ The interpreter in _this_ repository has been further extended:
     * For example `PI`, `E`, `STDIN`, `STDOUT`, & `STDERR`.
 * Most scripts will continue running in the face of errors.
     * To correct/detect "obvious" errors add `pragma("strict");` to your script, which will cause the interpreter to show a suitable error-message and terminate.
+* Function arguments may have defaults.  For example:
+  * `function greet( name = "World" ) { puts("Hello, " + name + "\n"); }`
 
 
 ## 1. Installation

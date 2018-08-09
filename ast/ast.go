@@ -239,6 +239,7 @@ func (fle *ForLoopExpression) String() string {
 type FunctionLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier
+	Defaults   map[string]Expression
 	Body       *BlockStatement
 }
 
@@ -262,6 +263,7 @@ func (fl *FunctionLiteral) String() string {
 type FunctionDefineLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier
+	Defaults   map[string]Expression
 	Body       *BlockStatement
 }
 

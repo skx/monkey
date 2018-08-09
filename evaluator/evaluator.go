@@ -82,11 +82,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.FunctionLiteral:
 		params := node.Parameters
 		body := node.Body
-		return &object.Function{Parameters: params, Env: env, Body: body}
+		defaults := node.Defaults
+		return &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults}
 	case *ast.FunctionDefineLiteral:
 		params := node.Parameters
 		body := node.Body
-		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body})
+		defaults := node.Defaults
+		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
 		return NULL
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
@@ -791,8 +793,15 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 
 func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
+
+	// Set the defaults
+	for key, val := range fn.Defaults {
+		env.Set(key, Eval(val, env))
+	}
 	for paramIdx, param := range fn.Parameters {
-		env.Set(param.Value, args[paramIdx])
+		if paramIdx < len(args) {
+			env.Set(param.Value, args[paramIdx])
+		}
 	}
 	return env
 }
