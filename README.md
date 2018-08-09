@@ -244,6 +244,37 @@ It is also possible to define a function without the use of `let`, via the `func
     function hello() { puts "Hello, world\n" ; };
     hello();   // Outputs: Hello, world" to the console.
 
+You may specify a default value for arguments which are not specified,
+for example:
+
+    let foo = fn( name = "World!") {
+      puts( "Hello, " + name + "\n" );
+    };
+    foo();
+    foo( "Steve" );
+
+This will output what you expect:
+
+    Hello, World!
+    Hello, Steve
+
+The same thing works for literal functions:
+
+    // Function with a default (string) argument
+    function meh( arg = "Steve" ) {
+      puts( "Argument:", arg, " has type:", type(arg), "\n");
+    };
+
+    // Call it with no argument and the default will be used.
+    meh();
+
+    // But of course all the rest work just fine.
+    meh( 1 );
+    meh( 1/3.0 );
+    meh( "Steve" );
+    meh( [1,2,3,4] );
+    meh( {"Steve":"Kemp", true:1, false:0, 7:"seven"} );
+
 
 ## 2.6 If-else statements
 
