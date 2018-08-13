@@ -228,7 +228,7 @@ and several of these things are documented in [examples/](examples/).
 
 ## 2.5 Functions
 
-`monkey` use `fn` to define a function which will be assigned to a variable for
+`monkey` uses `fn` to define a function which will be assigned to a variable for
 naming/invocation purposes:
 
 
@@ -300,7 +300,7 @@ The same thing works for literal functions:
         let sum = 0;
 
         for (i < x) {
-           sum = sum + i;
+           sum += i;
            i++;
         }
         return sum;
