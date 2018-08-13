@@ -145,7 +145,7 @@ You can iterate over the contents of an array like so:
 
      let i = 0;
      for( i < len(a) ) {
-        puts( "Array index ", i, " contains ", a[i], "n");
+        puts( "Array index ", i, " contains ", a[i], "\n");
         i++
      }
 
