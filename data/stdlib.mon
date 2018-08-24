@@ -1,0 +1,43 @@
+//
+// This file contains functions available by default, implemented in 100%
+// pure monkey.
+//
+// i.e. This is part of our standard-library.
+//
+
+
+//
+// First element of an array
+//
+function first( array ) {
+  return( array[0] );
+}
+
+
+//
+// The rest of an array - i.e. all elements EXCEPT the first
+//
+function rest( array ) {
+  let result = [];
+
+  if ( len(array) > 1 ) {
+    let i = 1;
+    for( i < len(a) ) {
+      result = push(result, array[i]);
+      i++;
+    }
+   }
+   return result;
+}
+
+
+//
+// Last element of an array
+//
+function last( array ) {
+  if ( len( array ) > 0 ) {
+    return(array[len(array)-1]);
+  }
+
+  // `return null` is implicit here.
+}

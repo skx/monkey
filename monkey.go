@@ -70,6 +70,36 @@ func Execute(input string) int {
 			return (argsFun(args...))
 		})
 
+	//
+	// Our standard-library is mostly written in C,
+	// and can be found implemented in evaluator/stdlib*.go
+	//
+	// However there is also data/stdlib.mon, and here we
+	// load that
+	//
+	tmpl, err := getResource("data/stdlib.mon")
+	if err != nil {
+		fmt.Printf("Failed to load our standard-library: %s",
+			err.Error())
+		os.Exit(33)
+	}
+
+	//
+	//  Parse and evaluate our standard-library.
+	//
+	init_l := lexer.New(string(tmpl))
+	init_p := parser.New(init_l)
+	init_prog := init_p.ParseProgram()
+	evaluator.Eval(init_prog, env)
+
+	//
+	//  Now evaluate the code the user wanted to load.
+	//
+	//  Note that here our environment will still contain
+	// the code we just loaded from our data-resource
+	//
+	//  (i.e. Our monkey-based standard library.)
+	//
 	evaluator.Eval(program, env)
 	return 0
 }
