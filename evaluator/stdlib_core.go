@@ -168,41 +168,47 @@ func matchFun(args ...object.Object) object.Object {
 	return NULL
 }
 
-// set a global pragam
+// set a global pragma
 func pragmaFun(args ...object.Object) object.Object {
 
-	// no args? return the pragmas
-	if len(args) == 0 {
-		len := len(PRAGMAS)
-
-		// Create a new array for the results.
-		array := make([]object.Object, len, len)
-
-		i := 0
-		for key := range PRAGMAS {
-			array[i] = &object.String{Value: key}
-			i++
-
-		}
-		return &object.Array{Elements: array}
-	}
-
-	// one arg? set the pragma
-	if len(args) != 1 {
+	// If more than one argument that's an error
+	if len(args) > 1 {
 		return newError("wrong number of arguments. got=%d, want=0|1",
 			len(args))
 	}
-	switch args[0].(type) {
-	case *object.String:
-		input := args[0].(*object.String).Value
-		input = strings.ToLower(input)
-		PRAGMAS[input] = 1
-	default:
-		return newError("argument to `pragma` not supported, got=%s",
-			args[0].Type())
+
+	// If one argument update to enable the given pragma
+	if len(args) == 1 {
+		switch args[0].(type) {
+		case *object.String:
+			input := args[0].(*object.String).Value
+			input = strings.ToLower(input)
+
+			if strings.HasPrefix(input, "no-") {
+				real := strings.TrimPrefix(input, "no-")
+				delete(PRAGMAS, real)
+			} else {
+				PRAGMAS[input] = 1
+			}
+		default:
+			return newError("argument to `pragma` not supported, got=%s",
+				args[0].Type())
+		}
 	}
 
-	return &object.Boolean{Value: true}
+	// Now return the pragmas that are in-use.
+	len := len(PRAGMAS)
+
+	// Create a new array for the results.
+	array := make([]object.Object, len, len)
+
+	i := 0
+	for key := range PRAGMAS {
+		array[i] = &object.String{Value: key}
+		i++
+
+	}
+	return &object.Array{Elements: array}
 }
 
 // push something onto an array
