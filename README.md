@@ -31,6 +31,8 @@ The interpreter in _this_ repository has been further extended:
     * To correct/detect "obvious" errors add `pragma("strict");` to your script, which will cause the interpreter to show a suitable error-message and terminate.
 * Function arguments may have defaults.  For example:
   * `function greet( name = "World" ) { puts("Hello, " + name + "\n"); }`
+* Moved some of the standard-library to 100% pure monkey, rather than implementing it in go.
+  * See [data/stdlib.mon](data/stdlib.mon) for the implementation.
 
 
 ## 1. Installation
@@ -189,16 +191,12 @@ The core primitives are:
 
 * `delete`
   * Deletes a hash-key.
-* `first`
-  * yield the first element of array.
 * `int`
   * convert the given float/string to an integer.
 * `keys`
   * Return the keys of the specified array.
 * `len`
   * Yield the length of builtin containers.
-* `last`
-  * yield the last element of array.
 * `match`
   * Regular-expression matching.
 * `pragma`
@@ -208,14 +206,23 @@ The core primitives are:
   * push an elements into the array.
 * `puts`
   * print literal value of objects.
-* `rest`
-  * yield an array which excludes the first element.
 * `set`
   * insert key value pair into the map.
 * `string`
   * convert the given item to a string.
 * `type`
   * returns the type of a variable.
+
+The following functions are also part of our standard library, but are
+implemented in 100% pure monkey:
+
+* `first`
+  * yield the first element of array.
+* `last`
+  * yield the last element of array.
+* `rest`
+  * yield an array which excludes the first element.
+
 
 
 ## 2.4.1 The Standard Library
@@ -224,6 +231,25 @@ In addition to the core built-in functions we also have a minimal-standard libra
 
 You can see the implementations beneath [evaluator/stdlib*](evaluator/),
 and several of these things are documented in [examples/](examples/).
+
+**NOTE**: Parts of our standard-library are implemented in 100% pure monkey,
+and these are embedded in our compiled binary.  The source of the functions
+can be viewed in [data/stdlib.mon](data/stdlib.mon), but to ease compilation
+these are included in the compled code as [static.go](static.go).
+
+If you wish to make changes to the monkey-based standard-library you'll
+need to rebuild `static.go` after editing `stdlib.mon`.  To do this use the
+`implant` tool.
+
+If you don't already have `implant` installed fetch it like so:
+
+     go get -u github.com/skx/implant/
+
+Now regenerate the embedded version of the standard-library and rebuild the
+binary to make your changes:
+
+    implant -input data/ -output static.go
+    go build .
 
 
 ## 2.5 Functions
