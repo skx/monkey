@@ -4,6 +4,24 @@
 //
 // i.e. This is part of our standard-library.
 //
+// If you wish to make changes to the standard-library functions defined
+// here you'll need to rebuild `static.go` after editing this file, as
+// that contains the embedded copy of this code which is included in
+// the generated monkey-interpreter.
+//
+// To rebuild `static.go` use the `implant` tool.
+//
+// If you don't already have `implant` installed fetch it like so:
+//
+//     go get -u  github.com/skx/implant/
+//     go install github.com/skx/implant/
+//
+// Now regenerate the embedded version of this file and rebuild the
+// interpreter with your changes:
+//
+//    implant -input data/ -output static.go
+//    go build .
+//
 
 
 //

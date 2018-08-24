@@ -227,15 +227,15 @@ implemented in 100% pure monkey:
 
 ## 2.4.1 The Standard Library
 
-In addition to the core built-in functions we also have a minimal-standard library.  The library includes some string/file primitives as well as maths-helpers.
+In addition to the core built-in functions we also have a minimal-standard library.  The library includes some string/file primitives, a regular-expression
+matcher, and some maths-helpers.
 
-You can see the implementations beneath [evaluator/stdlib*](evaluator/),
-and several of these things are documented in [examples/](examples/).
+You can see the implementation of the go-based standard-library beneath [evaluator/stdlib*](evaluator/), and several of these functions are documented in the various [examples/](examples/).
 
 **NOTE**: Parts of our standard-library are implemented in 100% pure monkey,
-and these are embedded in our compiled binary.  The source of the functions
+and these are embedded in our compiled interpreter.  The source of the functions
 can be viewed in [data/stdlib.mon](data/stdlib.mon), but to ease compilation
-these are included in the compled code as [static.go](static.go).
+these are included in the compiled interpreter via [static.go](static.go).
 
 If you wish to make changes to the monkey-based standard-library you'll
 need to rebuild `static.go` after editing `stdlib.mon`.  To do this use the
@@ -243,7 +243,8 @@ need to rebuild `static.go` after editing `stdlib.mon`.  To do this use the
 
 If you don't already have `implant` installed fetch it like so:
 
-     go get -u github.com/skx/implant/
+     go get -u  github.com/skx/implant/
+     go install github.com/skx/implant/
 
 Now regenerate the embedded version of the standard-library and rebuild the
 binary to make your changes:
