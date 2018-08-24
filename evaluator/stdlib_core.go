@@ -64,42 +64,6 @@ func intFun(args ...object.Object) object.Object {
 	}
 }
 
-// the first item in an array.
-func firstFun(args ...object.Object) object.Object {
-	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
-			len(args))
-	}
-	if args[0].Type() != object.ARRAY_OBJ {
-		return newError("argument to `first` must be ARRAY, got %s",
-			args[0].Type())
-	}
-	arr := args[0].(*object.Array)
-	length := len(arr.Elements)
-	if length > 0 {
-		return arr.Elements[0]
-	}
-	return NULL
-}
-
-// last item in an array
-func lastFun(args ...object.Object) object.Object {
-	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
-			len(args))
-	}
-	if args[0].Type() != object.ARRAY_OBJ {
-		return newError("argument to `last` must be ARRAY, got %s",
-			args[0].Type())
-	}
-	arr := args[0].(*object.Array)
-	length := len(arr.Elements)
-	if length > 0 {
-		return arr.Elements[length-1]
-	}
-	return NULL
-}
-
 // length of item
 func lenFun(args ...object.Object) object.Object {
 	if len(args) != 1 {
@@ -235,27 +199,6 @@ func putsFun(args ...object.Object) object.Object {
 		fmt.Print(arg.Inspect())
 	}
 	return NULL
-}
-
-// rest of an array.
-func restFun(args ...object.Object) object.Object {
-	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
-			len(args))
-	}
-	if args[0].Type() != object.ARRAY_OBJ {
-		return newError("argument to `rest` must be ARRAY, got=%s",
-			args[0].Type())
-	}
-	arr := args[0].(*object.Array)
-	length := len(arr.Elements)
-	if length > 0 {
-		newElements := make([]object.Object, length-1, length-1)
-		copy(newElements, arr.Elements[1:length])
-		return &object.Array{Elements: newElements}
-	}
-	return NULL
-
 }
 
 // Get hash keys
@@ -399,10 +342,6 @@ func init() {
 		func(args ...object.Object) object.Object {
 			return (hashKeys(args...))
 		})
-	RegisterBuiltin("last",
-		func(args ...object.Object) object.Object {
-			return (lastFun(args...))
-		})
 	RegisterBuiltin("len",
 		func(args ...object.Object) object.Object {
 			return (lenFun(args...))
@@ -410,10 +349,6 @@ func init() {
 	RegisterBuiltin("match",
 		func(args ...object.Object) object.Object {
 			return (matchFun(args...))
-		})
-	RegisterBuiltin("first",
-		func(args ...object.Object) object.Object {
-			return (firstFun(args...))
 		})
 	RegisterBuiltin("pragma",
 		func(args ...object.Object) object.Object {
@@ -426,10 +361,6 @@ func init() {
 	RegisterBuiltin("puts",
 		func(args ...object.Object) object.Object {
 			return (putsFun(args...))
-		})
-	RegisterBuiltin("rest",
-		func(args ...object.Object) object.Object {
-			return (restFun(args...))
 		})
 	RegisterBuiltin("set",
 		func(args ...object.Object) object.Object {
