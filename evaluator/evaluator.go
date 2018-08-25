@@ -182,15 +182,15 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 func evalPostfixExpression(env *object.Environment, operator string, node *ast.PostfixExpression) object.Object {
 	switch operator {
 	case "++":
-		if _, ok := env.GetConst(node.Token.Literal); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
-			os.Exit(3)
-		}
-
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
 			return newError("%s is unknown", node.Token.Literal)
 		}
+		if val.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
+			os.Exit(3)
+		}
+
 		switch arg := val.(type) {
 		case *object.Integer:
 			v := arg.Value
@@ -201,14 +201,13 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 
 		}
 	case "--":
-		if _, ok := env.GetConst(node.Token.Literal); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
-			os.Exit(3)
-		}
-
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
 			return newError("%s is unknown", node.Token.Literal)
+		}
+		if val.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
+			os.Exit(3)
 		}
 		switch arg := val.(type) {
 		case *object.Integer:
@@ -475,15 +474,14 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 	//
 	switch a.Operator {
 	case "+=":
-		if _, ok := env.GetConst(a.Name.String()); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
+		}
+		if current.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
+			os.Exit(3)
 		}
 
 		res := evalInfixExpression("+=", current, evaluated)
@@ -495,15 +493,15 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		return res
 
 	case "-=":
-		if _, ok := env.GetConst(a.Name.String()); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
+		}
+		if current.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
+			os.Exit(3)
 		}
 
 		res := evalInfixExpression("-=", current, evaluated)
@@ -515,15 +513,14 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		return res
 
 	case "*=":
-		if _, ok := env.GetConst(a.Name.String()); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
-
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
+		}
+		if current.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
+			os.Exit(3)
 		}
 
 		res := evalInfixExpression("*=", current, evaluated)
@@ -535,10 +532,6 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		return res
 
 	case "/=":
-		if _, ok := env.GetConst(a.Name.String()); ok {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
@@ -546,6 +539,10 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
+		if current.Constant() {
+			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
+			os.Exit(3)
+		}
 		res := evalInfixExpression("/=", current, evaluated)
 		if isError(res) {
 			fmt.Printf("Error handling /= %s\n", res.Inspect())
@@ -630,9 +627,6 @@ func isError(obj object.Object) bool {
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	if val, ok := env.Get(node.Value); ok {
 		return val
-	}
-	if const_val, ok := env.GetConst(node.Value); ok {
-		return const_val
 	}
 	if builtin, ok := builtins[node.Value]; ok {
 		return builtin
