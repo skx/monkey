@@ -186,10 +186,6 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 		if !ok {
 			return newError("%s is unknown", node.Token.Literal)
 		}
-		if val.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
-			os.Exit(3)
-		}
 
 		switch arg := val.(type) {
 		case *object.Integer:
@@ -205,10 +201,7 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 		if !ok {
 			return newError("%s is unknown", node.Token.Literal)
 		}
-		if val.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", node.Token.Literal)
-			os.Exit(3)
-		}
+
 		switch arg := val.(type) {
 		case *object.Integer:
 			v := arg.Value
@@ -479,16 +472,13 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
-		if current.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 
 		res := evalInfixExpression("+=", current, evaluated)
 		if isError(res) {
 			fmt.Printf("Error handling += %s\n", res.Inspect())
 			return res
 		}
+
 		env.Set(a.Name.String(), res)
 		return res
 
@@ -499,16 +489,13 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
-		if current.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 
 		res := evalInfixExpression("-=", current, evaluated)
 		if isError(res) {
 			fmt.Printf("Error handling -= %s\n", res.Inspect())
 			return res
 		}
+
 		env.Set(a.Name.String(), res)
 		return res
 
@@ -518,16 +505,13 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		if !ok {
 			return newError("%s is unknown", a.Name.String())
 		}
-		if current.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 
 		res := evalInfixExpression("*=", current, evaluated)
 		if isError(res) {
 			fmt.Printf("Error handling *= %s\n", res.Inspect())
 			return res
 		}
+
 		env.Set(a.Name.String(), res)
 		return res
 
@@ -539,10 +523,6 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		if current.Constant() {
-			fmt.Printf("Attempt to modify a constant-value, %s\n", a.Name.String())
-			os.Exit(3)
-		}
 		res := evalInfixExpression("/=", current, evaluated)
 		if isError(res) {
 			fmt.Printf("Error handling /= %s\n", res.Inspect())
@@ -562,6 +542,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 				os.Exit(1)
 			}
 		}
+
 		env.Set(a.Name.String(), evaluated)
 	}
 	return evaluated
