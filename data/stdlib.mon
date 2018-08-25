@@ -25,6 +25,20 @@
 
 
 //
+// Mathematical constants
+//
+const PI = 3.141592653589793;
+const E  =  2.718281828459045;
+
+//
+// Constants referring to file-handles, as used for STDIN, STDOUT, STDERR
+//
+const STDIN  = 0;
+const STDOUT = 1;
+const STDERR = 2;
+
+
+//
 // First element of an array
 //
 function first( array ) {
