@@ -44,6 +44,7 @@ const (
 	FUNCTION        = "FUNCTION"
 	DEFINE_FUNCTION = "DEFINE_FUNCTION"
 	LET             = "LET"
+	CONST           = "CONST"
 	TRUE            = "TRUE"
 	FALSE           = "FALSE"
 	IF              = "IF"
@@ -60,15 +61,16 @@ const (
 
 // reversed keywords
 var keywords = map[string]TokenType{
-	"fn":       FUNCTION,
-	"function": DEFINE_FUNCTION,
-	"let":      LET,
-	"true":     TRUE,
-	"false":    FALSE,
-	"if":       IF,
+	"const":    CONST,
 	"else":     ELSE,
-	"return":   RETURN,
+	"false":    FALSE,
+	"fn":       FUNCTION,
 	"for":      FOR,
+	"function": DEFINE_FUNCTION,
+	"if":       IF,
+	"let":      LET,
+	"return":   RETURN,
+	"true":     TRUE,
 }
 
 // LookupIdentifier used to determinate whether identifier is keyword nor not
