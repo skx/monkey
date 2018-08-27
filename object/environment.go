@@ -40,15 +40,31 @@ func (e *Environment) Get(name string) (Object, bool) {
 // Set object by name
 func (e *Environment) Set(name string, val Object) Object {
 
-	// If this is a constant - we do nothing - then return
-	// the value existing.
-	if const_val, ok := e.Get(name); ok {
-		if const_val.Constant() {
-			fmt.Printf("Attempting to modify constant denied - %s\n", name)
-			os.Exit(3)
-		}
-		return const_val
+	//
+	// If a variable is constant then we don't allow it to be changed.
+	//
+	// But constants are scoped, they are not global, so we only need
+	// to look in the current scope - not any parent.
+	//
+	// i.e. The parent-scope might have a constant-value, but
+	// we just don't care.  Consider the following code:
+	//
+	//    const a = 3.13;
+	//    function foo() {
+	//       let a = 1976;
+	//    };
+	//
+	// The variable inside the function _should_ not be constant.
+	//
+	cur := e.store[name]
+	if cur != nil && (cur.Constant()) {
+		fmt.Printf("Attempting to modify '%s' denied; it was defined as a constant.\n", name)
+		os.Exit(3)
 	}
+
+	//
+	// Store the (updated) value.
+	//
 	e.store[name] = val
 	return val
 }
