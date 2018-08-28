@@ -259,3 +259,33 @@ let a = 1;
 		}
 	}
 }
+
+func TestIntegers(t *testing.T) {
+	input := `10 0x10 0xF0 0xFE 0b0101 0xFF 0b101 0xFF;`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.INT, "10"},
+		{token.INT, "0x10"},
+		{token.INT, "0xF0"},
+		{token.INT, "0xFE"},
+		{token.INT, "0b0101"},
+		{token.INT, "0xFF"},
+		{token.INT, "0b101"},
+		{token.INT, "0xFF"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}

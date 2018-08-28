@@ -1,6 +1,8 @@
 package lexer
 
 import (
+	"strings"
+
 	"github.com/skx/monkey/token"
 )
 
@@ -229,13 +231,28 @@ func (l *Lexer) skipMultiLineComment() {
 	l.skipWhitespace()
 }
 
-// read number
+// read number - this handles 0x1234 and 0b101010101 too.
 func (l *Lexer) readNumber() string {
-	position := l.position
-	for isDigit(l.ch) {
+	str := ""
+
+	// We usually just accept digits.
+	accept := "0123456789"
+
+	// But if we have `0x` as a prefix we accept hexadecimal instead.
+	if l.ch == '0' && l.peekChar() == 'x' {
+		accept = "0x123456789abcdefABCDEF"
+	}
+
+	// If we have `0b` as a prefix we accept binary digits only.
+	if l.ch == '0' && l.peekChar() == 'b' {
+		accept = "b01"
+	}
+
+	for strings.Contains(accept, string(l.ch)) {
+		str += string(l.ch)
 		l.readChar()
 	}
-	return string(l.characters[position:l.position])
+	return str
 }
 
 // read until white space
