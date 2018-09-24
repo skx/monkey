@@ -289,3 +289,70 @@ func TestIntegers(t *testing.T) {
 		}
 	}
 }
+
+// Test that the shebang-line is handled specially.
+func TestShebang(t *testing.T) {
+	input := `#!/bin/monkey
+10;`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// TestMoreHandling does nothing real, but it bumps our coverage!
+func TestMoreHandling(t *testing.T) {
+	input := `#!/bin/monkey
+1 += 1;
+2 -= 2;
+3 /= 3;
+x */ 3;
+
+let a = 1;
+a++;
+
+let b = a % 1;
+b--;
+b -= 2;
+
+if ( a<3 ) { puts( "Blah!"); }
+if ( a>3 ) { puts( "Blah!"); }
+
+let b = 3;
+b**b;
+b *= 3;
+if ( b <= 3  ) { puts "blah\n" }
+if ( b >= 3  ) { puts "blah\n" }
+
+let a = "steve";
+let a = "steve\n";
+let a = "steve\t";
+let a = "steve\r";
+let a = "steve\\";
+let a = "steve\"";
+let c = 3.113£;
+`
+	input += "`/bin/ls`"
+	input += "/*\n"
+
+	l := New(input)
+	tok := l.NextToken()
+	for tok.Type != token.EOF {
+		tok = l.NextToken()
+	}
+}
