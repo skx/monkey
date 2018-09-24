@@ -58,11 +58,7 @@ if(5<10){
 {"foo":"bar"}
 1.2
 0.5
-.3
-.
-3世
-9.2世
-4.3.2
+0.3
 世界
 for
 `
@@ -158,11 +154,7 @@ for
 		{token.RBRACE, "}"},
 		{token.FLOAT, "1.2"},
 		{token.FLOAT, "0.5"},
-		{token.FLOAT, ".3"},
-		{token.ILLEGAL, "."},
-		{token.ILLEGAL, "3世"},
-		{token.ILLEGAL, "9.2世"},
-		{token.ILLEGAL, "4.3.2"},
+		{token.FLOAT, "0.3"},
 		{token.IDENT, "世界"},
 		{token.FOR, "for"},
 		{token.EOF, ""},
@@ -346,6 +338,7 @@ let a = "steve\r";
 let a = "steve\\";
 let a = "steve\"";
 let c = 3.113£;
+.;
 `
 	input += "`/bin/ls`"
 	input += "/*\n"
@@ -354,5 +347,106 @@ let c = 3.113£;
 	tok := l.NextToken()
 	for tok.Type != token.EOF {
 		tok = l.NextToken()
+	}
+}
+
+// TestStdLib ensures that identifiers are parsed correctly for the
+// case where we need to support the legacy-names.
+func TestStdLib(t *testing.T) {
+	input := `
+os.getenv
+os.setenv
+os.environment
+directory.glob
+file.open
+file.close
+file.lines
+math.abs
+math.random
+math.sqrt
+string.interpolate
+string.toupper
+string.tolower
+string.trim
+string.reverse
+string.split
+`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.IDENT, "os.getenv"},
+		{token.IDENT, "os.setenv"},
+		{token.IDENT, "os.environment"},
+		{token.IDENT, "directory.glob"},
+		{token.IDENT, "file.open"},
+		{token.IDENT, "file.close"},
+		{token.IDENT, "file.lines"},
+		{token.IDENT, "math.abs"},
+		{token.IDENT, "math.random"},
+		{token.IDENT, "math.sqrt"},
+		{token.IDENT, "string.interpolate"},
+		{token.IDENT, "string.toupper"},
+		{token.IDENT, "string.tolower"},
+		{token.IDENT, "string.trim"},
+		{token.IDENT, "string.reverse"},
+		{token.IDENT, "string.split"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt, tok)
+		}
+	}
+}
+
+// TestDotMethod ensures that identifiers are parsed correctly for the
+// case where we need to split at periods.
+func TestDotMethod(t *testing.T) {
+	input := `
+foo.bar();
+moi.kissa();
+a?.b?();
+`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.IDENT, "foo"},
+		{token.PERIOD, "."},
+		{token.IDENT, "bar"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "moi"},
+		{token.PERIOD, "."},
+		{token.IDENT, "kissa"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "a?"},
+		{token.PERIOD, "."},
+		{token.IDENT, "b?"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt, tok)
+		}
 	}
 }

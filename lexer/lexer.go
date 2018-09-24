@@ -72,6 +72,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RPAREN, l.ch)
 	case rune(','):
 		tok = newToken(token.COMMA, l.ch)
+	case rune('.'):
+		tok = newToken(token.PERIOD, l.ch)
 	case rune('+'):
 		if l.peekChar() == rune('+') {
 			ch := l.ch
@@ -158,8 +160,6 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RBRACKET, l.ch)
 	case rune(':'):
 		tok = newToken(token.COLON, l.ch)
-	case rune('.'):
-		return l.readFloat()
 	case rune(0):
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -181,13 +181,87 @@ func newToken(tokenType token.TokenType, ch rune) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
 
-// read Identifier
+// readIdentifier is designed to read an identifier (name of variable,
+// function, etc).
+//
+// However there is a complication due to our historical implementation
+// of the standard library.  We really want to stop identifiers if we hit
+// a period, to allow method-calls to work on objects.
+//
+// So with inptu like this:
+//
+//   a.blah();
+//
+// Our identifier should be "a" (then we have a period, then a second
+// identifier "blah", followed by opening & closing parenthesis).
+//
+// However we also have to cover the case of:
+//
+//    string.toupper( "blah" );
+//    os.getenv( "PATH" );
+//    ..
+//
+// So we have a horrid implementation..
 func (l *Lexer) readIdentifier() string {
+
+	id := ""
+
+	//
+	// Save our position, in case we need to jump backwards in
+	// our scanning.  Yeah.
+	//
 	position := l.position
+	rposition := l.readPosition
+
+	//
+	// Build up our identifier, handling only valid characters.
+	//
+	// NOTE: This WILL consider the period valid, allowing the
+	// parsing of "foo.bar", "os.getenv", "blah.blah.blah", etc.
+	//
 	for isIdentifier(l.ch) {
+		id += string(l.ch)
 		l.readChar()
 	}
-	return string(l.characters[position:l.position])
+
+	//
+	// Now we to see if our identifier had a period inside it.
+	//
+	// If it does we stop early, and reset our lexer-state to
+	// the position just ahead of the period UNLESS we found
+	// a period in a function that is "probably" part of our
+	// standard-library.
+	//
+	if strings.Contains(id, ".") {
+
+		if !strings.HasPrefix(id, "directory.") &&
+			!strings.HasPrefix(id, "file.") &&
+			!strings.HasPrefix(id, "math.") &&
+			!strings.HasPrefix(id, "os.") &&
+			!strings.HasPrefix(id, "string.") {
+
+			//
+			// OK first of all we truncate our identifier
+			// at the position before the "."
+			//
+			offset := strings.Index(id, ".")
+			id = id[:offset]
+
+			//
+			// Now we have to move backwards - as a quickie
+			// We'll reset our position and move forwards
+			// the length of the bits we went too-far.
+			l.position = position
+			l.readPosition = rposition
+			for offset > 0 {
+				l.readChar()
+				offset -= 1
+			}
+		}
+	}
+
+	// And now our pain is over.
+	return id
 }
 
 // skip white space
@@ -281,22 +355,6 @@ func (l *Lexer) readDecimal() token.Token {
 	} else {
 		illegalPart := l.readUntilWhitespace()
 		return token.Token{Type: token.ILLEGAL, Literal: integer + illegalPart}
-	}
-}
-
-// read float
-func (l *Lexer) readFloat() token.Token {
-	l.readChar()
-	fraction := l.readNumber()
-	if len(fraction) == 0 {
-		return token.Token{Type: token.ILLEGAL, Literal: "."}
-	} else {
-		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
-			return token.Token{Type: token.FLOAT, Literal: "." + fraction}
-		} else {
-			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type: token.ILLEGAL, Literal: "." + fraction + illegalPart}
-		}
 	}
 }
 
