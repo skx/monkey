@@ -23,7 +23,7 @@ var (
 // The built-in functions / standard-library methods are stored here.
 var builtins = map[string]*object.Builtin{}
 
-// Eval: entry point of environment
+// Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 
@@ -115,9 +115,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 				os.Exit(1)
 			}
 			return res
-		} else {
-			return res
 		}
+		return res
+
 	case *ast.ArrayLiteral:
 		elements := evalExpression(node.Elements, env)
 		if len(elements) == 1 && isError(elements[0]) {
@@ -830,7 +830,8 @@ func upwrapReturnValue(obj object.Object) object.Object {
 	return obj
 }
 
-// Register a built-in function.  Used to register our "standard library".
+// RegisterBuiltin registers a built-in function.  This is used to register
+// our "standard library" functions.
 func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 	builtins[name] = &object.Builtin{Fn: fun}
 }
