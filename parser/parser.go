@@ -452,7 +452,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	return lit
 }
 
-// parseFunctionDefinition parses the defintion of a function.
+// parseFunctionDefinition parses the definition of a function.
 func (p *Parser) parseFunctionDefinition() ast.Expression {
 	p.nextToken()
 	lit := &ast.FunctionDefineLiteral{Token: p.curToken}
@@ -635,26 +635,6 @@ func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
 	p.nextToken()
 	methodCall.Call = p.parseCallExpression(name)
 	return methodCall
-}
-
-// parseCallArguments parses the arguments applied to a call.
-func (p *Parser) parseCallArguments() []ast.Expression {
-	args := make([]ast.Expression, 0)
-	if p.peekTokenIs(token.RPAREN) {
-		p.nextToken()
-		return args
-	}
-	p.nextToken()
-	args = append(args, p.parseExpression(LOWEST))
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
-		p.nextToken()
-		args = append(args, p.parseExpression(LOWEST))
-	}
-	if !p.expectPeek(token.RPAREN) {
-		return nil
-	}
-	return args
 }
 
 // curTokenIs tests if the current token has the given type.
