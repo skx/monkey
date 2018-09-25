@@ -29,7 +29,7 @@ func (l *Lexer) readChar() {
 		l.ch = l.characters[l.readPosition]
 	}
 	l.position = l.readPosition
-	l.readPosition += 1
+	l.readPosition++
 }
 
 // NextToken to read next token, skipping the white space.
@@ -166,11 +166,10 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		if isDigit(l.ch) {
 			return l.readDecimal()
-		} else {
-			tok.Literal = l.readIdentifier()
-			tok.Type = token.LookupIdentifier(tok.Literal)
-			return tok
 		}
+		tok.Literal = l.readIdentifier()
+		tok.Type = token.LookupIdentifier(tok.Literal)
+		return tok
 	}
 	l.readChar()
 	return tok
@@ -255,7 +254,7 @@ func (l *Lexer) readIdentifier() string {
 			l.readPosition = rposition
 			for offset > 0 {
 				l.readChar()
-				offset -= 1
+				offset--
 			}
 		}
 	}
@@ -346,10 +345,10 @@ func (l *Lexer) readDecimal() token.Token {
 		fraction := l.readNumber()
 		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 			return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
-		} else {
-			illegalPart := l.readUntilWhitespace()
-			return token.Token{Type: token.ILLEGAL, Literal: integer + "." + fraction + illegalPart}
 		}
+		illegalPart := l.readUntilWhitespace()
+		return token.Token{Type: token.ILLEGAL, Literal: integer + "." + fraction + illegalPart}
+
 	} else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
 		return token.Token{Type: token.INT, Literal: integer}
 	} else {
@@ -413,9 +412,8 @@ func (l *Lexer) readBacktick() string {
 func (l *Lexer) peekChar() rune {
 	if l.readPosition >= len(l.characters) {
 		return rune(0)
-	} else {
-		return l.characters[l.readPosition]
 	}
+	return l.characters[l.readPosition]
 }
 
 // determinate ch is identifier or not

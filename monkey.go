@@ -86,10 +86,10 @@ func Execute(input string) int {
 	//
 	//  Parse and evaluate our standard-library.
 	//
-	init_l := lexer.New(string(tmpl))
-	init_p := parser.New(init_l)
-	init_prog := init_p.ParseProgram()
-	evaluator.Eval(init_prog, env)
+	initL := lexer.New(string(tmpl))
+	initP := parser.New(initL)
+	initProg := initP.ParseProgram()
+	evaluator.Eval(initProg, env)
 
 	//
 	//  Now evaluate the code the user wanted to load.
