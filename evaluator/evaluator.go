@@ -97,6 +97,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		defaults := node.Defaults
 		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
 		return NULL
+	case *ast.ObjectCallExpression:
+		return evalObjectCallExpression(node, env)
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
 		if isError(function) {
@@ -831,4 +833,19 @@ func upwrapReturnValue(obj object.Object) object.Object {
 // Register a built-in function.  Used to register our "standard library".
 func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 	builtins[name] = &object.Builtin{Fn: fun}
+}
+
+// Method calls against objects.
+func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Environment) object.Object {
+
+	fmt.Printf("Handling an object-based method-call!\n")
+
+	fmt.Printf("\tToken: %v\n", call.Token)
+	fmt.Printf("\tObject: %v\n", call.Object)
+	fmt.Printf("\tExpression: %v\n", call.Call)
+
+	//
+	// Show the type
+	//.
+	return newError("Error?")
 }
