@@ -57,6 +57,7 @@ const (
 	LBRACKET        = "["
 	RBRACKET        = "]"
 	COLON           = ":"
+	PERIOD          = "."
 )
 
 // reversed keywords

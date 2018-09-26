@@ -28,7 +28,7 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 	return env
 }
 
-// Get object by name
+// Get returns the value of a given variable, by name.
 func (e *Environment) Get(name string) (Object, bool) {
 	obj, ok := e.store[name]
 	if !ok && e.outer != nil {
@@ -37,7 +37,7 @@ func (e *Environment) Get(name string) (Object, bool) {
 	return obj, ok
 }
 
-// Set object by name
+// Set stores the value of a variable, by name.
 func (e *Environment) Set(name string, val Object) Object {
 
 	//
