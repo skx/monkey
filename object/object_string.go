@@ -47,8 +47,28 @@ func (s *String) HashKey() HashKey {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (s *String) InvokeMethod(method string, args ...Object) Object {
+	if method == "count" {
+		if len(args) < 1 {
+			return &Error{Message: "Missing argument to count()!"}
+		}
+		// Note that this coerces into a string :)
+		arg := args[0].Inspect()
+		return &Integer{Value: int64(strings.Count(s.Value, arg))}
+	}
+	if method == "find" {
+		if len(args) < 1 {
+			return &Error{Message: "Missing argument to find()!"}
+		}
+
+		// Note that this coerces into a string :)
+		arg := args[0].Inspect()
+		return &Integer{Value: int64(strings.Index(s.Value, arg))}
+	}
+	if method == "len" {
+		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
+	}
 	if method == "methods" {
-		names := []string{"len", "methods", "reverse", "split", "toupper", "tolower", "type"}
+		names := []string{"count", "find", "len", "methods", "replace", "reverse", "split", "toupper", "tolower", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -56,8 +76,14 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		}
 		return &Array{Elements: result}
 	}
-	if method == "len" {
-		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
+	if method == "replace" {
+		if len(args) < 2 {
+			return &Error{Message: "Missing arguments to replace()!"}
+		}
+		// Note that this coerces into strings :)
+		oldS := args[0].Inspect()
+		newS := args[1].Inspect()
+		return &String{Value: strings.Replace(s.Value, oldS, newS, -1)}
 	}
 	if method == "reverse" {
 		out := make([]rune, utf8.RuneCountInString(s.Value))
@@ -91,6 +117,7 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 
 	}
 	if method == "trim" {
+		// TODO: ltrim, rtrim
 		return &String{Value: strings.TrimSpace(s.Value)}
 	}
 	if method == "tolower" {
