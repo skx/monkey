@@ -1,7 +1,6 @@
 package evaluator
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -118,8 +117,14 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1<1", false},
 		{"1>1", false},
 		{"1==1", true},
+		{"\"steve\"==\"steve\"", true},
+		{"\"steve\"!=\"Steve\"", true},
+		{"\"steve\"==\"kemp\"", false},
+		{"\"abc123\"==\"abc\" + \"123\"", true},
 		{"1!=1", false},
 		{"1==2", false},
+		{"1.0==1", true},
+		{"1.5==1", false},
 		{"1!=2", true},
 		{"true == true", true},
 		{"false == false", true},
@@ -358,7 +363,6 @@ func TestBuiltinFunction(t *testing.T) {
 			} else {
 				errObj, ok := evaluated.(*object.Error)
 				if !ok {
-					fmt.Printf("Input: %s\n", tt.input)
 					t.Errorf("object is not Error, got=%T(%+v)",
 						evaluated, evaluated)
 				}

@@ -3,10 +3,9 @@ sudo: false
 matrix:
   include:
   - go: tip
-  allow_failures:
-  - go: tip
 script:
 - ".travis/build-all"
+- ".travis/test"
 deploy:
   provider: releases
   api_key:
