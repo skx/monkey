@@ -39,6 +39,58 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
+// Test that errors are returned when incomplete let/const expressions are seen
+func TestBadLetConstStatement(t *testing.T) {
+	input := []string{"let", "const", "let x;", "const x;"}
+
+	for _, str := range input {
+		l := lexer.New(str)
+		p := New(l)
+		_ = p.ParseProgram()
+
+		errors := p.errors
+		if len(errors) < 1 {
+			t.Errorf("UNexpected error-count!")
+		}
+
+		if len(p.Errors()) != len(errors) {
+			t.Errorf("Mismatch of errors + error-messages!")
+		}
+	}
+}
+
+//TestConstStatements tests the "const" token.
+func TestConstStatements(t *testing.T) {
+	tests := []struct {
+		input              string
+		expectedIdentifier string
+		expectedValue      interface{}
+	}{
+		{"const x =5;", "x", 5},
+		{"const z =1.3;", "z", 1.3},
+		{"const y = true;", "y", true},
+		{"const foobar=y;", "foobar", "y"},
+	}
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
+				len(program.Statements))
+		}
+		stmt := program.Statements[0]
+		if !testConstStatement(t, stmt, tt.expectedIdentifier) {
+			return
+		}
+		val := stmt.(*ast.ConstStatement).Value
+		if !testLiteralExpression(t, val, tt.expectedValue) {
+			return
+		}
+	}
+}
+
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got %q", s.TokenLiteral())
@@ -60,10 +112,31 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
+func testConstStatement(t *testing.T, s ast.Statement, name string) bool {
+	if s.TokenLiteral() != "const" {
+		t.Errorf("s.TokenLiteral not 'const'. got %q", s.TokenLiteral())
+		return false
+	}
+	letStmt, ok := s.(*ast.ConstStatement)
+	if !ok {
+		t.Errorf("s not *ast.LetStatement. got=%T", s)
+		return false
+	}
+	if letStmt.Name.Value != name {
+		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
+		return false
+	}
+	if letStmt.Name.TokenLiteral() != name {
+		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
+		return false
+	}
+	return true
+}
+
 func TestReturnStatement(t *testing.T) {
 	input := `
-return 5;
-return 10;
+return 0b11;
+return 0x15;
 return 993322;
 `
 	l := lexer.New(input)
@@ -478,13 +551,13 @@ func TestForLoopExpression(t *testing.T) {
 }
 
 func TestFunctionLiteralParsing(t *testing.T) {
-	input := `fn(x,y){x+y;}`
+	input := `fn(x,y=3){x+y;}`
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 	if len(program.Statements) != 1 {
-		t.Fatalf("program.Body does not coantin %d statement. got=%d",
+		t.Fatalf("program.Body does not contain %d statement. got=%d",
 			1, len(program.Statements))
 	}
 	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
@@ -499,6 +572,44 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	}
 	if len(function.Parameters) != 2 {
 		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T",
+			stmt.Expression)
+	}
+	testLiteralExpression(t, function.Parameters[0], "x")
+	testLiteralExpression(t, function.Parameters[1], "y")
+	if len(function.Body.Statements) != 1 {
+		t.Fatalf("function.Body.Statements has not 1 Statements. got=%d\n",
+			len(function.Body.Statements))
+	}
+	bodyStmt, ok := function.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T",
+			function.Body.Statements[0])
+	}
+	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+}
+
+func TestFunctionParsing(t *testing.T) {
+	input := `function f(x,y){x+y;}`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body does not contain %d statement. got=%d",
+			1, len(program.Statements))
+	}
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+	function, ok := stmt.Expression.(*ast.FunctionDefineLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.FunctionDefineLiteral. got=%T",
+			stmt.Expression)
+	}
+	if len(function.Parameters) != 2 {
+		t.Fatalf("stmt.Expression is not ast.FunctionDefineLiteral. got=%T",
 			stmt.Expression)
 	}
 	testLiteralExpression(t, function.Parameters[0], "x")
@@ -724,5 +835,37 @@ func TestParsingHashLiteralWithExpression(t *testing.T) {
 			continue
 		}
 		testFunc(value)
+	}
+}
+
+// Test operators: +=, -=, /=, and *=.
+func TestMutators(t *testing.T) {
+	input := []string{"let w = 5; w *= 3;",
+		"let x = 15; x += 3;",
+		"let y = 10; y /= 2;",
+		"let z = 10; y -= 2;",
+		"let z = 1; z++;",
+		"let z = 1; z--;",
+		"let z = 10; let a = 3; y = a;"}
+
+	for _, txt := range input {
+		l := lexer.New(txt)
+		p := New(l)
+		_ = p.ParseProgram()
+		checkParserErrors(t, p)
+	}
+}
+
+// Test method-call operation.
+func TestObjectMethodCall(t *testing.T) {
+	input := []string{"\"steve\".len()",
+		"let x = 15; x.string();",
+		"`ls`"}
+
+	for _, txt := range input {
+		l := lexer.New(txt)
+		p := New(l)
+		_ = p.ParseProgram()
+		checkParserErrors(t, p)
 	}
 }
