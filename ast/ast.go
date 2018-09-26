@@ -331,10 +331,9 @@ func (ce *CallExpression) String() string {
 
 // ObjectCallExpression is used when calling a method on an object.
 type ObjectCallExpression struct {
-	Token     token.Token
-	Object    Expression
-	Call      Expression
-	Arguments []Expression
+	Token  token.Token
+	Object Expression
+	Call   Expression
 }
 
 func (oce *ObjectCallExpression) expressionNode() {}
