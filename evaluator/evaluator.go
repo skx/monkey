@@ -98,7 +98,14 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
 		return NULL
 	case *ast.ObjectCallExpression:
-		return evalObjectCallExpression(node, env)
+		res := evalObjectCallExpression(node, env)
+		if isError(res) {
+			fmt.Fprintf(os.Stderr, "Error calling object-method %s\n", res.Inspect())
+			if PRAGMAS["strict"] == 1 {
+				os.Exit(1)
+			}
+		}
+		return res
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
 		if isError(function) {
@@ -836,17 +843,17 @@ func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 	builtins[name] = &object.Builtin{Fn: fun}
 }
 
-// Method calls against objects.
+// evalObjectCallExpression invokes methods against objects.
 func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Environment) object.Object {
 
-	fmt.Printf("Handling an object-based method-call!\n")
+	obj := Eval(call.Object, env)
+	if method, ok := call.Call.(*ast.CallExpression); ok {
+		args := evalExpression(call.Call.(*ast.CallExpression).Arguments, env)
+		ret := obj.InvokeMethod(method.Function.String(), args...)
+		if ret != nil {
+			return ret
+		}
+	}
 
-	fmt.Printf("\tToken: %v\n", call.Token)
-	fmt.Printf("\tObject: %v\n", call.Object)
-	fmt.Printf("\tExpression: %v\n", call.Call)
-
-	//
-	// Show the type
-	//.
-	return newError("Error?")
+	return newError("Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
 }
