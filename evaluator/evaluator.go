@@ -258,6 +258,8 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return evalFloatIntegerInfixExpression(operator, left, right)
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ:
 		return evalIntegerFloatInfixExpression(operator, left, right)
+	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+		return evalStringInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
@@ -265,8 +267,6 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s",
 			left.Type(), operator, right.Type())
-	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
-		return evalStringInfixExpression(operator, left, right)
 	default:
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
@@ -435,14 +435,24 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 }
 
 func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
-	if operator != "+" && operator != "+=" {
-		return newError("unknown operator: %s %s %s",
-			left.Type(), operator, right.Type())
+	l := left.(*object.String)
+	r := right.(*object.String)
+
+	switch operator {
+	case "==":
+		return nativeBoolToBooleanObject(l.Value == r.Value)
+	case "!=":
+		return nativeBoolToBooleanObject(l.Value != r.Value)
+	case "+":
+		return &object.String{Value: l.Value + r.Value}
+	case "+=":
+		return &object.String{Value: l.Value + r.Value}
 	}
-	leftVal := left.(*object.String).Value
-	rightVal := right.(*object.String).Value
-	return &object.String{Value: leftVal + rightVal}
+
+	return newError("unknown operator: %s %s %s",
+		left.Type(), operator, right.Type())
 }
+
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
 	condition := Eval(ie.Condition, env)
 	if isError(condition) {
