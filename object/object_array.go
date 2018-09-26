@@ -45,17 +45,32 @@ func (ao *Array) Inspect() string {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (ao *Array) InvokeMethod(method string, args ...Object) Object {
+	if method == "find" {
+		if len(args) < 1 {
+			return &Error{Message: "Missing argument to find()!"}
+		}
+
+		// TODO - Allow finding non-strings.
+		arg := args[0].Inspect()
+		result := -1
+		for idx, entry := range ao.Elements {
+			if (entry.Type() == STRING_OBJ) && (entry.(*String).Value == arg) {
+				result = idx
+			}
+		}
+		return &Integer{Value: int64(result)}
+	}
+	if method == "len" {
+		return &Integer{Value: int64(len(ao.Elements))}
+	}
 	if method == "methods" {
-		names := []string{"len", "methods", "string"}
+		names := []string{"find", "len", "methods", "string"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "len" {
-		return &Integer{Value: int64(len(ao.Elements))}
 	}
 	if method == "string" {
 		return &String{Value: ao.Inspect()}
