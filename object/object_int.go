@@ -41,7 +41,7 @@ func (i *Integer) HashKey() HashKey {
 func (i *Integer) InvokeMethod(method string, args ...Object) Object {
 
 	if method == "methods" {
-		names := []string{"methods", "string"}
+		names := []string{"methods", "string", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -51,6 +51,9 @@ func (i *Integer) InvokeMethod(method string, args ...Object) Object {
 	}
 	if method == "string" {
 		return &String{Value: i.Inspect()}
+	}
+	if method == "type" {
+		return &String{Value: "integer"}
 	}
 	return nil
 }

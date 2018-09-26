@@ -50,5 +50,17 @@ func (f *Function) Inspect() string {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (f *Function) InvokeMethod(method string, args ...Object) Object {
+	if method == "methods" {
+		names := []string{"methods", "type"}
+
+		result := make([]Object, len(names), len(names))
+		for i, txt := range names {
+			result[i] = &String{Value: txt}
+		}
+		return &Array{Elements: result}
+	}
+	if method == "type" {
+		return &String{Value: "function"}
+	}
 	return nil
 }

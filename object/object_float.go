@@ -45,7 +45,7 @@ func (f *Float) HashKey() HashKey {
 // (Built-in methods only.)
 func (f *Float) InvokeMethod(method string, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"methods", "string"}
+		names := []string{"methods", "string", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -55,6 +55,9 @@ func (f *Float) InvokeMethod(method string, args ...Object) Object {
 	}
 	if method == "string" {
 		return &String{Value: f.Inspect()}
+	}
+	if method == "type" {
+		return &String{Value: "float"}
 	}
 	return nil
 }

@@ -272,12 +272,12 @@ It is also possible to define a function without the use of `let`, via the `func
     function hello() { puts "Hello, world\n" ; };
     hello();   // Outputs: Hello, world" to the console.
 
-You may specify a default value for arguments which are not specified,
-for example:
+You may specify a default value for arguments which are not provided, for example:
 
     let foo = fn( name = "World!") {
       puts( "Hello, " + name + "\n" );
     };
+
     foo();
     foo( "Steve" );
 
@@ -399,6 +399,65 @@ If a match fails NULL will be returned, otherwise a hash containing any
 capture groups in the match.
 
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
+
+
+# 3. Object Methods
+
+There is now support for "object-methods".  Object methods are methods
+which are defined against a _type_.  For example all of our primitive
+types allow a `methods()` method, which returns the methods which are
+available against them.
+
+Similarly each of them implement a `type()` function which returns the
+type involved:
+
+    let i = 1;
+    puts( i.type() );
+
+    let s = "Steve";
+    puts( s.type() );
+
+Or even:
+
+    puts( "Steve".type() );
+
+Seeing methods available works as you would expect:
+
+    a = [ "Array", "Is", "Here" ];
+
+    let i = 0;
+    for ( i < len(a.methods() ) ) {
+       puts( "Method " + a.methods()[i] + "\n" );
+       i++;
+    }
+
+This shows:
+
+    Method find
+    Method len
+    Method methods
+    Method string
+
+The `string` object has the most methods at the time of writing, but
+no doubt things will change over time.
+
+
+## 3.1 Object Method Limitations
+
+Object-methods are currently implemented in Go, and the user cannot
+add new ones.  This is something I'm pondering how to change.
+
+It might be possible to allow new methods to be implemented in the
+future via a specialised method:
+
+    class string {
+
+        function foo() {
+            puts( "Called with a string : " + this + "\n" );
+        }
+    };
+
+If something like that were implemented then `"input".foo()` would work.
 
 
 Steve

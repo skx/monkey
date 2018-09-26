@@ -75,5 +75,8 @@ func (ao *Array) InvokeMethod(method string, args ...Object) Object {
 	if method == "string" {
 		return &String{Value: ao.Inspect()}
 	}
+	if method == "type" {
+		return &String{Value: "array"}
+	}
 	return nil
 }

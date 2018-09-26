@@ -46,7 +46,7 @@ func (b *Boolean) HashKey() HashKey {
 // (Built-in methods only.)
 func (b *Boolean) InvokeMethod(method string, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"methods", "string"}
+		names := []string{"methods", "string", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -56,6 +56,9 @@ func (b *Boolean) InvokeMethod(method string, args ...Object) Object {
 	}
 	if method == "string" {
 		return &String{Value: b.Inspect()}
+	}
+	if method == "type" {
+		return &String{Value: "bool"}
 	}
 	return nil
 }

@@ -66,7 +66,7 @@ func (h *Hash) Inspect() string {
 // (Built-in methods only.)
 func (h *Hash) InvokeMethod(method string, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"keys", "methods", "string"}
+		names := []string{"keys", "methods", "string", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -89,6 +89,9 @@ func (h *Hash) InvokeMethod(method string, args ...Object) Object {
 	}
 	if method == "string" {
 		return &String{Value: h.Inspect()}
+	}
+	if method == "type" {
+		return &String{Value: "hash"}
 	}
 	return nil
 }
