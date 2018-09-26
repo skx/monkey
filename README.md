@@ -22,6 +22,7 @@ The interpreter in _this_ repository has been further extended:
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added the `<=` + `>=` comparison functions.
+* Allow string comparisons via `==` and `!=`.
 * Allow assignments without `let`.
     * This also allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
 * Added command-line handling, so that scripts can read their own arguments.
