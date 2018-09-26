@@ -7,6 +7,7 @@ matrix:
   - go: tip
 script:
 - ".travis/build-all"
+- ".travis/test"
 deploy:
   provider: releases
   api_key:
