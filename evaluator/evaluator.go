@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/skx/monkey/ast"
 	"github.com/skx/monkey/object"
@@ -862,6 +863,49 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		ret := obj.InvokeMethod(method.Function.String(), args...)
 		if ret != nil {
 			return ret
+		}
+
+		//
+		// We have an object, which has a type.
+		//
+		// For example we might be handling the case of
+		//
+		//  "steve".len();
+		//
+		// So we want to look for the method "string.len"
+		//
+		// Or we might have:
+		//
+		//   let a = [ 1, 2, 3 ];
+		//   puts( a.foo() );
+		//
+		// In that case we'd be looking for the method "array.foo".
+		//
+		//
+		fmt.Printf("type: %s\n", obj.Type())
+		name := strings.ToLower(string(obj.Type())) + "." + method.Function.String()
+		// Try to lookup the function in our environment.
+		if fn, ok := env.Get(name); ok {
+
+			// If we found it yay!
+			fmt.Printf("Found monkey-defined function %s\n", name)
+
+			//
+			// At this point we need to fuck with args, to ensure
+			// that "this" is the object itself, and return the
+			// value.
+			//
+			extendEnv := extendFunctionEnv(fn.(*object.Function), args)
+
+			//
+			// Set the "self" parameter to be the object
+			// that is being evaluated against.
+			//
+			extendEnv.Set("self", obj)
+			evaluated := Eval(fn.(*object.Function).Body, extendEnv)
+
+			obj = upwrapReturnValue(evaluated)
+			return obj
 		}
 	}
 
