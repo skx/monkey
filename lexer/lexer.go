@@ -55,6 +55,19 @@ func (l *Lexer) NextToken() token.Token {
 	}
 
 	switch l.ch {
+	case rune('&'):
+		if l.peekChar() == rune('&') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.AND, Literal: string(ch) + string(l.ch)}
+		}
+	case rune('|'):
+		if l.peekChar() == rune('|') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.OR, Literal: string(ch) + string(l.ch)}
+		}
+
 	case rune('='):
 		tok = newToken(token.ASSIGN, l.ch)
 		if l.peekChar() == rune('=') {

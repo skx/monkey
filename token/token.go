@@ -20,6 +20,8 @@ const (
 	PLUS            = "+"
 	PLUS_PLUS       = "++"
 	PLUS_EQUALS     = "+="
+	AND             = "&&"
+	OR              = "||"
 	MOD             = "%"
 	COMMA           = ","
 	BACKTICK        = "`"

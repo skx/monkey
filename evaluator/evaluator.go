@@ -261,6 +261,11 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return evalIntegerFloatInfixExpression(operator, left, right)
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
+	case operator == "&&":
+		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
+	case operator == "||":
+		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
+
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
@@ -951,4 +956,40 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 	// So we've got no choice but to return an error.
 	//
 	return newError("Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
+}
+
+func objectToNativeBoolean(o object.Object) bool {
+	if r, ok := o.(*object.ReturnValue); ok {
+		o = r.Value
+	}
+	switch obj := o.(type) {
+	case *object.Boolean:
+		return obj.Value
+	case *object.String:
+		return obj.Value != ""
+	case *object.Null:
+		return false
+	case *object.Integer:
+		if obj.Value == 0 {
+			return false
+		}
+		return true
+	case *object.Float:
+		if obj.Value == 0.0 {
+			return false
+		}
+		return true
+	case *object.Array:
+		if len(obj.Elements) == 0 {
+			return false
+		}
+		return true
+	case *object.Hash:
+		if len(obj.Pairs) == 0 {
+			return false
+		}
+		return true
+	default:
+		return true
+	}
 }
