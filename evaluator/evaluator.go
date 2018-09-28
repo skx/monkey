@@ -859,6 +859,14 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 
 	obj := Eval(call.Object, env)
 	if method, ok := call.Call.(*ast.CallExpression); ok {
+
+		//
+		// Here we try to invoke the object.method() call which has
+		// been implemented in go.
+		//
+		// We do this by forwarding the call to the appropriate
+		// `invokeMethod` interface on the object.
+		//
 		args := evalExpression(call.Call.(*ast.CallExpression).Arguments, env)
 		ret := obj.InvokeMethod(method.Function.String(), args...)
 		if ret != nil {
@@ -866,48 +874,77 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		}
 
 		//
-		// We have an object, which has a type.
+		// If we reach this point then the invokation didn't
+		// succeed, that probably means that the function wasn't
+		// implemented in go.
 		//
-		// For example we might be handling the case of
+		// So now we want to look for it in monkey, and we have
+		// enough details to find the appropriate function.
+		//
+		//  * We have the object involved.
+		//
+		//  * We have the type of that object.
+		//
+		//  * We have the name of the function.
+		//
+		//  * We have the arguments.
+		//
+		// We'll use the type + name to lookup the (global) function
+		// to invoke.  For example in this case we'll invoke
+		// `string.len()` - because the type of the object we're
+		// invoking-against is string:
 		//
 		//  "steve".len();
 		//
-		// So we want to look for the method "string.len"
-		//
-		// Or we might have:
+		// For this case we'll be looking for `array.foo()`.
 		//
 		//   let a = [ 1, 2, 3 ];
 		//   puts( a.foo() );
 		//
-		// In that case we'd be looking for the method "array.foo".
+
 		//
+		// Get the name of the function:
 		//
-		fmt.Printf("type: %s\n", obj.Type())
+		//   lower-case the type
+		//  +
+		//   .
+		//  +
+		//   method-name
+		//
 		name := strings.ToLower(string(obj.Type())) + "." + method.Function.String()
-		// Try to lookup the function in our environment.
+
+		//
+		// Try to find that function in our environment.
+		//
 		if fn, ok := env.Get(name); ok {
 
-			// If we found it yay!
-			fmt.Printf("Found monkey-defined function %s\n", name)
-
 			//
-			// At this point we need to fuck with args, to ensure
-			// that "this" is the object itself, and return the
-			// value.
+			// Extend our environment with the functional-args.
 			//
 			extendEnv := extendFunctionEnv(fn.(*object.Function), args)
 
 			//
-			// Set the "self" parameter to be the object
-			// that is being evaluated against.
+			// Now set "self" to be the implicit object, against
+			// which the function-call will be operating.
 			//
 			extendEnv.Set("self", obj)
-			evaluated := Eval(fn.(*object.Function).Body, extendEnv)
 
+			//
+			// Finally invoke & return.
+			//
+			evaluated := Eval(fn.(*object.Function).Body, extendEnv)
 			obj = upwrapReturnValue(evaluated)
 			return obj
 		}
 	}
 
+	//
+	// If we hit this point we have had a method invoked which
+	// was neither defined in go nor monkey.
+	//
+	// e.g. "steve".md5sum()
+	//
+	// So we've got no choice but to return an error.
+	//
 	return newError("Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
 }
