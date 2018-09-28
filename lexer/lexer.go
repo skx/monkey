@@ -203,6 +203,28 @@ func newToken(tokenType token.TokenType, ch rune) token.Token {
 // So we have a horrid implementation..
 func (l *Lexer) readIdentifier() string {
 
+	//
+	// Functions which are permitted to have dots in their name.
+	//
+	valid := map[string]bool{
+		"directory.glob":     true,
+		"file.close":         true,
+		"file.lines":         true,
+		"file.open":          true,
+		"math.abs":           true,
+		"math.random":        true,
+		"math.sqrt":          true,
+		"os.environment":     true,
+		"os.getenv":          true,
+		"os.setenv":          true,
+		"string.interpolate": true,
+		"string.reverse":     true,
+		"string.split":       true,
+		"string.tolower":     true,
+		"string.toupper":     true,
+		"string.trim":        true,
+	}
+
 	id := ""
 
 	//
@@ -233,11 +255,7 @@ func (l *Lexer) readIdentifier() string {
 	//
 	if strings.Contains(id, ".") {
 
-		if !strings.HasPrefix(id, "directory.") &&
-			!strings.HasPrefix(id, "file.") &&
-			!strings.HasPrefix(id, "math.") &&
-			!strings.HasPrefix(id, "os.") &&
-			!strings.HasPrefix(id, "string.") {
+		if !valid[id] {
 
 			//
 			// OK first of all we truncate our identifier
