@@ -117,6 +117,8 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1<1", false},
 		{"1>1", false},
 		{"1==1", true},
+		{"\"a\">=\"A\"", true},
+		{"\"a\"<=\"A\"", false},
 		{"\"steve\"==\"steve\"", true},
 		{"\"steve\"!=\"Steve\"", true},
 		{"\"steve\"==\"kemp\"", false},

@@ -444,6 +444,10 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 		return nativeBoolToBooleanObject(l.Value == r.Value)
 	case "!=":
 		return nativeBoolToBooleanObject(l.Value != r.Value)
+	case ">=":
+		return nativeBoolToBooleanObject(strings.Compare(l.Value, r.Value) == 1)
+	case "<=":
+		return nativeBoolToBooleanObject(strings.Compare(l.Value, r.Value) == -1)
 	case "+":
 		return &object.String{Value: l.Value + r.Value}
 	case "+=":
