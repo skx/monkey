@@ -442,22 +442,26 @@ The `string` object has the most methods at the time of writing, but
 no doubt things will change over time.
 
 
-## 3.1 Object Method Limitations
+## 3.1 Defininig New Object Methods
 
-Object-methods are currently implemented in Go, and the user cannot
-add new ones.  This is something I'm pondering how to change.
+The object-methods mentioned above are implemented in Go, however it is also
+possible to define such methods in 100% monkey!
 
-It might be possible to allow new methods to be implemented in the
-future via a specialised method:
+You can define a method something like:
 
-    class string {
+    function string.steve() {
+       puts( "Hello, I received '", self, "' as an argument\n" );
+    }
 
-        function foo() {
-            puts( "Called with a string : " + this + "\n" );
-        }
-    };
+Note that the function has access to the object it was invoked upon via the
+implicit `self` name.  Invocation would look as you expect:
 
-If something like that were implemented then `"input".foo()` would work.
+    let s = "Hello, world";
+    s.steve();   -> Hello, I received 'Hello, world' as an argument
+
+You can see [data/stdlib.mon](data/stdlib.mon) implements some primitives
+in this fashion, for example the functional-programming methods `array.map`,
+`array.filter`, etc.
 
 
 Steve

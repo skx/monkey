@@ -225,6 +225,15 @@ func (l *Lexer) readIdentifier() string {
 		"string.trim":        true,
 	}
 
+	//
+	// Types which will have valid methods.
+	//
+	types := []string{"string.",
+		"array.",
+		"integer.",
+		"float.",
+		"hash."}
+
 	id := ""
 
 	//
@@ -248,14 +257,33 @@ func (l *Lexer) readIdentifier() string {
 	//
 	// Now we to see if our identifier had a period inside it.
 	//
-	// If it does we stop early, and reset our lexer-state to
-	// the position just ahead of the period UNLESS we found
-	// a period in a function that is "probably" part of our
-	// standard-library.
-	//
 	if strings.Contains(id, ".") {
 
-		if !valid[id] {
+		// Is it a known-good function?
+		ok := valid[id]
+
+		// If not see if it has a type-prefix, which will
+		// let the definition succeed.
+		if ok == false {
+			for _, i := range types {
+				if strings.HasPrefix(id, i) {
+					ok = true
+				}
+			}
+		}
+
+		//
+		// Not permitted?  Then we abort.
+		//
+		// We reset our lexer-state to the position just ahead
+		// of the period.  This will then lead to a syntax
+		// error.
+		//
+		// Which probably means our lexer should abort instead.
+		//
+		// For the moment we'll leave as-is.
+		//
+		if !ok {
 
 			//
 			// OK first of all we truncate our identifier

@@ -73,3 +73,42 @@ function last( array ) {
 
   // `return null` is implicit here.
 }
+
+
+
+//
+// Call the given function on each entry, and return an array of the
+// items for which the predicate returned true.
+//
+function array.filter( this, predicate ) {
+   let i = 0;
+   let result = [];
+
+   for( i < len(this) ) {
+      let entry = this[i];
+      if (predicate(entry)) {
+         let result = push( result, entry );
+      }
+      i++;
+   }
+
+   return result;
+}
+
+
+//
+// Return an array containing the result of applying
+// the given function to each element in the supplied list.
+//
+function array.map( this, fnc ) {
+   let i = 0;
+   let result = [];
+
+   for( i < len(this) ) {
+      let tmp = fnc(this[i]);
+      let result = push( result, tmp);
+      i++;
+   }
+
+   return result;
+}
