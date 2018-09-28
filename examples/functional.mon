@@ -54,48 +54,9 @@ function prime?(n) {
 //
 function square(n) { return n * n ; }
 
-
 //
-// Call the given function on each entry, and return an array of the
-// items for which the predicate returned true.
-//
-function filter( array, predicate ) {
-   let i = 0;
-   let result = [];
-
-   for( i < len(array) ) {
-      let entry = array[i];
-      if (predicate(entry)) {
-         let result = push( result, entry );
-      }
-      i++;
-   }
-
-   return result;
-}
-
-
-//
-// Return an array containing the result of applying
-// the given function to each element in the supplied list.
-//
-function map( array, fnc ) {
-   let i = 0;
-   let result = [];
-
-   for( i < len(array) ) {
-      let tmp = fnc(array[i]);
-      let result = push( result, tmp);
-      i++;
-   }
-
-   return result;
-}
-
-
-
-
 // The list of numbers we'll operate upon.
+//
 let ints = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
              11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ];
 
@@ -107,23 +68,23 @@ puts( "\t", ints, "\n" );
 // Show their squares ..
 //
 puts( "\nSquares:\n" );
-puts( "\t", map(ints, square), "\n");
+puts( "\t", array.map(ints, square), "\n");
 
 //
 // Show their cubes, using an anonymous function
 //
 puts( "\nCubes:\n" );
-puts( "\t", map(ints, fn(n) { return n * n * n; }), "\n");
+puts( "\t", array.map(ints, fn(n) { return n * n * n; }), "\n");
 puts( "\nCubes via POW:\n" );
-puts( "\t", map(ints, fn(n) { return n ** 3; }), "\n");
+puts( "\t", array.map(ints, fn(n) { return n ** 3; }), "\n");
 
 //
 // Now use our functional-methods to show odd/even/prime
 // numbers contained in our list.
 //
 puts( "\nOdd numbers:\n" );
-puts( "\t", filter(ints, odd?), "\n");
+puts( "\t", array.filter(ints, odd?), "\n");
 puts( "\nEven numbers:\n" );
-puts( "\t", filter(ints, even?), "\n");
+puts( "\t", array.filter(ints, even?), "\n");
 puts( "\nPrime numbers:\n" );
-puts( "\t", filter(ints, prime?), "\n");
+puts( "\t", array.filter(ints, prime?), "\n");
