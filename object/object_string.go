@@ -119,10 +119,6 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		return &Array{Elements: result}
 
 	}
-	if method == "trim" {
-		// TODO: ltrim, rtrim
-		return &String{Value: strings.TrimSpace(s.Value)}
-	}
 	if method == "type" {
 		return &String{Value: "string"}
 	}

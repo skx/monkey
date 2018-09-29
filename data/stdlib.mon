@@ -136,6 +136,45 @@ function array.map( fnc ) {
 
 
 //
+// Remove leading whitespace from the string.
+//
+function string.ltrim() {
+   let reg = "^(\\s+)(.*)$";
+   let out = match(reg, self);
+
+   if ( out ) {
+      return( out[1]) ;
+   } else {
+      return self;
+   }
+}
+
+
+//
+// Remove trailing whitespace from the string.
+//
+function string.rtrim() {
+   let reg = "^(.*?)(\\s*)$";
+   let out = match(reg, self);
+
+   if ( out ) {
+      return( out[0]) ;
+   } else {
+      return self;
+   }
+}
+
+
+//
+// Trim leading & trailing whitespace from the given string.
+//
+function string.trim() {
+   let l = self.ltrim();
+   return( l.rtrim() );
+}
+
+
+//
 // Convert the given string to lower-case.
 //
 function string.tolower() {
@@ -156,7 +195,7 @@ function string.tolower() {
       r += c;
    }
 
-return r;
+   return r;
 }
 
 //
@@ -180,5 +219,5 @@ function string.toupper() {
       r += c;
    }
 
-return r;
+   return r;
 }
