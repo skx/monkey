@@ -68,7 +68,7 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		names := []string{"count", "find", "len", "methods", "replace", "reverse", "split", "type"}
+		names := []string{"count", "find", "len", "methods", "replace", "split", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
@@ -87,15 +87,6 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		oldS := args[0].Inspect()
 		newS := args[1].Inspect()
 		return &String{Value: strings.Replace(s.Value, oldS, newS, -1)}
-	}
-	if method == "reverse" {
-		out := make([]rune, utf8.RuneCountInString(s.Value))
-		i := len(out)
-		for _, c := range s.Value {
-			i--
-			out[i] = c
-		}
-		return &String{Value: string(out)}
 	}
 	if method == "split" {
 

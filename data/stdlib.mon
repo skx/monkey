@@ -151,6 +151,21 @@ function string.ltrim() {
 
 
 //
+// Reverse a string,
+//
+function string.reverse() {
+  let r= "";
+  let l = len(self);
+
+  for( l > 0 ) {
+     r += self[l-1];
+     l--;
+  }
+  return r;
+}
+
+
+//
 // Remove trailing whitespace from the string.
 //
 function string.rtrim() {
