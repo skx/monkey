@@ -68,23 +68,23 @@ puts( "\t", ints, "\n" );
 // Show their squares ..
 //
 puts( "\nSquares:\n" );
-puts( "\t", array.map(ints, square), "\n");
+puts( "\t", ints.map(square), "\n");
 
 //
 // Show their cubes, using an anonymous function
 //
 puts( "\nCubes:\n" );
-puts( "\t", array.map(ints, fn(n) { return n * n * n; }), "\n");
+puts( "\t", ints.map( fn(n) { return n * n * n; }), "\n");
 puts( "\nCubes via POW:\n" );
-puts( "\t", array.map(ints, fn(n) { return n ** 3; }), "\n");
+puts( "\t", ints.map( fn(n) { return n ** 3; }), "\n");
 
 //
 // Now use our functional-methods to show odd/even/prime
 // numbers contained in our list.
 //
 puts( "\nOdd numbers:\n" );
-puts( "\t", array.filter(ints, odd?), "\n");
+puts( "\t", ints.filter(odd?), "\n");
 puts( "\nEven numbers:\n" );
-puts( "\t", array.filter(ints, even?), "\n");
+puts( "\t", ints.filter( even?), "\n");
 puts( "\nPrime numbers:\n" );
-puts( "\t", array.filter(ints, prime?), "\n");
+puts( "\t", ints.filter( prime?), "\n");

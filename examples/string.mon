@@ -1,15 +1,25 @@
 //
-// Showcase the stdlib string-functions
+// Showcase some of our string-functions.
 //
 
 
-puts( string.toupper( "Steve Kemp" ), "\n" )
-puts( string.tolower( "Steve Kemp" ), "\n" )
-puts( string.trim( "  This should have no leading/trailing spaces. \t" ), "\n" )
+let input = "  Steve Kemp  ";
 
+puts( "Input: '", input, "'\n" );
+
+// Case-conversion
+puts( "Upper: '", input.toupper(), "'\n");
+puts( "Lower: '", input.tolower(), "'\n");
+
+// Removing whitespace
+puts( "ltrim: '", input.ltrim(), "'\n");
+puts( "rtrim: '", input.rtrim(), "'\n");
+puts( "trim: '",  input.trim(), "'\n");
+
+// Reversing
 let str = "The quick brown 狐 jumped over the lazy 犬";
-puts( "String  : " + str + "\n" );
-puts( "Reversed: " + string.reverse(str) + "\n" );
+puts( "String  : '" + str + "'\n" );
+puts( "Reversed: '" + str.reverse() + "'\n" );
 
-
-puts( "We allow escaping quotes, like so: \"\n" );
+// Escapes are good.
+puts( "We also allow escaping quotes, like so: \"\n" );

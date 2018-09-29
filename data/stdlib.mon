@@ -14,7 +14,6 @@
 // If you don't already have `implant` installed fetch it like so:
 //
 //     go get -u  github.com/skx/implant/
-//     go install github.com/skx/implant/
 //
 // Now regenerate the embedded version of this file and rebuild the
 // interpreter with your changes:
@@ -80,12 +79,13 @@ function last( array ) {
 // Call the given function on each entry, and return an array of the
 // items for which the predicate returned true.
 //
-function array.filter( this, predicate ) {
+function array.filter( predicate ) {
    let i = 0;
+   let l = len(self);
    let result = [];
 
-   for( i < len(this) ) {
-      let entry = this[i];
+   for( i < l ) {
+      let entry = self[i];
       if (predicate(entry)) {
          let result = push( result, entry );
       }
@@ -95,20 +95,143 @@ function array.filter( this, predicate ) {
    return result;
 }
 
+//
+// Return the offset, if any, of the item in the array.
+//
+function array.find(item) {
+   let i = 0;
+   let l = len(self);
+
+   for( i < l ) {
+     if ( self[i] == item ) {
+       return i;
+     }
+     i++;
+   }
+
+   // not found.
+   return -1;
+};
+
 
 //
 // Return an array containing the result of applying
 // the given function to each element in the supplied list.
 //
-function array.map( this, fnc ) {
+function array.map( fnc ) {
    let i = 0;
+   let l = len(self);
    let result = [];
 
-   for( i < len(this) ) {
-      let tmp = fnc(this[i]);
+   for( i < l ) {
+      let tmp = fnc(self[i]);
       let result = push( result, tmp);
       i++;
    }
 
    return result;
+}
+
+
+
+//
+// Remove leading whitespace from the string.
+//
+function string.ltrim() {
+   let reg = "^(\\s+)(.*)$";
+   let out = match(reg, self);
+
+   if ( out ) {
+      return( out[1]) ;
+   } else {
+      return self;
+   }
+}
+
+
+//
+// Reverse a string,
+//
+function string.reverse() {
+  let r= "";
+  let l = len(self);
+
+  for( l > 0 ) {
+     r += self[l-1];
+     l--;
+  }
+  return r;
+}
+
+
+//
+// Remove trailing whitespace from the string.
+//
+function string.rtrim() {
+   let reg = "^(.*?)(\\s*)$";
+   let out = match(reg, self);
+
+   if ( out ) {
+      return( out[0]) ;
+   } else {
+      return self;
+   }
+}
+
+
+//
+// Trim leading & trailing whitespace from the given string.
+//
+function string.trim() {
+   let l = self.ltrim();
+   return( l.rtrim() );
+}
+
+
+//
+// Convert the given string to lower-case.
+//
+function string.tolower() {
+   let i = 0;
+   let l = len(self);
+   let r = "";
+
+   for( i < l ) {
+      let c = self[i];
+
+      if ( c >= "A" && c <= "Z" ) {
+           let c = c.ord();
+           c += 32;
+           c = c.chr();
+      }
+      i++;
+
+      r += c;
+   }
+
+   return r;
+}
+
+//
+// Convert the given string to upper-case.
+//
+function string.toupper() {
+   let i = 0;
+   let l = len(self);
+   let r = "";
+
+   for( i < l ) {
+      let c = self[i];
+
+      if ( c >= "a" && c <= "z" ) {
+           let c = c.ord();
+           c -= 32;
+           c = c.chr();
+      }
+      i++;
+
+      r += c;
+   }
+
+   return r;
 }

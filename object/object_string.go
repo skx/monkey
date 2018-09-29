@@ -68,13 +68,16 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		names := []string{"count", "find", "len", "methods", "replace", "reverse", "split", "toupper", "tolower", "type"}
+		names := []string{"count", "find", "len", "methods", "replace", "split", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
+	}
+	if method == "ord" {
+		return &Integer{Value: int64(s.Value[0])}
 	}
 	if method == "replace" {
 		if len(args) < 2 {
@@ -84,15 +87,6 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		oldS := args[0].Inspect()
 		newS := args[1].Inspect()
 		return &String{Value: strings.Replace(s.Value, oldS, newS, -1)}
-	}
-	if method == "reverse" {
-		out := make([]rune, utf8.RuneCountInString(s.Value))
-		i := len(out)
-		for _, c := range s.Value {
-			i--
-			out[i] = c
-		}
-		return &String{Value: string(out)}
 	}
 	if method == "split" {
 
@@ -115,16 +109,6 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		}
 		return &Array{Elements: result}
 
-	}
-	if method == "trim" {
-		// TODO: ltrim, rtrim
-		return &String{Value: strings.TrimSpace(s.Value)}
-	}
-	if method == "tolower" {
-		return &String{Value: strings.ToLower(s.Value)}
-	}
-	if method == "toupper" {
-		return &String{Value: strings.ToUpper(s.Value)}
 	}
 	if method == "type" {
 		return &String{Value: "string"}
