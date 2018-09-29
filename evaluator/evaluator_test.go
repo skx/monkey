@@ -635,16 +635,6 @@ func TestStringMethods(t *testing.T) {
 		{`"string".find("tr")`, 1},
 		{`"string".find("ng")`, 4},
 		{`"string".find("x")`, -1},
-		{`"ab".reverse()`, "ba"},
-		{`"abc".toupper()`, "ABC"},
-		{`"a b c".toupper()`, "A B C"},
-		{`"a%b!c".toupper()`, "A%B!C"},
-		{`"ABC".tolower()`, "abc"},
-		{`"A B C".tolower()`, "a b c"},
-		{`"A%B!C".tolower()`, "a%b!c"},
-		{`"     ".trim()`, ""},
-		{`"
-                       string".trim()`, "string"},
 		{`"abc".replace("a", "A")`, "Abc"},
 		{`"These are the days of summer".count("e")`, 5},
 	}
