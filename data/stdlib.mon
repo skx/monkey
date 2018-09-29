@@ -14,7 +14,6 @@
 // If you don't already have `implant` installed fetch it like so:
 //
 //     go get -u  github.com/skx/implant/
-//     go install github.com/skx/implant/
 //
 // Now regenerate the embedded version of this file and rebuild the
 // interpreter with your changes:
