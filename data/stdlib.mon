@@ -80,12 +80,13 @@ function last( array ) {
 // Call the given function on each entry, and return an array of the
 // items for which the predicate returned true.
 //
-function array.filter( this, predicate ) {
+function array.filter( predicate ) {
    let i = 0;
+   let l = len(self);
    let result = [];
 
-   for( i < len(this) ) {
-      let entry = this[i];
+   for( i < l ) {
+      let entry = self[i];
       if (predicate(entry)) {
          let result = push( result, entry );
       }
@@ -95,17 +96,36 @@ function array.filter( this, predicate ) {
    return result;
 }
 
+//
+// Return the offset, if any, of the item in the array.
+//
+function array.find(item) {
+   let i = 0;
+   let l = len(self);
+
+   for( i < l ) {
+     if ( self[i] == item ) {
+       return i;
+     }
+     i++;
+   }
+
+   // not found.
+   return -1;
+};
+
 
 //
 // Return an array containing the result of applying
 // the given function to each element in the supplied list.
 //
-function array.map( this, fnc ) {
+function array.map( fnc ) {
    let i = 0;
+   let l = len(self);
    let result = [];
 
-   for( i < len(this) ) {
-      let tmp = fnc(this[i]);
+   for( i < l ) {
+      let tmp = fnc(self[i]);
       let result = push( result, tmp);
       i++;
    }
