@@ -76,6 +76,17 @@ function last( array ) {
 
 
 //
+// Is the given array empty?
+//
+function array.empty?() {
+   if ( len(self) == 0 ) {
+      return true;
+   }
+   return false;
+}
+
+
+//
 // Call the given function on each entry, and return an array of the
 // items for which the predicate returned true.
 //
@@ -132,6 +143,16 @@ function array.map( fnc ) {
    return result;
 }
 
+
+//
+// Is the given hash empty?
+//
+function hash.empty?() {
+   if ( len(self.keys()) == 0 ) {
+      return true;
+   }
+   return false;
+}
 
 
 //
