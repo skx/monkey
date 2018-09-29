@@ -22,7 +22,10 @@ The interpreter in _this_ repository has been further extended:
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
 * Added the `<=` + `>=` comparison functions.
-* Allow string comparisons via `==` and `!=`.
+* Allow string comparisons via `==` and `!=`, `<=`, & `>=`.
+* Allow comparisions to be complex:
+  * `if ( a && b ) ..`
+  * `if ( a || b ) ..`
 * Allow assignments without `let`.
     * This also allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
 * Added command-line handling, so that scripts can read their own arguments.
@@ -32,8 +35,10 @@ The interpreter in _this_ repository has been further extended:
     * To correct/detect "obvious" errors add `pragma("strict");` to your script, which will cause the interpreter to show a suitable error-message and terminate.
 * Function arguments may have defaults.  For example:
   * `function greet( name = "World" ) { puts("Hello, " + name + "\n"); }`
-* Moved some of the standard-library to 100% pure monkey, rather than implementing it in go.
+* Moved parts of the standard-library to 100% pure monkey, rather than implementing it in go.
   * See [data/stdlib.mon](data/stdlib.mon) for the implementation.
+  * See also the notes on [object-based methods](#31-defininig-new-object-methods).
+
 
 
 ## 1. Installation
@@ -41,7 +46,6 @@ The interpreter in _this_ repository has been further extended:
 If you have a working [golang](https://golang.org/) setup you can install the interpreter via:
 
     $ go get -u  github.com/skx/monkey
-    $ go install github.com/skx/monkey
 
 Alternatively you could install a binary-release, from the [release page](https://github.com/skx/monkey/releases).
 
@@ -177,7 +181,7 @@ Updating a hash is done via the `set` function, but note that this returns
 an updated hash - rather than changing in-place:
 
     let b = set(a, 8, "eight");
-    puts( b);  // Outputs: {name: monkey, true: 1, 7: seven, 8: eight}
+    puts(b);  // Outputs: {name: monkey, true: 1, 7: seven, 8: eight}
 
 You can iterate over the keys in a hash via the `keys` function, or delete
 keys via `delete` (again these functions returns an updated value rather than
@@ -245,7 +249,6 @@ need to rebuild `static.go` after editing `stdlib.mon`.  To do this use the
 If you don't already have `implant` installed fetch it like so:
 
      go get -u  github.com/skx/implant/
-     go install github.com/skx/implant/
 
 Now regenerate the embedded version of the standard-library and rebuild the
 binary to make your changes:
@@ -381,8 +384,8 @@ operator (`\``).
       let uptime = `/usr/bin/uptime`;
 
       if ( uptime ) {
-          puts( "STDOUT: ", string.trim(uptime["stdout"] ) , "\n");
-          puts( "STDERR: ", string.trim(uptime["stderr"] ) , "\n");
+          puts( "STDOUT: ", uptime["stdout"].trim() , "\n");
+          puts( "STDERR: ", uptime["stderr"].trim() , "\n");
       } else {
           puts( "Failed to run command\n");
       }
@@ -447,7 +450,7 @@ no doubt things will change over time.
 The object-methods mentioned above are implemented in Go, however it is also
 possible to define such methods in 100% monkey!
 
-You can define a method something like:
+You can define a method via something like:
 
     function string.steve() {
        puts( "Hello, I received '", self, "' as an argument\n" );
@@ -461,7 +464,7 @@ implicit `self` name.  Invocation would look as you expect:
 
 You can see [data/stdlib.mon](data/stdlib.mon) implements some primitives
 in this fashion, for example the functional-programming methods `array.map`,
-`array.filter`, etc.
+`array.filter`, `string.toupper`, etc, etc.
 
 
 Steve
