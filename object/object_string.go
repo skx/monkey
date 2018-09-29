@@ -68,13 +68,16 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		names := []string{"count", "find", "len", "methods", "replace", "reverse", "split", "toupper", "tolower", "type"}
+		names := []string{"count", "find", "len", "methods", "replace", "reverse", "split", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
+	}
+	if method == "ord" {
+		return &Integer{Value: int64(s.Value[0])}
 	}
 	if method == "replace" {
 		if len(args) < 2 {
@@ -119,12 +122,6 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 	if method == "trim" {
 		// TODO: ltrim, rtrim
 		return &String{Value: strings.TrimSpace(s.Value)}
-	}
-	if method == "tolower" {
-		return &String{Value: strings.ToLower(s.Value)}
-	}
-	if method == "toupper" {
-		return &String{Value: strings.ToUpper(s.Value)}
 	}
 	if method == "type" {
 		return &String{Value: "string"}

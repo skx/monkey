@@ -132,3 +132,53 @@ function array.map( fnc ) {
 
    return result;
 }
+
+
+
+//
+// Convert the given string to lower-case.
+//
+function string.tolower() {
+   let i = 0;
+   let l = len(self);
+   let r = "";
+
+   for( i < l ) {
+      let c = self[i];
+
+      if ( c >= "A" && c <= "Z" ) {
+           let c = c.ord();
+           c += 32;
+           c = c.chr();
+      }
+      i++;
+
+      r += c;
+   }
+
+return r;
+}
+
+//
+// Convert the given string to upper-case.
+//
+function string.toupper() {
+   let i = 0;
+   let l = len(self);
+   let r = "";
+
+   for( i < l ) {
+      let c = self[i];
+
+      if ( c >= "a" && c <= "z" ) {
+           let c = c.ord();
+           c -= 32;
+           c = c.chr();
+      }
+      i++;
+
+      r += c;
+   }
+
+return r;
+}

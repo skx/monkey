@@ -39,9 +39,11 @@ func (i *Integer) HashKey() HashKey {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (i *Integer) InvokeMethod(method string, args ...Object) Object {
-
+	if method == "chr" {
+		return &String{Value: string(i.Value)}
+	}
 	if method == "methods" {
-		names := []string{"methods", "string", "type"}
+		names := []string{"chr", "methods", "string", "type"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
