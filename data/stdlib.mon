@@ -182,6 +182,30 @@ function array.reverse() {
   return r;
 }
 
+//
+// Sorted returns true if the array is sorted
+//
+function array.sorted?() {
+  let i = 1;
+  let l = len(self);
+
+  // Array of zoer/one element is always sorted.
+  if ( l < 2 ) {
+    return true;
+  }
+
+  // If a later item is smaller than the
+  // earlier item the array is not sorted.
+  for( i < l ) {
+     if ( self[i] < self[i-1]) {
+       return false;
+     }
+    i+= 1;
+  }
+
+  // OK it is good :)
+  return true;
+}
 
 //
 // Is the given hash empty?
