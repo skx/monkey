@@ -203,9 +203,59 @@ function array.sorted?() {
      i++;
   }
 
-  // OK it is good :)
   return true;
 }
+
+
+//
+// Swap the value of two array indexes.
+//
+function array.swap( a, b ) {
+  let aVal = self[b];
+  let bVal = self[a];
+
+  let r = [];
+  let i = 0;
+  let l = len(self);
+
+  for( i < l ) {
+     if ( i == a ) {
+        let r = push(r, aVal);
+     } else {
+        if ( i == b ) {
+           let r = push(r,bVal );
+        } else {
+           let r = push( r, self[i] );
+        }
+     }
+     i++;
+  }
+
+  return r;
+}
+
+
+//
+// Sort the given array.
+//
+function array.sort() {
+  let pass = 0;
+
+  for( ! self.sorted?() ) {
+     let i = 1;
+     let l = len(self);
+     for( i < l ) {
+        if ( self[i] < self[i-1] ) {
+          self = self.swap( i-1, i);
+        }
+        i++;
+     }
+     pass +=1;
+  }
+//  puts( "Sorting took ", pass, " passes ..\n");
+  return self;
+}
+
 
 //
 // Is the given hash empty?
