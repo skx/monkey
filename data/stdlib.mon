@@ -126,6 +126,30 @@ function array.find(item) {
 
 
 //
+// Join the elements of an array by the given string.
+//
+function array.join( char ) {
+   let r = "";
+   let i = 0;
+   let l = len(self);
+
+   // For each entry.
+   for( i < l ) {
+
+     // If the result is non-empty add the separator.
+     if ( len(r) > 0 ) {
+       r+= char;
+     }
+
+     // add on the next element.
+     r += string(self[i])
+     i++;
+   }
+
+   return r;
+}
+
+//
 // Return an array containing the result of applying
 // the given function to each element in the supplied list.
 //
