@@ -460,3 +460,41 @@ a?.b?();
 		}
 	}
 }
+
+// TestIntDotMethod ensures that identifiers are parsed correctly for the
+// case where they immediately follow int/float valies.
+func TestIntDotMethod(t *testing.T) {
+	input := `
+3.foo();
+3.14.bar();
+`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.INT, "3"},
+		{token.PERIOD, "."},
+		{token.IDENT, "foo"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.FLOAT, "3.14"},
+		{token.PERIOD, "."},
+		{token.IDENT, "bar"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt, tok)
+		}
+	}
+}

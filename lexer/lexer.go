@@ -398,22 +398,28 @@ func (l *Lexer) readUntilWhitespace() string {
 
 // read decimal
 func (l *Lexer) readDecimal() token.Token {
+
+	//
+	// Read an integer-number.
+	//
 	integer := l.readNumber()
-	if l.ch == rune('.') {
+
+	//
+	// Now we either expect:
+	//
+	//   .[digits]  -> Which converts us from an int to a float.
+	//
+	//   .blah      -> Which is a method-call on a raw number.
+	//
+	if l.ch == rune('.') && isDigit(l.peekChar()) {
+		//
+		// OK here we think we've got a float.
+		//
 		l.readChar()
 		fraction := l.readNumber()
-		if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
-			return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
-		}
-		illegalPart := l.readUntilWhitespace()
-		return token.Token{Type: token.ILLEGAL, Literal: integer + "." + fraction + illegalPart}
-
-	} else if isEmpty(l.ch) || isWhitespace(l.ch) || isOperator(l.ch) || isComparison(l.ch) || isCompound(l.ch) || isBracket(l.ch) || isBrace(l.ch) || isParen(l.ch) {
-		return token.Token{Type: token.INT, Literal: integer}
-	} else {
-		illegalPart := l.readUntilWhitespace()
-		return token.Token{Type: token.ILLEGAL, Literal: integer + illegalPart}
+		return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
 	}
+	return token.Token{Type: token.INT, Literal: integer}
 }
 
 // read string
