@@ -200,7 +200,7 @@ function array.sorted?() {
      if ( self[i] < self[i-1]) {
        return false;
      }
-    i+= 1;
+     i++;
   }
 
   // OK it is good :)
