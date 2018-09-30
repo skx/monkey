@@ -273,6 +273,17 @@ function array.sort() {
 }
 
 
+
+//
+// Convert a float to an integer.
+//
+// Like Go we discard the value after the period, so 4.9 will become 4.
+//
+function float.to_i() {
+   return( int( self ) );
+}
+
+
 //
 // Is the given hash empty?
 //
@@ -281,6 +292,14 @@ function hash.empty?() {
       return true;
    }
    return false;
+}
+
+
+//
+// Convert an integer to a float.
+//
+function integer.to_f() {
+   return( self + 0.0);
 }
 
 
