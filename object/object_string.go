@@ -3,8 +3,10 @@
 package object
 
 import (
+	"fmt"
 	"hash/fnv"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -121,6 +123,21 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		}
 		return &Array{Elements: result}
 
+	}
+	if method == "to_i" {
+		i, err := strconv.ParseInt(s.Value, 0, 64)
+		if err != nil {
+			fmt.Printf("Error : ", err.Error())
+			i = 0
+		}
+		return &Integer{Value: int64(i)}
+	}
+	if method == "to_f" {
+		i, err := strconv.ParseFloat(s.Value, 64)
+		if err != nil {
+			i = 0
+		}
+		return &Float{Value: i}
 	}
 	if method == "type" {
 		return &String{Value: "string"}

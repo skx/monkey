@@ -383,6 +383,23 @@ function string.tolower() {
 
 
 //
+// Convert a string to a number
+//
+// (Possibly an int, possibly a float)
+//
+function string.to_number() {
+   let reg = "\\.";
+   let out = match(reg, self);
+
+   if ( out ) {
+      return( self.to_f() );
+   } else {
+      return( self.to_i() );
+   }
+}
+
+
+//
 // Convert the given string to upper-case.
 //
 function string.toupper() {
