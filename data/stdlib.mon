@@ -106,8 +106,9 @@ function array.filter( predicate ) {
    return result;
 }
 
+
 //
-// Return the offset, if any, of the item in the array.
+// Return the offset, if any, of the specified item in the array.
 //
 function array.find(item) {
    let i = 0;
@@ -149,9 +150,10 @@ function array.join( char ) {
    return r;
 }
 
+
 //
-// Return an array containing the result of applying
-// the given function to each element in the supplied list.
+// Return an array containing the result of applying the specified
+// function to each element in the array.
 //
 function array.map( fnc ) {
    let i = 0;
@@ -169,7 +171,7 @@ function array.map( fnc ) {
 
 
 //
-// Reverse an array
+// Reverse an array.
 //
 function array.reverse() {
   let r = [];
@@ -182,14 +184,15 @@ function array.reverse() {
   return r;
 }
 
+
 //
-// Sorted returns true if the array is sorted
+// sorted? returns true if the specified array is sorted.
 //
 function array.sorted?() {
   let i = 1;
   let l = len(self);
 
-  // Array of zoer/one element is always sorted.
+  // Array of zero/one element is always sorted.
   if ( l < 2 ) {
     return true;
   }
@@ -209,6 +212,13 @@ function array.sorted?() {
 
 //
 // Swap the value of two array indexes.
+//
+// This is used by our sorting function.  Currently it isn't possible
+// to mutate an array-member in-place.  So we create a new array
+// correctly swapping the values at the given index.
+//
+// This would be easier if we had "elseif" support, or even a case
+// statement.  (Due to the nested if usage here.)
 //
 function array.swap( a, b ) {
   let aVal = self[b];
@@ -238,17 +248,27 @@ function array.swap( a, b ) {
 //
 // Sort the given array.
 //
+// This is grossly inefficient, obviously.
+//
 function array.sort() {
+
+  // While the given array isn't sorted.
   for( ! self.sorted?() ) {
+
+     // make a pass over the array.
      let i = 1;
      let l = len(self);
      for( i < l ) {
+
+        // if this element is wrong swap it.
         if ( self[i] < self[i-1] ) {
           self = self.swap( i-1, i);
         }
         i++;
      }
   }
+
+  // Should be done now.
   return self;
 }
 
@@ -341,6 +361,7 @@ function string.tolower() {
 
    return r;
 }
+
 
 //
 // Convert the given string to upper-case.
