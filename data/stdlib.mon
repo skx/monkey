@@ -239,8 +239,6 @@ function array.swap( a, b ) {
 // Sort the given array.
 //
 function array.sort() {
-  let pass = 0;
-
   for( ! self.sorted?() ) {
      let i = 1;
      let l = len(self);
@@ -250,9 +248,7 @@ function array.sort() {
         }
         i++;
      }
-     pass +=1;
   }
-//  puts( "Sorting took ", pass, " passes ..\n");
   return self;
 }
 
