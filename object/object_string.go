@@ -3,7 +3,6 @@
 package object
 
 import (
-	"fmt"
 	"hash/fnv"
 	"sort"
 	"strconv"
@@ -127,7 +126,6 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 	if method == "to_i" {
 		i, err := strconv.ParseInt(s.Value, 0, 64)
 		if err != nil {
-			fmt.Printf("Error : ", err.Error())
 			i = 0
 		}
 		return &Integer{Value: int64(i)}
