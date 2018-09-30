@@ -315,6 +315,12 @@ func TestMoreHandling(t *testing.T) {
 3 /= 3;
 x */ 3;
 
+let t = true;
+let f = false;
+
+if ( t && f ) { puts( "What?" ); }
+if ( t || f ) { puts( "What?" ); }
+
 let a = 1;
 a++;
 
@@ -370,6 +376,7 @@ string.tolower
 string.trim
 string.reverse
 string.split
+moi.kissa
 `
 
 	tests := []struct {
@@ -392,6 +399,9 @@ string.split
 		{token.IDENT, "string.trim"},
 		{token.IDENT, "string.reverse"},
 		{token.IDENT, "string.split"},
+		{token.IDENT, "moi"},
+		{token.PERIOD, "."},
+		{token.IDENT, "kissa"},
 		{token.EOF, ""},
 	}
 	l := New(input)
