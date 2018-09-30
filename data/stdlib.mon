@@ -169,6 +169,21 @@ function array.map( fnc ) {
 
 
 //
+// Reverse an array
+//
+function array.reverse() {
+  let r = [];
+  let l = len(self);
+
+  for( l > 0 ) {
+     let r = push( r, self[l-1] );
+     l--;
+  }
+  return r;
+}
+
+
+//
 // Is the given hash empty?
 //
 function hash.empty?() {
