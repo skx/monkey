@@ -7,11 +7,12 @@
 
 This repository contains an interpreter for the "Monkey" programming language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
 
-This repository started life as the implementation written by [gaufung](https://github.com/gaufung/Monkey) which extended the code in the book to add a `for` statement.
+This repository started life as the implementation written by [gaufung](https://github.com/gaufung/Monkey), but it has now diverged significantly in terms of both features and implementation.
+
 
 #### My changes
 
-The interpreter in _this_ repository has been further extended:
+The interpreter in _this_ repository has been significantly extended from the starting point:
 
 * Added single-line & multi-line comments.
 * Added postfix operators (`i++`, `i--`).
@@ -21,10 +22,10 @@ The interpreter in _this_ repository has been further extended:
 * Added a collection of standard-library functions.
     * Including file input/output, type-discovery, string, and math functions.
 * Added a new way to define functions, via `function`.
-* Added the `<=` + `>=` comparison functions.
-* Allow string comparisons via `==` and `!=`, `<=`, & `>=`.
+* Added the general-purpose comparision functions `<=` & `>=`.
+* Allow string comparisons via `==`, `!=`, `<=`, & `>=`.
 * Allow comparisions to be complex:
-  * `if ( a && b ) ..`
+  * `if ( a >= 'a' && a <= 'z' ) ..`
   * `if ( a || b ) ..`
 * Allow assignments without `let`.
     * This also allows operators such as "`+=`", "`-=`", "`*=`", & "`/=`" to work.
@@ -71,9 +72,7 @@ Execution then works as you would expect:
      Hello, world!
 
 If no script-name is passed to the interpreter it will read from STDIN and
-execute that instead.  This could be used like so:
-
-     $ echo 'puts("Read from STDIN!\n");' | monkey
+execute that instead, allowing simple tests to be made.
 
 
 # 2 Syntax
