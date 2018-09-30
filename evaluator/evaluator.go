@@ -582,7 +582,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 }
 
 func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {
-	var rt object.Object
+	rt := &object.Boolean{Value: true}
 	for {
 		condition := Eval(fle.Condition, env)
 		if isError(condition) {
