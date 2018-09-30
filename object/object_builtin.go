@@ -34,7 +34,7 @@ func (b *Builtin) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (b *Builtin) InvokeMethod(method string, args ...Object) Object {
+func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
 		names := []string{"methods", "type"}
 

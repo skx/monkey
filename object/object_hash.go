@@ -3,6 +3,7 @@ package object
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -64,9 +65,20 @@ func (h *Hash) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (h *Hash) InvokeMethod(method string, args ...Object) Object {
+func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"keys", "methods", "string", "type"}
+		static := []string{"keys", "methods", "string", "type"}
+		dynamic := env.Names("hash.")
+
+		var names []string
+		for _, e := range static {
+			names = append(names, e)
+		}
+		for _, e := range dynamic {
+			bits := strings.Split(e, ".")
+			names = append(names, bits[1])
+		}
+		sort.Strings(names)
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {

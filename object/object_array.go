@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"sort"
 	"strings"
 )
 
@@ -44,12 +45,23 @@ func (ao *Array) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (ao *Array) InvokeMethod(method string, args ...Object) Object {
+func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "len" {
 		return &Integer{Value: int64(len(ao.Elements))}
 	}
 	if method == "methods" {
-		names := []string{"len", "methods", "string"}
+		static := []string{"len", "methods", "string"}
+		dynamic := env.Names("array.")
+
+		var names []string
+		for _, e := range static {
+			names = append(names, e)
+		}
+		for _, e := range dynamic {
+			bits := strings.Split(e, ".")
+			names = append(names, bits[1])
+		}
+		sort.Strings(names)
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {

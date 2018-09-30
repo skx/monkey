@@ -1,6 +1,10 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
 
 // Integer wraps int64 and implements Object and Hashable interfaces.
 type Integer struct {
@@ -38,12 +42,23 @@ func (i *Integer) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (i *Integer) InvokeMethod(method string, args ...Object) Object {
+func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "chr" {
 		return &String{Value: string(i.Value)}
 	}
 	if method == "methods" {
-		names := []string{"chr", "methods", "string", "type"}
+		static := []string{"chr", "methods", "string", "type"}
+		dynamic := env.Names("integer.")
+
+		var names []string
+		for _, e := range static {
+			names = append(names, e)
+		}
+		for _, e := range dynamic {
+			bits := strings.Split(e, ".")
+			names = append(names, bits[1])
+		}
+		sort.Strings(names)
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {

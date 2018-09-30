@@ -4,6 +4,7 @@ package object
 
 import (
 	"hash/fnv"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -46,7 +47,7 @@ func (s *String) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (s *String) InvokeMethod(method string, args ...Object) Object {
+func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "count" {
 		if len(args) < 1 {
 			return &Error{Message: "Missing argument to count()!"}
@@ -68,7 +69,18 @@ func (s *String) InvokeMethod(method string, args ...Object) Object {
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		names := []string{"count", "find", "len", "methods", "replace", "split", "type"}
+		static := []string{"count", "find", "len", "methods", "ord", "replace", "split", "type"}
+		dynamic := env.Names("string.")
+
+		var names []string
+		for _, e := range static {
+			names = append(names, e)
+		}
+		for _, e := range dynamic {
+			bits := strings.Split(e, ".")
+			names = append(names, bits[1])
+		}
+		sort.Strings(names)
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {

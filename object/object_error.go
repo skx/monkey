@@ -31,7 +31,7 @@ func (e *Error) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (e *Error) InvokeMethod(method string, args ...Object) Object {
+func (e *Error) InvokeMethod(method string, env Environment, args ...Object) Object {
 
 	//
 	// There are no methods available upon a return-object.

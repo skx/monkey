@@ -3,6 +3,7 @@ package object
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Environment stores our functions, variables, constants, etc.
@@ -26,6 +27,19 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()
 	env.outer = outer
 	return env
+}
+
+// Names returns the names of every known-value with the
+// given prefix
+func (e *Environment) Names(prefix string) []string {
+	var ret []string
+
+	for key, _ := range e.store {
+		if strings.HasPrefix(key, prefix) {
+			ret = append(ret, key)
+		}
+	}
+	return ret
 }
 
 // Get returns the value of a given variable, by name.

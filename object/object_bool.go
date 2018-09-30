@@ -1,6 +1,10 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
 
 // Boolean wraps bool and implements Object and Hashable interface.
 type Boolean struct {
@@ -44,9 +48,20 @@ func (b *Boolean) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (b *Boolean) InvokeMethod(method string, args ...Object) Object {
+func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"methods", "string", "type"}
+		static := []string{"methods", "string", "type"}
+		dynamic := env.Names("bool.")
+
+		var names []string
+		for _, e := range static {
+			names = append(names, e)
+		}
+		for _, e := range dynamic {
+			bits := strings.Split(e, ".")
+			names = append(names, bits[1])
+		}
+		sort.Strings(names)
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {

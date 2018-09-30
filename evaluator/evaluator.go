@@ -881,7 +881,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		// `invokeMethod` interface on the object.
 		//
 		args := evalExpression(call.Call.(*ast.CallExpression).Arguments, env)
-		ret := obj.InvokeMethod(method.Function.String(), args...)
+		ret := obj.InvokeMethod(method.Function.String(), *env, args...)
 		if ret != nil {
 			return ret
 		}

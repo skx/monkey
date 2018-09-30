@@ -36,7 +36,7 @@ type Object interface {
 
 	// InvokeMethod invokes a method against the object.
 	// (Built-in methods only.)
-	InvokeMethod(method string, args ...Object) Object
+	InvokeMethod(method string, env Environment, args ...Object) Object
 }
 
 // Hashable type can be hashed
