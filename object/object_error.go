@@ -4,19 +4,6 @@ package object
 type Error struct {
 	// Message contains the error-message we're wrapping
 	Message string
-
-	// Const is true if this object is constant.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (e *Error) SetConstant(val bool) {
-	e.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (e *Error) Constant() bool {
-	return e.Const
 }
 
 // Type returns the type of this object.

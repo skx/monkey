@@ -11,19 +11,6 @@ import (
 type Float struct {
 	// Value holds the float-value this object wraps.
 	Value float64
-
-	// Const determines whether this is a constant value.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (f *Float) SetConstant(val bool) {
-	f.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (f *Float) Constant() bool {
-	return f.Const
 }
 
 // Inspect returns a string-representation of the given object.

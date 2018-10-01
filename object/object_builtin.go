@@ -7,19 +7,6 @@ type BuiltinFunction func(args ...Object) Object
 type Builtin struct {
 	// Value holds the function we wrap.
 	Fn BuiltinFunction
-
-	// Const is true if this object is constant.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (b *Builtin) SetConstant(val bool) {
-	b.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (b *Builtin) Constant() bool {
-	return b.Const
 }
 
 // Type returns the type of this object.

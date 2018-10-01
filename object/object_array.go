@@ -10,19 +10,6 @@ import (
 type Array struct {
 	// Elements holds the individual members of the array we're wrapping.
 	Elements []Object
-
-	// Const is true if this object is constant.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (ao *Array) SetConstant(val bool) {
-	ao.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (ao *Array) Constant() bool {
-	return ao.Const
 }
 
 // Type returns the type of this object.

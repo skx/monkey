@@ -4,19 +4,6 @@ package object
 type ReturnValue struct {
 	// Value is the object that is to be returned
 	Value Object
-
-	// Const is true if this object is constant.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (rv *ReturnValue) SetConstant(val bool) {
-	rv.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (rv *ReturnValue) Constant() bool {
-	return rv.Const
 }
 
 // Type returns the type of this object.

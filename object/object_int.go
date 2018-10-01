@@ -10,19 +10,6 @@ import (
 type Integer struct {
 	// Value holds the integer value this object wraps
 	Value int64
-
-	// Const determines whether this is a constant value
-	Const bool
-}
-
-// Constant returns true if an object is read-only or constant.
-func (i *Integer) Constant() bool {
-	return i.Const
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (i *Integer) SetConstant(val bool) {
-	i.Const = val
 }
 
 // Inspect returns a string-representation of the given object.

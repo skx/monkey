@@ -14,19 +14,6 @@ import (
 type String struct {
 	// Value holds the string value this object wraps.
 	Value string
-
-	// Const determines whether this is a constant value
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (s *String) SetConstant(val bool) {
-	s.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (s *String) Constant() bool {
-	return s.Const
 }
 
 // Type returns the type of this object.

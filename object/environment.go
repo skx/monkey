@@ -11,6 +11,9 @@ type Environment struct {
 	// store holds variables, including functions.
 	store map[string]Object
 
+	// readonly marks names as read-only.
+	readonly map[string]bool
+
 	// outer holds any parent environment.  Our env. allows
 	// nesting to implement scope.
 	outer *Environment
@@ -19,7 +22,8 @@ type Environment struct {
 // NewEnvironment creates new environment
 func NewEnvironment() *Environment {
 	s := make(map[string]Object)
-	return &Environment{store: s, outer: nil}
+	r := make(map[string]bool)
+	return &Environment{store: s, readonly: r, outer: nil}
 }
 
 // NewEnclosedEnvironment create new environment by outer parameter
@@ -30,7 +34,10 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 }
 
 // Names returns the names of every known-value with the
-// given prefix
+// given prefix.
+//
+// This function is used by `invokeMethod` to get the methods
+// associated with a particular class-type.
 func (e *Environment) Names(prefix string) []string {
 	var ret []string
 
@@ -71,7 +78,7 @@ func (e *Environment) Set(name string, val Object) Object {
 	// The variable inside the function _should_ not be constant.
 	//
 	cur := e.store[name]
-	if cur != nil && (cur.Constant()) {
+	if cur != nil && e.readonly[name] {
 		fmt.Printf("Attempting to modify '%s' denied; it was defined as a constant.\n", name)
 		os.Exit(3)
 	}
@@ -89,7 +96,8 @@ func (e *Environment) SetConst(name string, val Object) Object {
 	// store the value
 	e.store[name] = val
 
-	// Mark this as a constant
-	e.store[name].SetConstant(true)
+	// flag as read-only.
+	e.readonly[name] = true
+
 	return val
 }

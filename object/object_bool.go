@@ -10,19 +10,6 @@ import (
 type Boolean struct {
 	// Value holds the boolean value we wrap.
 	Value bool
-
-	// Const determines whether this is a constant value.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (b *Boolean) SetConstant(val bool) {
-	b.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (b *Boolean) Constant() bool {
-	return b.Const
 }
 
 // Type returns the type of this object.

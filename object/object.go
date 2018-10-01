@@ -28,12 +28,6 @@ type Object interface {
 	// Inspect returns a string-representation of the given object.
 	Inspect() string
 
-	// SetConstant allows an object to be marked as read-only, or constant.
-	SetConstant(val bool)
-
-	// Constant returns true if an object is read-only or constant.
-	Constant() bool
-
 	// InvokeMethod invokes a method against the object.
 	// (Built-in methods only.)
 	InvokeMethod(method string, env Environment, args ...Object) Object

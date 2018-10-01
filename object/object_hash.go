@@ -29,19 +29,6 @@ type HashPair struct {
 type Hash struct {
 	// Pairs holds the key/value pairs of the hash we wrap
 	Pairs map[HashKey]HashPair
-
-	// Const determines whether this is a constant value.
-	Const bool
-}
-
-// SetConstant allows an object to be marked as read-only, or constant.
-func (h *Hash) SetConstant(val bool) {
-	h.Const = val
-}
-
-// Constant returns true if an object is read-only or constant.
-func (h *Hash) Constant() bool {
-	return h.Const
 }
 
 // Type returns the type of this object.
