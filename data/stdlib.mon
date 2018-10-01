@@ -317,6 +317,19 @@ function string.ltrim() {
    }
 }
 
+//
+// Repeat a string N times.
+//
+function string.repeat(count) {
+  let r= "";
+
+  for( count > 0 ) {
+     r += self;
+     count--;
+  }
+  return r;
+}
+
 
 //
 // Reverse a string,
