@@ -57,7 +57,7 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		static := []string{"count", "find", "len", "methods", "ord", "replace", "split", "type"}
+		static := []string{"count", "find", "len", "methods", "ord", "replace", "type"}
 		dynamic := env.Names("string.")
 
 		var names []string
@@ -87,28 +87,6 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		oldS := args[0].Inspect()
 		newS := args[1].Inspect()
 		return &String{Value: strings.Replace(s.Value, oldS, newS, -1)}
-	}
-	if method == "split" {
-
-		// default seperator
-		sep := " "
-
-		if len(args) >= 1 {
-			// may be changed.
-			sep = args[0].(*String).Value
-		}
-
-		// do the split
-		fields := strings.Split(s.Value, sep)
-
-		// copy the results to the caller.
-		l := len(fields)
-		result := make([]Object, l, l)
-		for i, txt := range fields {
-			result[i] = &String{Value: txt}
-		}
-		return &Array{Elements: result}
-
 	}
 	if method == "to_i" {
 		i, err := strconv.ParseInt(s.Value, 0, 64)
