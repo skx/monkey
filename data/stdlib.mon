@@ -38,11 +38,31 @@ const STDERR = 2;
 
 
 //
+// The `assert` method allows the code in our standard-library to be
+// tested every time it is loaded.
+//
+function assert(val, msg = "Assertion failed!" ) {
+   if ( ! val ) {
+      puts( msg, "\n" );
+      exit(1);
+   }
+}
+
+
+//
 // First element of an array
 //
 function first( array ) {
-  return( array[0] );
+  if ( len(array) >= 1 ) {
+    return( array[0] );
+  }
+
+  // return nil is implicit here.
 }
+
+assert( first( [0,1] ) == 0 , "first() failed" );
+assert( first( ["steve",1] ) == "steve" , "first() failed" );
+assert( !first( [] ) , "first() failed on empty array" );
 
 
 //
@@ -73,6 +93,9 @@ function last( array ) {
   // `return null` is implicit here.
 }
 
+assert( last([0,2]) == 2 , "last() failed" );
+assert( !last([]), "last() on empty array failed" );
+
 
 
 //
@@ -84,6 +107,10 @@ function array.empty?() {
    }
    return false;
 }
+
+assert( [].empty?(), "array.empty? failed" );
+assert( ![1,2].empty?(), "array.empty? failed" );
+assert( !["steve",3].empty?(), "array.empty? failed" );
 
 
 //
@@ -150,6 +177,8 @@ function array.join( char ) {
    return r;
 }
 
+assert( [1,2,3].join( "." ) == "1.2.3", "array.join failed");
+
 
 //
 // Return an array containing the result of applying the specified
@@ -184,6 +213,8 @@ function array.reverse() {
   return r;
 }
 
+assert( string([1,2,3].reverse()) == "[3, 2, 1]", "array.reverse failed" );
+
 
 //
 // sorted? returns true if the specified array is sorted.
@@ -201,7 +232,7 @@ function array.sorted?() {
   }
 
   // There can be only one!
-  if ( len( keys( tmp ) ) != 1 ) {
+  if ( len( keys( tmp ) ) > 1 ) {
      puts( "Attempting to check an array with mixed-type values!\n" );
      puts( string(self), "\n" );
      exit(1);
@@ -227,6 +258,10 @@ function array.sorted?() {
   return true;
 }
 
+
+assert( [-1,0,1].sorted?() , "array.sorted? failed" );
+assert( [1].sorted?(), "array.sorted? failed on 1 element" );
+assert( [].sorted?(), "array.sorted? failed on empty array" );
 
 //
 // Swap the value of two array indexes.
@@ -281,7 +316,7 @@ function array.sort() {
   }
 
   // There can be only one!
-  if ( len( keys( tmp ) ) != 1 ) {
+  if ( len( keys( tmp ) ) > 1 ) {
      puts( "Attempting to sort an array with mixed-type values!\n" );
      puts( string(self), "\n" );
      exit(1);
@@ -325,6 +360,7 @@ function array.uniq() {
     return( tmp.keys().sort() );
 };
 
+assert( string([1,1,1,1,2].uniq()) == "[1, 2]", "array.uniq() failed" );
 
 //
 // Convert a float to an integer.
