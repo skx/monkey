@@ -405,6 +405,54 @@ function string.split(sep = " \r\t\n" ) {
 }
 
 
+
+//
+// string.replace removes a value from a string, replacing it
+// with a new value.
+//
+function string.replace( old, new ) {
+  let s = self;
+  let index = s.find( old );
+
+  for( index >= 0 ) {
+
+     // get the prefix
+     let pre = s.substr(0, index);
+
+     // get the suffix
+     let suf = s.substr( index + len(old) );
+
+     s = pre + new + suf;
+
+     index = s.find( old );
+  };
+
+  return s;
+}
+
+// string.substr returns the given substring
+// from our input.  The length of the string
+// to return is optional, and will default to
+// the length available.
+//
+function string.substr(start,length = -1) {
+
+   if ( length == -1 ) {
+    length = len(self) - start ;
+   }
+
+   let res = "";
+   let copied = 0;
+
+   for( (start < len(self)) && ( copied < length ) ) {
+     res += self[start];
+     start++;
+     copied++;
+   }
+   return( res );
+}
+
+
 //
 // Trim leading & trailing whitespace from the given string.
 //
