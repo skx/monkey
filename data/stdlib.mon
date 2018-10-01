@@ -189,6 +189,24 @@ function array.reverse() {
 // sorted? returns true if the specified array is sorted.
 //
 function array.sorted?() {
+
+  // Ensure each array-member has the same type.
+  let tmp = {};
+  let i = 0;
+
+  // Record the types.
+  for( i < len(self) ) {
+     tmp = set(tmp, self[i].type(), true );
+     i++;
+  }
+
+  // There can be only one!
+  if ( len( keys( tmp ) ) != 1 ) {
+     puts( "Attempting to check an array with mixed-type values!\n" );
+     puts( string(self), "\n" );
+     exit(1);
+  }
+
   let i = 1;
   let l = len(self);
 
@@ -251,6 +269,23 @@ function array.swap( a, b ) {
 // This is grossly inefficient, obviously.
 //
 function array.sort() {
+
+  // Ensure each array-member has the same type.
+  let tmp = {};
+  let i = 0;
+
+  // Record the types.
+  for( i < len(self) ) {
+     tmp = set(tmp, self[i].type(), true );
+     i++;
+  }
+
+  // There can be only one!
+  if ( len( keys( tmp ) ) != 1 ) {
+     puts( "Attempting to sort an array with mixed-type values!\n" );
+     puts( string(self), "\n" );
+     exit(1);
+  }
 
   // While the given array isn't sorted.
   for( ! self.sorted?() ) {
