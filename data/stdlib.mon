@@ -362,6 +362,50 @@ function string.rtrim() {
 
 
 //
+// string.split returns an array splitting on any characters included
+// in the separator string.
+//
+// By default the split is on whitespace: " ", "TAB", & "RETURN".
+//
+function string.split(sep = " \r\t\n" ) {
+  let i = 0;
+  let l = len(self);
+  let r = [];
+
+  let tmp = "";
+
+  for( i < l ) {
+
+     // get the character.
+     let c = self[i];
+
+     // is the character one of our split-characters?
+     if ( sep.find( c ) != -1 ) {
+
+        // OK push any previously-accumulated token into our array.
+        if ( len(tmp) > 0 ) {
+          r = push( r, tmp );
+        }
+        tmp = "";
+
+     } else {
+
+       // store the character into our accumulator.
+       tmp += c;
+     }
+     i++;
+  }
+
+  // Do we have a dangling-string?  If so append it.
+  if ( len(tmp) > 0 ) {
+     r = push(r,tmp);
+  }
+
+  return r;
+}
+
+
+//
 // Trim leading & trailing whitespace from the given string.
 //
 function string.trim() {
