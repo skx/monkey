@@ -273,6 +273,23 @@ function array.sort() {
 }
 
 
+//
+// array.uniq returns the unique members of an array.
+//
+function array.uniq() {
+    tmp = {};
+
+    let i = 0;
+    let l = len(self);
+    for( i < l ) {
+         tmp = set( tmp, self[i], true );
+         i++;
+    };
+
+    // return the sorted keys
+    return( tmp.keys().sort() );
+};
+
 
 //
 // Convert a float to an integer.
