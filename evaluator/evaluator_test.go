@@ -635,7 +635,6 @@ func TestStringMethods(t *testing.T) {
 		{`"string".find("tr")`, 1},
 		{`"string".find("ng")`, 4},
 		{`"string".find("x")`, -1},
-		{`"These are the days of summer".count("e")`, 5},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
