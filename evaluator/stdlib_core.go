@@ -8,8 +8,45 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/skx/monkey/lexer"
 	"github.com/skx/monkey/object"
+	"github.com/skx/monkey/parser"
 )
+
+// evaluate a string containing monkey-code
+func evalFun(env *object.Environment, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	switch args[0].(type) {
+	case *object.String:
+		txt := args[0].(*object.String).Value
+
+		// Lex the input
+		l := lexer.New(txt)
+
+		// parse it.
+		p := parser.New(l)
+
+		// If there are no errors
+		program := p.ParseProgram()
+		if len(p.Errors()) == 0 {
+			// evaluate it, and return the output.
+			return (Eval(program, env))
+		}
+
+		// Otherwise abort.  We should have try { } catch
+		// to allow this kind of error to be caught in the future!
+		fmt.Printf("Error parsing eval-string: %s", txt)
+		for _, msg := range p.Errors() {
+			fmt.Printf("\t%s\n", msg)
+		}
+		os.Exit(1)
+	}
+	return newError("argument to `eval` not supported, got=%s",
+		args[0].Type())
+}
 
 // exit a program.
 func exitFun(args ...object.Object) object.Object {
@@ -329,6 +366,10 @@ func init() {
 	RegisterBuiltin("delete",
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashDelete(args...))
+		})
+	RegisterBuiltin("eval",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (evalFun(env, args...))
 		})
 	RegisterBuiltin("exit",
 		func(env *object.Environment, args ...object.Object) object.Object {
