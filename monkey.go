@@ -7,6 +7,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -105,10 +106,41 @@ func Execute(input string) int {
 
 func main() {
 
+	//
+	// Setup some flags.
+	//
+	eval := flag.String("eval", "", "Code to execute.")
+	vers := flag.Bool("version", false, "Show our version and exit.")
+
+	//
+	// Parse the flags
+	//
+	flag.Parse()
+
+	//
+	// Showing the version?
+	//
+	if *vers {
+		fmt.Printf("monkey %s\n", version)
+		os.Exit(1)
+	}
+
+	//
+	// Executing code?
+	//
+	if *eval != "" {
+		Execute(*eval)
+		os.Exit(1)
+	}
+
+	//
+	// Otherwise we're either reading from STDIN, or the
+	// named file containing source-code.
+	//
 	var input []byte
 	var err error
 
-	if len(os.Args) > 1 {
+	if len(flag.Args()) > 1 {
 		input, err = ioutil.ReadFile(os.Args[1])
 	} else {
 		input, err = ioutil.ReadAll(os.Stdin)

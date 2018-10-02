@@ -1,3 +1,6 @@
 #!/bin/sh
 
 go test ./...
+
+go build -ldflags "-X main.version=$(git describe --tags 2>/dev/null || echo 'master')" -o "monkey"
+./monkey -eval 'puts("ok - stdlib\n");'
