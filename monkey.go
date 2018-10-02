@@ -140,7 +140,7 @@ func main() {
 	var input []byte
 	var err error
 
-	if len(flag.Args()) > 1 {
+	if len(flag.Args()) > 0 {
 		input, err = ioutil.ReadFile(os.Args[1])
 	} else {
 		input, err = ioutil.ReadAll(os.Stdin)
