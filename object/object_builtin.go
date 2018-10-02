@@ -1,7 +1,7 @@
 package object
 
 // BuiltinFunction holds the type of a built-in function.
-type BuiltinFunction func(args ...Object) Object
+type BuiltinFunction func(env *Environment, args ...Object) Object
 
 // Builtin wraps func and implements Object interface.
 type Builtin struct {
