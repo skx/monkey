@@ -57,7 +57,7 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		static := []string{"count", "find", "len", "methods", "ord", "replace", "type"}
+		static := []string{"count", "find", "len", "methods", "ord", "type"}
 		dynamic := env.Names("string.")
 
 		var names []string
@@ -78,15 +78,6 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 	}
 	if method == "ord" {
 		return &Integer{Value: int64(s.Value[0])}
-	}
-	if method == "replace" {
-		if len(args) < 2 {
-			return &Error{Message: "Missing arguments to replace()!"}
-		}
-		// Note that this coerces into strings :)
-		oldS := args[0].Inspect()
-		newS := args[1].Inspect()
-		return &String{Value: strings.Replace(s.Value, oldS, newS, -1)}
 	}
 	if method == "to_i" {
 		i, err := strconv.ParseInt(s.Value, 0, 64)
