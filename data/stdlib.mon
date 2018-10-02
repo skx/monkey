@@ -47,6 +47,8 @@ function assert(val, msg = "Assertion failed!" ) {
       exit(1);
    }
 }
+assert( true, "Assert is broken!" );
+assert(!false, "Assert is broken!" );
 
 
 //
@@ -178,6 +180,7 @@ function array.join( char ) {
 }
 
 assert( [1,2,3].join( "." ) == "1.2.3", "array.join failed");
+
 
 
 //
