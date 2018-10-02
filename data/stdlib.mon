@@ -101,7 +101,6 @@ function rest( array ) {
    return result;
 }
 
-
 assert( "type(rest([])) == \"array\"" );
 assert( "len(rest( [0,2] ) ) == 1" );
 assert( "len(rest( [0,1,2] ) ) == 2" );
@@ -315,7 +314,6 @@ function array.sorted?() {
 
   return true;
 }
-
 
 assert( "[-1,0,1].sorted?()" );
 assert( "[1].sorted?()" );
