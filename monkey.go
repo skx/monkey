@@ -59,13 +59,13 @@ func Execute(input string) int {
 	// Register a function called version()
 	// that the script can call.
 	evaluator.RegisterBuiltin("version",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (versionFun(args...))
 		})
 
 	// Access to the command-line arguments
 	evaluator.RegisterBuiltin("args",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (argsFun(args...))
 		})
 

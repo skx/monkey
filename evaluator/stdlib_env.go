@@ -67,15 +67,15 @@ func setEnvFun(args ...object.Object) object.Object {
 
 func init() {
 	RegisterBuiltin("os.getenv",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (getEnvFun(args...))
 		})
 	RegisterBuiltin("os.setenv",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (setEnvFun(args...))
 		})
 	RegisterBuiltin("os.environment",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (envFun(args...))
 		})
 }

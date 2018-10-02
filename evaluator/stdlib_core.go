@@ -327,51 +327,51 @@ func typeFun(args ...object.Object) object.Object {
 }
 func init() {
 	RegisterBuiltin("delete",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashDelete(args...))
 		})
 	RegisterBuiltin("exit",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (exitFun(args...))
 		})
 	RegisterBuiltin("int",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (intFun(args...))
 		})
 	RegisterBuiltin("keys",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashKeys(args...))
 		})
 	RegisterBuiltin("len",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (lenFun(args...))
 		})
 	RegisterBuiltin("match",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (matchFun(args...))
 		})
 	RegisterBuiltin("pragma",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (pragmaFun(args...))
 		})
 	RegisterBuiltin("push",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (pushFun(args...))
 		})
 	RegisterBuiltin("puts",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (putsFun(args...))
 		})
 	RegisterBuiltin("set",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (setFun(args...))
 		})
 	RegisterBuiltin("string",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (strFun(args...))
 		})
 	RegisterBuiltin("type",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (typeFun(args...))
 		})
 }
