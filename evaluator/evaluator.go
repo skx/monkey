@@ -116,7 +116,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
-		res := applyFunction(function, args)
+		res := applyFunction(env, function, args)
 		if isError(res) {
 			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s\n", node.Function, res.Inspect())
 			if PRAGMAS["strict"] == 1 {
@@ -825,14 +825,14 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 
 }
 
-func applyFunction(fn object.Object, args []object.Object) object.Object {
+func applyFunction(env *object.Environment, fn object.Object, args []object.Object) object.Object {
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(fn, args)
 		evaluated := Eval(fn.Body, extendEnv)
 		return upwrapReturnValue(evaluated)
 	case *object.Builtin:
-		return fn.Fn(args...)
+		return fn.Fn(env, args...)
 	default:
 		return newError("not a function: %s", fn.Type())
 	}

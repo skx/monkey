@@ -39,6 +39,8 @@ The interpreter in _this_ repository has been significantly extended from the st
 * Moved parts of the standard-library to 100% pure monkey, rather than implementing it in go.
   * See [data/stdlib.mon](data/stdlib.mon) for the implementation.
   * See also the notes on [object-based methods](#31-defininig-new-object-methods).
+* Added the `eval` function.
+  * Which allows executing monkey-code from a string.
 
 
 

@@ -64,15 +64,15 @@ func init() {
 	//
 	rand.Seed(time.Now().UnixNano())
 	RegisterBuiltin("math.abs",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (mathAbs(args...))
 		})
 	RegisterBuiltin("math.random",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (mathRandom(args...))
 		})
 	RegisterBuiltin("math.sqrt",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (mathSqrt(args...))
 		})
 }

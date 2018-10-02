@@ -8,8 +8,45 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/skx/monkey/lexer"
 	"github.com/skx/monkey/object"
+	"github.com/skx/monkey/parser"
 )
+
+// evaluate a string containing monkey-code
+func evalFun(env *object.Environment, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	switch args[0].(type) {
+	case *object.String:
+		txt := args[0].(*object.String).Value
+
+		// Lex the input
+		l := lexer.New(txt)
+
+		// parse it.
+		p := parser.New(l)
+
+		// If there are no errors
+		program := p.ParseProgram()
+		if len(p.Errors()) == 0 {
+			// evaluate it, and return the output.
+			return (Eval(program, env))
+		}
+
+		// Otherwise abort.  We should have try { } catch
+		// to allow this kind of error to be caught in the future!
+		fmt.Printf("Error parsing eval-string: %s", txt)
+		for _, msg := range p.Errors() {
+			fmt.Printf("\t%s\n", msg)
+		}
+		os.Exit(1)
+	}
+	return newError("argument to `eval` not supported, got=%s",
+		args[0].Type())
+}
 
 // exit a program.
 func exitFun(args ...object.Object) object.Object {
@@ -327,51 +364,55 @@ func typeFun(args ...object.Object) object.Object {
 }
 func init() {
 	RegisterBuiltin("delete",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashDelete(args...))
 		})
+	RegisterBuiltin("eval",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (evalFun(env, args...))
+		})
 	RegisterBuiltin("exit",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (exitFun(args...))
 		})
 	RegisterBuiltin("int",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (intFun(args...))
 		})
 	RegisterBuiltin("keys",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashKeys(args...))
 		})
 	RegisterBuiltin("len",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (lenFun(args...))
 		})
 	RegisterBuiltin("match",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (matchFun(args...))
 		})
 	RegisterBuiltin("pragma",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (pragmaFun(args...))
 		})
 	RegisterBuiltin("push",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (pushFun(args...))
 		})
 	RegisterBuiltin("puts",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (putsFun(args...))
 		})
 	RegisterBuiltin("set",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (setFun(args...))
 		})
 	RegisterBuiltin("string",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (strFun(args...))
 		})
 	RegisterBuiltin("type",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (typeFun(args...))
 		})
 }

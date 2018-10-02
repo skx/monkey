@@ -195,27 +195,27 @@ func writeOutput(args ...object.Object) object.Object {
 
 func init() {
 	RegisterBuiltin("directory.glob",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (dirGlob(args...))
 		})
 	RegisterBuiltin("read",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (readInput(args...))
 		})
 	RegisterBuiltin("write",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (writeOutput(args...))
 		})
 	RegisterBuiltin("file.open",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (fileOpen(args...))
 		})
 	RegisterBuiltin("file.close",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (fileClose(args...))
 		})
 	RegisterBuiltin("file.lines",
-		func(args ...object.Object) object.Object {
+		func(env *object.Environment, args ...object.Object) object.Object {
 			return (fileLines(args...))
 		})
 }

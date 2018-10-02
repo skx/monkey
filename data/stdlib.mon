@@ -41,14 +41,29 @@ const STDERR = 2;
 // The `assert` method allows the code in our standard-library to be
 // tested every time it is loaded.
 //
-function assert(val, msg = "Assertion failed!" ) {
-   if ( ! val ) {
-      puts( msg, "\n" );
-      exit(1);
+function assert(val, msg = "Result was not 'true'!" ) {
+   if ( type(val) == "string") {
+      result = eval( val );
+      if ( !result ) {
+        puts( "assert(\"" , val, "\") failed - ", msg, "\n" );
+        exit(1);
+      }
    }
+   else {
+      if ( ! val ) {
+        puts( msg, "\n" );
+        exit(1);
+      }
+  }
 }
-assert( true, "Assert is broken!" );
-assert(!false, "Assert is broken!" );
+
+assert( "true" );
+assert( true );
+assert( "! false;" );
+assert( !false );
+
+
+
 
 
 //
@@ -62,9 +77,12 @@ function first( array ) {
   // return nil is implicit here.
 }
 
-assert( first( [0,1] ) == 0 , "first() failed" );
-assert( first( ["steve",1] ) == "steve" , "first() failed" );
-assert( !first( [] ) , "first() failed on empty array" );
+assert( "first( [0,1] ) == 0" );
+assert( "first([\"steve\",1]) == \"steve\"" );
+assert( "!first([])" );
+
+
+
 
 
 //
@@ -75,13 +93,22 @@ function rest( array ) {
 
   if ( len(array) > 1 ) {
     let i = 1;
-    for( i < len(a) ) {
+    for( i < len(array) ) {
       result = push(result, array[i]);
       i++;
     }
    }
    return result;
 }
+
+assert( "type(rest([])) == \"array\"" );
+assert( "len(rest( [0,2] ) ) == 1" );
+assert( "len(rest( [0,1,2] ) ) == 2" );
+assert( "len(rest( [0,1,2,3,4,5] ) ) == 5" );
+assert( "string(rest([\"steve\",1])) == \"[1]\"" );
+
+
+
 
 
 //
@@ -95,8 +122,10 @@ function last( array ) {
   // `return null` is implicit here.
 }
 
-assert( last([0,2]) == 2 , "last() failed" );
-assert( !last([]), "last() on empty array failed" );
+assert( "last([0,2]) == 2" );
+assert( "!last([])" );
+
+
 
 
 
@@ -110,9 +139,12 @@ function array.empty?() {
    return false;
 }
 
-assert( [].empty?(), "array.empty? failed" );
-assert( ![1,2].empty?(), "array.empty? failed" );
-assert( !["steve",3].empty?(), "array.empty? failed" );
+assert( "[].empty?()" );
+assert( "![1,2].empty?()" );
+assert( "![\"steve\",3].empty?()" );
+
+
+
 
 
 //
@@ -136,6 +168,9 @@ function array.filter( predicate ) {
 }
 
 
+
+
+
 //
 // Return the offset, if any, of the specified item in the array.
 //
@@ -153,6 +188,14 @@ function array.find(item) {
    // not found.
    return -1;
 };
+
+assert( "[1,2,3].find(7) == -1" );
+assert( "[1,2,3].find(1) == 0" );
+assert( "[1,2,3].find(3) == 2" );
+assert( "[1,2,3,3].find(3) == 2" );
+
+
+
 
 
 //
@@ -179,7 +222,11 @@ function array.join( char ) {
    return r;
 }
 
-assert( [1,2,3].join( "." ) == "1.2.3", "array.join failed");
+assert( "[1,2,3].join( \".\" ) == \"1.2.3\"" );
+assert( "[1,2,3].join( \"\" ) == \"123\"" );
+
+
+
 
 
 
@@ -202,6 +249,9 @@ function array.map( fnc ) {
 }
 
 
+
+
+
 //
 // Reverse an array.
 //
@@ -216,7 +266,11 @@ function array.reverse() {
   return r;
 }
 
-assert( string([1,2,3].reverse()) == "[3, 2, 1]", "array.reverse failed" );
+assert( "string([1,2,3].reverse()) == \"[3, 2, 1]\"" );
+
+
+
+
 
 
 //
@@ -261,10 +315,15 @@ function array.sorted?() {
   return true;
 }
 
+assert( "[-1,0,1].sorted?()" );
+assert( "[1].sorted?()" );
+assert( "[].sorted?()" );
 
-assert( [-1,0,1].sorted?() , "array.sorted? failed" );
-assert( [1].sorted?(), "array.sorted? failed on 1 element" );
-assert( [].sorted?(), "array.sorted? failed on empty array" );
+
+
+
+
+
 
 //
 // Swap the value of two array indexes.
@@ -299,6 +358,13 @@ function array.swap( a, b ) {
 
   return r;
 }
+
+assert( "let a = [10,20]; a = a.swap(0,1); if ( a[0] == 20 ) { true; } else { false ; }" );
+assert( "let a = [10,20]; a = a.swap(0,1); if ( a[1] == 10 ) { true; } else { false ; }" );
+
+
+
+
 
 
 //
@@ -345,6 +411,15 @@ function array.sort() {
   return self;
 }
 
+assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a.sorted?()" );
+assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a[0] == 1" );
+assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a[1] == 2" );
+assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a[2] == 3" );
+
+
+
+
+
 
 //
 // array.uniq returns the unique members of an array.
@@ -363,7 +438,13 @@ function array.uniq() {
     return( tmp.keys().sort() );
 };
 
-assert( string([1,1,1,1,2].uniq()) == "[1, 2]", "array.uniq() failed" );
+assert( "string([1,1,1,1,2].uniq()) == \"[1, 2]\"" );
+
+
+
+
+
+
 
 //
 // Convert a float to an integer.
@@ -374,8 +455,12 @@ function float.to_i() {
    return( int( self ) );
 }
 
-assert( type( 3.1.to_i() ) == "integer", "float.to_i() failed" );
-//assert(  3.1.to_f() == 3, "float.to_i() failed" );
+assert( "type( 3.1.to_i() ) == \"integer\"" );
+assert( "let a = 3.1; if ( a.to_i() == 3 ) { return true; } else { return false ; } " );
+
+
+
+
 
 
 //
@@ -387,7 +472,15 @@ function hash.empty?() {
    }
    return false;
 }
-// TODO
+
+assert( "{}.empty?()" );
+assert( "! {\"name\":\"steve\"}.empty?()" );
+
+
+
+
+
+
 
 //
 // Convert an integer to a float.
@@ -396,8 +489,36 @@ function integer.to_f() {
    return( self + 0.0);
 }
 
-assert( type( 3.to_f() ) == "float", "integer.to_f() failed" );
-assert(  3.to_f() == 3.0, "integer.to_f() failed" );
+assert( "type( 3.to_f() ) == \"float\"" );
+assert( "3.to_f() == 3.0" );
+
+
+
+
+
+//
+// Count occurences of the given character in the string.
+//
+function string.count(char) {
+  let c = 0;
+  let l = len(self);
+
+  for( l > 0 ) {
+     if ( char == self[l-1] ) {
+       c += 1;
+     }
+     l--;
+  }
+  return c;
+};
+
+assert( "\"steve\".count(\"e\") == 2" );
+assert( "\"steve\".count(\"E\") == 0" );
+assert( "\"犬狐\".count(\"狐\") == 1" );
+assert( "\"犬犬犬犬犬犬狐\".count(\"犬\") == 6" );
+
+
+
 
 
 //
@@ -416,6 +537,12 @@ function string.ltrim() {
 
 assert( ( "  狐犬  ".ltrim() == "狐犬  "), "string.ltrim failed" );
 assert( ( "  steve  ".ltrim() == "steve  "), "string.ltrim failed" );
+
+
+
+
+
+
 
 //
 // Repeat a string N times.
@@ -440,6 +567,9 @@ assert( ( "*".repeat(-1) == "*"), "string.repeat failed" );
 
 
 
+
+
+
 //
 // Reverse a string,
 //
@@ -458,6 +588,10 @@ assert( ( "狐犬".reverse() == "犬狐"), "string.reverse failed" );
 assert( ( "322".reverse() == "223"), "string.reverse failed" );
 
 
+
+
+
+
 //
 // Remove trailing whitespace from the string.
 //
@@ -473,6 +607,10 @@ function string.rtrim() {
 }
 
 assert( ( "  狐犬  ".rtrim() == "  狐犬"), "string.rtrim failed" );
+
+
+
+
 
 //
 // string.split returns an array splitting on any characters included
@@ -517,7 +655,12 @@ function string.split(sep = " \r\t\n" ) {
   return r;
 }
 
-// TODO
+assert( "len(\"1 2 3\".split()) == 3" );
+assert( "type(\"1 2 3\".split(\"2\")) == \"array\"" );
+
+
+
+
 
 
 
@@ -544,8 +687,14 @@ function string.substr(start,length = -1) {
    }
    return( res );
 }
+
 assert( "Hello world".substr( 1,4 ) == "ello" , "string.substr() failed");
 assert( "Hello world".substr( 6 ) == "world" , "string.substr() failed");
+
+
+
+
+
 
 
 //
@@ -575,10 +724,11 @@ function string.replace( old, new ) {
 assert( "steve".replace( "e", "E" ) == "stEvE", "string.replace() failed" );
 assert( "steve".replace( "A", "EE" ) == "steve", "string.replace() failed" );
 
-//TODO
 
 
-// TODO
+
+
+
 
 //
 // Trim leading & trailing whitespace from the given string.
@@ -590,6 +740,11 @@ function string.trim() {
 
 assert( "  ".trim() == "", "string.trim failed" );
 assert( " 1 ".trim() == "1", "string.trim failed" );
+
+
+
+
+
 
 //
 // Convert the given string to lower-case.
@@ -618,6 +773,13 @@ function string.tolower() {
 assert( "Steve".tolower() == "steve", "string.tolower() failed" );
 assert( "狐犬".tolower() == "狐犬", "string.tolower() failed" );
 
+
+
+
+
+
+
+
 //
 // Convert a string to a number
 //
@@ -636,10 +798,15 @@ function string.to_number() {
 
 assert( "3.13".to_number() == 3.13, "string.tonumber() failed" );
 assert( type("3.13".to_number() ) == "float", "string.tonumber() failed" );
+assert( "313".to_number() == 313, "string.tonumber() failed" );
+assert( type("313".to_number() ) == "integer", "string.tonumber() failed" );
 
-// TODO - Still broken
-// assert( "313".to_number() == 313, "string.tonumber() failed" );
-// assert( type("313".to_number() ) == "integer", "string.tonumber() failed" );
+
+
+
+
+
+
 
 //
 // Convert the given string to upper-case.
