@@ -36,14 +36,6 @@ func (s *String) HashKey() HashKey {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
-	if method == "count" {
-		if len(args) < 1 {
-			return &Error{Message: "Missing argument to count()!"}
-		}
-		// Note that this coerces into a string :)
-		arg := args[0].Inspect()
-		return &Integer{Value: int64(strings.Count(s.Value, arg))}
-	}
 	if method == "find" {
 		if len(args) < 1 {
 			return &Error{Message: "Missing argument to find()!"}
@@ -57,7 +49,7 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		static := []string{"count", "find", "len", "methods", "ord", "type"}
+		static := []string{"find", "len", "methods", "ord", "type"}
 		dynamic := env.Names("string.")
 
 		var names []string

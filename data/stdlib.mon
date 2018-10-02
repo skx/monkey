@@ -498,6 +498,30 @@ assert( "3.to_f() == 3.0" );
 
 
 
+//
+// Count occurences of the given character in the string.
+//
+function string.count(char) {
+  let c = 0;
+  let l = len(self);
+
+  for( l > 0 ) {
+     if ( char == self[l-1] ) {
+       c += 1;
+     }
+     l--;
+  }
+  return c;
+};
+
+assert( "\"steve\".count(\"e\") == 2" );
+assert( "\"steve\".count(\"E\") == 0" );
+assert( "\"犬狐\".count(\"狐\") == 1" );
+assert( "\"犬犬犬犬犬犬狐\".count(\"犬\") == 6" );
+
+
+
+
 
 //
 // Remove leading whitespace from the string.
