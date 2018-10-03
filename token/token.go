@@ -11,7 +11,6 @@ type Token struct {
 
 // pre-defined TokenType
 const (
-	ILLEGAL         = "ILLEGAL"
 	EOF             = "EOF"
 	IDENT           = "IDENT"
 	INT             = "INT"
