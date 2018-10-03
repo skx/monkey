@@ -169,7 +169,7 @@ func (p *Parser) Errors() []string {
 
 // peekError raises an error if the next token is not the expected type.
 func (p *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.curToken.Type)
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead around line %d", t, p.curToken.Type, p.l.GetLine())
 	p.errors = append(p.errors, msg)
 }
 
@@ -257,7 +257,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 // no prefix parse function error
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s found", t)
+	msg := fmt.Sprintf("no prefix parse function for %s found around line %d", t, p.l.GetLine())
 	p.errors = append(p.errors, msg)
 }
 
@@ -314,7 +314,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	}
 
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
+		msg := fmt.Sprintf("could not parse %q as integer around line %d", p.curToken.Literal, p.l.GetLine())
 		p.errors = append(p.errors, msg)
 		return nil
 	}
@@ -327,7 +327,7 @@ func (p *Parser) parseFloatLiteral() ast.Expression {
 	flo := &ast.FloatLiteral{Token: p.curToken}
 	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float", p.curToken.Literal)
+		msg := fmt.Sprintf("could not parse %q as float around line %d", p.curToken.Literal, p.l.GetLine())
 		p.errors = append(p.errors, msg)
 		return nil
 	}
@@ -568,7 +568,7 @@ func (p *Parser) parseAssignExpression(name ast.Expression) ast.Expression {
 	if n, ok := name.(*ast.Identifier); ok {
 		stmt.Name = n
 	} else {
-		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead", name.TokenLiteral())
+		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead around line %d", name.TokenLiteral(), p.l.GetLine())
 		p.errors = append(p.errors, msg)
 	}
 

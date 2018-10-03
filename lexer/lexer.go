@@ -21,6 +21,18 @@ func New(input string) *Lexer {
 	return l
 }
 
+// GetLine returns the rough line-number of our current position.
+func (l *Lexer) GetLine() int {
+	line := 0
+
+	for _, c := range l.characters {
+		if c == rune('\n') {
+			line += 1
+		}
+	}
+	return line
+}
+
 // read one forward character
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.characters) {
