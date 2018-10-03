@@ -34,7 +34,7 @@ func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) O
 		return &String{Value: string(i.Value)}
 	}
 	if method == "methods" {
-		static := []string{"chr", "methods", "string", "type"}
+		static := []string{"chr", "methods"}
 		dynamic := env.Names("integer.")
 
 		var names []string
@@ -52,12 +52,6 @@ func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) O
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "string" {
-		return &String{Value: i.Inspect()}
-	}
-	if method == "type" {
-		return &String{Value: "integer"}
 	}
 	return nil
 }

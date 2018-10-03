@@ -37,7 +37,7 @@ func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Ob
 		return &Integer{Value: int64(len(ao.Elements))}
 	}
 	if method == "methods" {
-		static := []string{"len", "methods", "string"}
+		static := []string{"len", "methods"}
 		dynamic := env.Names("array.")
 
 		var names []string
@@ -55,12 +55,6 @@ func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Ob
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "string" {
-		return &String{Value: ao.Inspect()}
-	}
-	if method == "type" {
-		return &String{Value: "array"}
 	}
 	return nil
 }

@@ -38,6 +38,42 @@ const STDERR = 2;
 
 
 //
+// Functions with an "object." prefix are available to all types.
+//
+// With this definition in-place you can invoke the object-methods:
+//
+//     "".type();
+//     3.type();
+//     [].type();
+//     etc
+//
+// instead of having to run type( blah );
+//
+function object.type() {
+   return(type(self));
+}
+
+
+//
+// Functions with an "object." prefix are available to all types.
+//
+// With this definition in-place you can invoke the object-methods:
+//
+//     "".string();
+//     3.string();
+//     [].string();
+//     etc
+//
+// instead of having to run string( blah );
+//
+function object.string() {
+   return(string(self));
+}
+
+
+
+
+//
 // The `assert` method allows the code in our standard-library to be
 // tested every time it is loaded.
 //

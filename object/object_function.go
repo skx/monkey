@@ -41,7 +41,7 @@ func (f *Function) Inspect() string {
 // (Built-in methods only.)
 func (f *Function) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		static := []string{"methods", "type"}
+		static := []string{"methods"}
 		dynamic := env.Names("function.")
 
 		var names []string
@@ -59,9 +59,6 @@ func (f *Function) InvokeMethod(method string, env Environment, args ...Object) 
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "type" {
-		return &String{Value: "function"}
 	}
 	return nil
 }

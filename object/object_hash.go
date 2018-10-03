@@ -54,7 +54,7 @@ func (h *Hash) Inspect() string {
 // (Built-in methods only.)
 func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		static := []string{"keys", "methods", "string", "type"}
+		static := []string{"keys", "methods"}
 		dynamic := env.Names("hash.")
 
 		var names []string
@@ -85,12 +85,6 @@ func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Obje
 		}
 
 		return &Array{Elements: array}
-	}
-	if method == "string" {
-		return &String{Value: h.Inspect()}
-	}
-	if method == "type" {
-		return &String{Value: "hash"}
 	}
 	return nil
 }

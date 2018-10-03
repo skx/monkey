@@ -34,7 +34,7 @@ func (f *Float) HashKey() HashKey {
 // (Built-in methods only.)
 func (f *Float) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		static := []string{"methods", "string", "type"}
+		static := []string{"methods"}
 		dynamic := env.Names("float.")
 
 		var names []string
@@ -52,12 +52,6 @@ func (f *Float) InvokeMethod(method string, env Environment, args ...Object) Obj
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "string" {
-		return &String{Value: f.Inspect()}
-	}
-	if method == "type" {
-		return &String{Value: "float"}
 	}
 	return nil
 }

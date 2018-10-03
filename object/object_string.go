@@ -49,7 +49,7 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
 	if method == "methods" {
-		static := []string{"find", "len", "methods", "ord", "type"}
+		static := []string{"find", "len", "methods", "ord"}
 		dynamic := env.Names("string.")
 
 		var names []string
@@ -84,9 +84,6 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 			i = 0
 		}
 		return &Float{Value: i}
-	}
-	if method == "type" {
-		return &String{Value: "string"}
 	}
 	return nil
 }

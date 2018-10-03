@@ -914,41 +914,50 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		//   let a = [ 1, 2, 3 ];
 		//   puts( a.foo() );
 		//
+		// As a final fall-back we'll look for "object.foo()"
+		// if "array.foo()" isn't defined.
+		//
+		//
+		//
+		attempts := []string{}
+		attempts = append(attempts, strings.ToLower(string(obj.Type())))
+		attempts = append(attempts, "object")
 
 		//
-		// Get the name of the function:
+		// Look for "$type.name", or "object.name"
 		//
-		//   lower-case the type
-		//  +
-		//   .
-		//  +
-		//   method-name
-		//
-		name := strings.ToLower(string(obj.Type())) + "." + method.Function.String()
-
-		//
-		// Try to find that function in our environment.
-		//
-		if fn, ok := env.Get(name); ok {
+		for _, prefix := range attempts {
 
 			//
-			// Extend our environment with the functional-args.
+			// What we're attempting to execute.
 			//
-			extendEnv := extendFunctionEnv(fn.(*object.Function), args)
+			name := prefix + "." + method.Function.String()
 
 			//
-			// Now set "self" to be the implicit object, against
-			// which the function-call will be operating.
+			// Try to find that function in our environment.
 			//
-			extendEnv.Set("self", obj)
+			if fn, ok := env.Get(name); ok {
 
-			//
-			// Finally invoke & return.
-			//
-			evaluated := Eval(fn.(*object.Function).Body, extendEnv)
-			obj = upwrapReturnValue(evaluated)
-			return obj
+				//
+				// Extend our environment with the functional-args.
+				//
+				extendEnv := extendFunctionEnv(fn.(*object.Function), args)
+
+				//
+				// Now set "self" to be the implicit object, against
+				// which the function-call will be operating.
+				//
+				extendEnv.Set("self", obj)
+
+				//
+				// Finally invoke & return.
+				//
+				evaluated := Eval(fn.(*object.Function).Body, extendEnv)
+				obj = upwrapReturnValue(evaluated)
+				return obj
+			}
 		}
+
 	}
 
 	//

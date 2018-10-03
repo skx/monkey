@@ -23,16 +23,13 @@ func (b *Builtin) Inspect() string {
 // (Built-in methods only.)
 func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		names := []string{"methods", "type"}
+		names := []string{"methods"}
 
 		result := make([]Object, len(names), len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "type" {
-		return &String{Value: "builtin"}
 	}
 	return nil
 }

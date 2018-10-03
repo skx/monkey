@@ -257,7 +257,8 @@ func (l *Lexer) readIdentifier() string {
 		"array.",
 		"integer.",
 		"float.",
-		"hash."}
+		"hash.",
+		"object."}
 
 	id := ""
 

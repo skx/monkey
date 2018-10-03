@@ -37,7 +37,7 @@ func (b *Boolean) HashKey() HashKey {
 // (Built-in methods only.)
 func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "methods" {
-		static := []string{"methods", "string", "type"}
+		static := []string{"methods"}
 		dynamic := env.Names("bool.")
 
 		var names []string
@@ -55,12 +55,6 @@ func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) O
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "string" {
-		return &String{Value: b.Inspect()}
-	}
-	if method == "type" {
-		return &String{Value: "bool"}
 	}
 	return nil
 }

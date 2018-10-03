@@ -45,6 +45,12 @@ func (e *Environment) Names(prefix string) []string {
 		if strings.HasPrefix(key, prefix) {
 			ret = append(ret, key)
 		}
+
+		// Functions with an "object." prefix are available
+		// to all object-methods.
+		if strings.HasPrefix(key, "object.") {
+			ret = append(ret, key)
+		}
 	}
 	return ret
 }
