@@ -41,6 +41,8 @@ The interpreter in _this_ repository has been significantly extended from the st
   * See also the notes on [object-based methods](#31-defininig-new-object-methods).
 * Added the `eval` function.
   * Which allows executing monkey-code from a string.
+* Improved error-reporting from the parser.
+  * It will now show the line-number of failures (where possible).
 
 
 
