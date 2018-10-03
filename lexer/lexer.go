@@ -200,7 +200,7 @@ func newToken(tokenType token.TokenType, ch rune) token.Token {
 // of the standard library.  We really want to stop identifiers if we hit
 // a period, to allow method-calls to work on objects.
 //
-// So with inptu like this:
+// So with input like this:
 //
 //   a.blah();
 //
@@ -231,11 +231,6 @@ func (l *Lexer) readIdentifier() string {
 		"os.getenv":          true,
 		"os.setenv":          true,
 		"string.interpolate": true,
-		"string.reverse":     true,
-		"string.split":       true,
-		"string.tolower":     true,
-		"string.toupper":     true,
-		"string.trim":        true,
 	}
 
 	//
