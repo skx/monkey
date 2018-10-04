@@ -163,9 +163,8 @@ func readInput(args ...object.Object) object.Object {
 	line, err := reader.ReadString('\n')
 	if err == nil {
 		return &object.String{Value: line}
-	} else {
-		return &object.String{Value: ""}
 	}
+	return &object.String{Value: ""}
 }
 
 // write(handle, text)
@@ -188,9 +187,9 @@ func writeOutput(args ...object.Object) object.Object {
 	if err == nil {
 		writer.Flush()
 		return &object.Boolean{Value: true}
-	} else {
-		return &object.Boolean{Value: false}
 	}
+
+	return &object.Boolean{Value: false}
 }
 
 func init() {
