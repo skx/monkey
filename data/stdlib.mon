@@ -709,8 +709,14 @@ assert( "type(\"1 2 3\".split(\"2\")) == \"array\"" );
 //
 function string.substr(start,length = -1) {
 
+   // if there is no length then default to the rest of the string.
    if ( length == -1 ) {
-    length = len(self) - start ;
+     length = len(self) - start ;
+   }
+
+   // catch bounding-errors.
+   if ( start >= len(self) ) {
+      return "";
    }
 
    let res = "";
@@ -726,7 +732,9 @@ function string.substr(start,length = -1) {
 
 assert( "Hello world".substr( 1,4 ) == "ello" , "string.substr() failed");
 assert( "Hello world".substr( 6 ) == "world" , "string.substr() failed");
-
+assert( "狐犬".substr( 0 ) == "狐犬" , "string.substr() failed");
+assert( "犬狐".substr( 1 ) == "狐" , "string.substr() failed");
+assert( "狐犬".substr( 2 ) == "" , "string.substr() failed");
 
 
 
