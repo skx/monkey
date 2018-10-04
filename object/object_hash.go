@@ -53,6 +53,19 @@ func (h *Hash) Inspect() string {
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
 func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
+	if method == "keys" {
+		ents := len(h.Pairs)
+		array := make([]Object, ents, ents)
+
+		// Now copy the keys into it.
+		i := 0
+		for _, ent := range h.Pairs {
+			array[i] = ent.Key
+			i++
+		}
+
+		return &Array{Elements: array}
+	}
 	if method == "methods" {
 		static := []string{"keys", "methods"}
 		dynamic := env.Names("hash.")
@@ -72,19 +85,6 @@ func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Obje
 			result[i] = &String{Value: txt}
 		}
 		return &Array{Elements: result}
-	}
-	if method == "keys" {
-		ents := len(h.Pairs)
-		array := make([]Object, ents, ents)
-
-		// Now copy the keys into it.
-		i := 0
-		for _, ent := range h.Pairs {
-			array[i] = ent.Key
-			i++
-		}
-
-		return &Array{Elements: array}
 	}
 	return nil
 }
