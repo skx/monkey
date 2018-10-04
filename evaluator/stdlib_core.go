@@ -347,6 +347,8 @@ func typeFun(args ...object.Object) object.Object {
 		return &object.String{Value: "string"}
 	case *object.Boolean:
 		return &object.String{Value: "bool"}
+	case *object.Builtin:
+		return &object.String{Value: "builtin"}
 	case *object.Array:
 		return &object.String{Value: "array"}
 	case *object.Function:
