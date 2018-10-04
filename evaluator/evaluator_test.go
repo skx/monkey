@@ -622,27 +622,3 @@ func TestTypeBuiltin(t *testing.T) {
 		}
 	}
 }
-
-// Test some of our object-based methods.
-func TestStringMethods(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected interface{}
-	}{
-		{`"string".find("s")`, 0},
-		{`"string".find("string")`, 0},
-		{`"string".find("g")`, 5},
-		{`"string".find("tr")`, 1},
-		{`"string".find("ng")`, 4},
-		{`"string".find("x")`, -1},
-	}
-	for _, tt := range tests {
-		evaluated := testEval(tt.input)
-		switch expected := tt.expected.(type) {
-		case int:
-			testIntegerObject(t, evaluated, int64(expected))
-		case string:
-			testStringObject(t, evaluated, expected)
-		}
-	}
-}

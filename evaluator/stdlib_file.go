@@ -11,28 +11,28 @@ import (
 //
 // Mapping of file-IDs to file-handles
 //
-var file_handles = make(map[uintptr]*os.File)
-var file_readers = make(map[uintptr]*bufio.Reader)
-var file_writers = make(map[uintptr]*bufio.Writer)
+var fileHandles = make(map[uintptr]*os.File)
+var fileReaders = make(map[uintptr]*bufio.Reader)
+var fileWriters = make(map[uintptr]*bufio.Writer)
 
 //
 // Horrid hack - setup STDIN/STDOUT/STDERR
 //
 func setupHandles() {
-	if file_handles[0] != nil {
+	if fileHandles[0] != nil {
 		return
 	}
-	file_handles[0] = os.Stdin
-	file_handles[1] = os.Stdout
-	file_handles[2] = os.Stderr
+	fileHandles[0] = os.Stdin
+	fileHandles[1] = os.Stdout
+	fileHandles[2] = os.Stderr
 
-	file_readers[0] = bufio.NewReader(os.Stdin)
-	file_readers[1] = bufio.NewReader(os.Stdout)
-	file_readers[2] = bufio.NewReader(os.Stderr)
+	fileReaders[0] = bufio.NewReader(os.Stdin)
+	fileReaders[1] = bufio.NewReader(os.Stdout)
+	fileReaders[2] = bufio.NewReader(os.Stderr)
 
-	file_writers[0] = bufio.NewWriter(os.Stdin)
-	file_writers[1] = bufio.NewWriter(os.Stdout)
-	file_writers[2] = bufio.NewWriter(os.Stderr)
+	fileWriters[0] = bufio.NewWriter(os.Stdin)
+	fileWriters[1] = bufio.NewWriter(os.Stdout)
+	fileWriters[2] = bufio.NewWriter(os.Stderr)
 }
 
 // array = directory.glob( "/etc/*.conf" )
@@ -81,13 +81,13 @@ func fileOpen(args ...object.Object) object.Object {
 	}
 
 	// convert handle to integer to return it
-	file_handles[file.Fd()] = file
+	fileHandles[file.Fd()] = file
 
 	// but also store a reader / writer as appropriate
 	if md == os.O_RDONLY {
-		file_readers[file.Fd()] = bufio.NewReader(file)
+		fileReaders[file.Fd()] = bufio.NewReader(file)
 	} else {
-		file_writers[file.Fd()] = bufio.NewWriter(file)
+		fileWriters[file.Fd()] = bufio.NewWriter(file)
 	}
 
 	return &object.Integer{Value: int64(file.Fd())}
@@ -106,13 +106,13 @@ func fileClose(args ...object.Object) object.Object {
 	// If the file was opened for writing then we must flush
 	// it before we close the handle - otherwise our written
 	// data might be lost.
-	if file_writers[uintptr(handle)] != nil {
-		file_writers[uintptr(handle)].Flush()
+	if fileWriters[uintptr(handle)] != nil {
+		fileWriters[uintptr(handle)].Flush()
 	}
-	file_handles[uintptr(handle)].Close()
-	delete(file_handles, uintptr(handle))
-	delete(file_readers, uintptr(handle))
-	delete(file_writers, uintptr(handle))
+	fileHandles[uintptr(handle)].Close()
+	delete(fileHandles, uintptr(handle))
+	delete(fileReaders, uintptr(handle))
+	delete(fileWriters, uintptr(handle))
 	return NULL
 }
 
@@ -155,7 +155,7 @@ func readInput(args ...object.Object) object.Object {
 	}
 
 	id := args[0].(*object.Integer).Value
-	reader := file_readers[uintptr(id)]
+	reader := fileReaders[uintptr(id)]
 	if reader == nil {
 		return newError("Reading from an unopened file-handle.")
 	}
@@ -179,7 +179,7 @@ func writeOutput(args ...object.Object) object.Object {
 	id := args[0].(*object.Integer).Value
 	txt := args[1].(*object.String).Value
 
-	writer := file_writers[uintptr(id)]
+	writer := fileWriters[uintptr(id)]
 	if writer == nil {
 		return newError("Writing to an unopened file-handle.")
 	}

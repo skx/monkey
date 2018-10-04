@@ -79,9 +79,9 @@ func intFun(args ...object.Object) object.Object {
 		i, err := strconv.Atoi(input)
 		if err == nil {
 			return &object.Integer{Value: int64(i)}
-		} else {
-			return newError("Converting string '%s' to int failed %s", input, err.Error())
 		}
+		return newError("Converting string '%s' to int failed %s", input, err.Error())
+
 	case *object.Boolean:
 		input := args[0].(*object.Boolean).Value
 		if input {
