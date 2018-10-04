@@ -714,6 +714,16 @@ function string.substr(start,length = -1) {
      length = len(self) - start ;
    }
 
+   // start must be positive
+   if ( start < 0 ) {
+     start = 0;
+   }
+
+   // if the length of the string is too big then we'll cap it too.
+   if ( start + length > self.len() ) {
+     length = len(self) - start ;
+   }
+
    // catch bounding-errors.
    if ( start >= len(self) ) {
       return "";
@@ -735,6 +745,10 @@ assert( "Hello world".substr( 6 ) == "world" , "string.substr() failed");
 assert( "狐犬".substr( 0 ) == "狐犬" , "string.substr() failed");
 assert( "犬狐".substr( 1 ) == "狐" , "string.substr() failed");
 assert( "狐犬".substr( 2 ) == "" , "string.substr() failed");
+assert( "狐犬".substr( 0,2 ) == "狐犬" , "string.substr() failed");
+assert( "狐犬".substr( 1,2 ) == "犬" , "string.substr() failed");
+assert( "狐犬".substr( 1,100 ) == "犬" , "string.substr() failed");
+assert( "狐犬".substr( -1,100 ) == "狐犬" , "string.substr() failed");
 
 
 
