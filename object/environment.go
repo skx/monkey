@@ -41,7 +41,7 @@ func NewEnclosedEnvironment(outer *Environment) *Environment {
 func (e *Environment) Names(prefix string) []string {
 	var ret []string
 
-	for key, _ := range e.store {
+	for key := range e.store {
 		if strings.HasPrefix(key, prefix) {
 			ret = append(ret, key)
 		}
