@@ -674,58 +674,6 @@ assert( ( "  狐犬  ".rtrim() == "  狐犬"), "string.rtrim failed" );
 
 
 
-//
-// string.split returns an array splitting on any characters included
-// in the separator string.
-//
-// By default the split is on whitespace: " ", "TAB", & "RETURN".
-//
-function string.split(sep = " \r\t\n" ) {
-  let i = 0;
-  let l = len(self);
-  let r = [];
-
-  let tmp = "";
-
-  for( i < l ) {
-
-     // get the character.
-     let c = self[i];
-
-     // is the character one of our split-characters?
-     if ( sep.find( c ) != -1 ) {
-
-        // OK push any previously-accumulated token into our array.
-        if ( len(tmp) > 0 ) {
-          r = push( r, tmp );
-        }
-        tmp = "";
-
-     } else {
-
-       // store the character into our accumulator.
-       tmp += c;
-     }
-     i++;
-  }
-
-  // Do we have a dangling-string?  If so append it.
-  if ( len(tmp) > 0 ) {
-     r = push(r,tmp);
-  }
-
-  return r;
-}
-
-assert( "len(\"1 2 3\".split()) == 3" );
-assert( "type(\"1 2 3\".split(\"2\")) == \"array\"" );
-
-
-
-
-
-
-
 // string.substr returns the given substring
 // from our input.  The length of the string
 // to return is optional, and will default to
@@ -775,6 +723,96 @@ assert( "狐犬".substr( 0,2 ) == "狐犬" , "string.substr() failed");
 assert( "狐犬".substr( 1,2 ) == "犬" , "string.substr() failed");
 assert( "狐犬".substr( 1,100 ) == "犬" , "string.substr() failed");
 assert( "狐犬".substr( -1,100 ) == "狐犬" , "string.substr() failed");
+
+
+
+
+//
+// string.find returns the offset of the given substring
+// or -1 if it isn't found.
+//
+function string.find( needle ) {
+
+   // get details about ourself
+   let i = 0;
+   let l = len(self);
+
+   // the length of our search string.
+   let L = len(needle);
+
+   // get a substring at each possible position
+   for( i < l ) {
+     possible = self.substr( i, L );
+
+     // does this match?
+     if ( possible == needle ) {
+       return i;
+     }
+
+     i++;
+   }
+
+   return -1;
+};
+
+
+assert( "\"steve\".find(\"e\" ) == 2" );
+assert( "\"steve\".find(\"v\" ) == 3" );
+assert( "\"steve\".find(\"PIE\" ) == -1" );
+assert( "\"狐犬\".find(\"狐犬\" ) == 0" );
+assert( "\"st狐eve犬es\".find(\"犬\" ) == 6" );
+
+
+
+
+//
+// string.split returns an array splitting on any characters included
+// in the separator string.
+//
+// By default the split is on whitespace: " ", "TAB", & "RETURN".
+//
+function string.split(sep = " \r\t\n" ) {
+  let i = 0;
+  let l = len(self);
+  let r = [];
+
+  let tmp = "";
+
+  for( i < l ) {
+
+     // get the character.
+     let c = self[i];
+
+     // is the character one of our split-characters?
+     if ( sep.find( c ) != -1 ) {
+
+        // OK push any previously-accumulated token into our array.
+        if ( len(tmp) > 0 ) {
+          r = push( r, tmp );
+        }
+        tmp = "";
+
+     } else {
+
+       // store the character into our accumulator.
+       tmp += c;
+     }
+     i++;
+  }
+
+  // Do we have a dangling-string?  If so append it.
+  if ( len(tmp) > 0 ) {
+     r = push(r,tmp);
+  }
+
+  return r;
+}
+
+assert( "len(\"1 2 3\".split()) == 3" );
+assert( "type(\"1 2 3\".split(\"2\")) == \"array\"" );
+
+
+
 
 
 
