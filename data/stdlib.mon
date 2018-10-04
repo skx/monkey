@@ -204,6 +204,16 @@ function array.filter( predicate ) {
 }
 
 
+// Filter an array and keep only values which are "2".
+assert( "let a = [ 1, 2, 3 , -1, \"steve\", 44 ];
+         let a = a.filter( fn(n) { return n == 2 ; } );
+         if ( a.string() == \"[2]\" ) {
+             return true;
+         } else {
+             puts( a );
+             return false;
+         }" );
+
 
 
 
@@ -261,28 +271,6 @@ function array.join( char ) {
 assert( "[1,2,3].join( \".\" ) == \"1.2.3\"" );
 assert( "[1,2,3].join( \"\" ) == \"123\"" );
 
-
-
-
-
-
-//
-// Return an array containing the result of applying the specified
-// function to each element in the array.
-//
-function array.map( fnc ) {
-   let i = 0;
-   let l = len(self);
-   let result = [];
-
-   for( i < l ) {
-      let tmp = fnc(self[i]);
-      let result = push( result, tmp);
-      i++;
-   }
-
-   return result;
-}
 
 
 
@@ -454,6 +442,44 @@ assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a[2] == 3" );
 
 
 
+//
+// Return an array containing the result of applying the specified
+// function to each element in the array.
+//
+// This is out of alphabetical order because our assert-based testing
+// invokes sort, just to ensure consistent results.
+//
+function array.map( fnc ) {
+   let i = 0;
+   let l = len(self);
+   let result = [];
+
+   for( i < l ) {
+      let tmp = fnc(self[i]);
+      let result = push( result, tmp);
+      i++;
+   }
+
+   return result;
+}
+
+
+assert( "let a = [3,9,-4];
+         a = a.map(fn(n) { return n * n; });
+         a = a.sort();
+         if( a.string() == \"[9, 16, 81]\" ) {
+           true;
+         } else {
+           false;
+         }" );
+assert( "let a = [2,-1,-12];
+         a = a.map(fn(n) { return n +2; });
+         a = a.sort();
+         if( a.string() == \"[-10, 1, 4]\" ) {
+           true;
+         } else {
+           false;
+         }" );
 
 
 
