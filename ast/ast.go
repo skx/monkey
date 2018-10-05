@@ -645,7 +645,6 @@ type HashLiteral struct {
 func (hl *HashLiteral) expressionNode() {}
 
 // TokenLiteral returns the literal token.
-
 func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
 
 // String returns this object as a string.
