@@ -314,7 +314,7 @@ func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 // String returns this object as a string.
 func (b *Boolean) String() string { return b.Token.Literal }
 
-// Blockstatement holds a group of statements, which are treated
+// BlockStatement holds a group of statements, which are treated
 // as a block.  (For example the body of an `if` expression.)
 type BlockStatement struct {
 	// Token holds the actual token
@@ -405,14 +405,27 @@ func (fle *ForLoopExpression) String() string {
 	return out.String()
 }
 
+// FunctionLiteral holds a function-definition
+//
+// See-also FunctionDefineLiteral.
 type FunctionLiteral struct {
-	Token      token.Token
+	// Token is the actual token
+	Token token.Token
+
+	// Parameters is the list of parameters the function receives.
 	Parameters []*Identifier
-	Defaults   map[string]Expression
-	Body       *BlockStatement
+
+	// Defaults holds any default values for arguments which aren't
+	// specified
+	Defaults map[string]Expression
+
+	// Body contains the set of statements within the function.
+	Body *BlockStatement
 }
 
-func (fl *FunctionLiteral) expressionNode()      {}
+func (fl *FunctionLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
 
 // String returns this object as a string.
@@ -431,14 +444,26 @@ func (fl *FunctionLiteral) String() string {
 
 }
 
+// FunctionDefineLiteral holds a function-definition.
+//
+// See-also FunctionLiteral.
 type FunctionDefineLiteral struct {
-	Token      token.Token
+	// Token holds the token
+	Token token.Token
+
+	// Paremeters holds the function parameters.
 	Parameters []*Identifier
-	Defaults   map[string]Expression
-	Body       *BlockStatement
+
+	// Defaults holds any default-arguments.
+	Defaults map[string]Expression
+
+	// Body holds the set of statements in the functions' body.
+	Body *BlockStatement
 }
 
 func (fl *FunctionDefineLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (fl *FunctionDefineLiteral) TokenLiteral() string {
 	return fl.Token.Literal
 }
@@ -459,13 +484,21 @@ func (fl *FunctionDefineLiteral) String() string {
 
 }
 
+// CallExpression holds the invokation of a method-call.
 type CallExpression struct {
-	Token     token.Token
-	Function  Expression
+	// Token stores the literal token
+	Token token.Token
+
+	// Function is the function to be invoked.
+	Function Expression
+
+	// Arguments are the arguments to be applied
 	Arguments []Expression
 }
 
-func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
 
 // String returns this object as a string.
@@ -484,12 +517,19 @@ func (ce *CallExpression) String() string {
 
 // ObjectCallExpression is used when calling a method on an object.
 type ObjectCallExpression struct {
-	Token  token.Token
+	// Token is the literal token
+	Token token.Token
+
+	// Object is the object against which the call is invoked.
 	Object Expression
-	Call   Expression
+
+	// Call is the method-name.
+	Call Expression
 }
 
 func (oce *ObjectCallExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (oce *ObjectCallExpression) TokenLiteral() string {
 	return oce.Token.Literal
 }
@@ -504,24 +544,35 @@ func (oce *ObjectCallExpression) String() string {
 	return out.String()
 }
 
+// StringLiteral holds a string
 type StringLiteral struct {
+	// Token is the token
 	Token token.Token
+
+	// Value is the value of the string.
 	Value string
 }
 
-func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 
 // String returns this object as a string.
 func (sl *StringLiteral) String() string { return sl.Token.Literal }
 
-// Holds input of the form `blah`
+// BacktickLiteral holds details of a command to be executed
 type BacktickLiteral struct {
+	// Token is the actual token
 	Token token.Token
+
+	// Value is the name of the command to execute.
 	Value string
 }
 
-func (bl *BacktickLiteral) expressionNode()      {}
+func (bl *BacktickLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (bl *BacktickLiteral) TokenLiteral() string { return bl.Token.Literal }
 
 // String returns this object as a string.
