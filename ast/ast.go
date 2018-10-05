@@ -85,7 +85,7 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
-// Const statement is the same as let-statement, but the value
+// ConstStatement is the same as let-statement, but the value
 // can't be changed later.
 type ConstStatement struct {
 	// Token is the token
@@ -297,23 +297,36 @@ func (pe *PostfixExpression) String() string {
 	return out.String()
 }
 
+// Boolean holds a boolean type
 type Boolean struct {
+	// Token holds the actual token
 	Token token.Token
+
+	// Value stores the bools' value: true, or false.
 	Value bool
 }
 
-func (b *Boolean) expressionNode()      {}
+func (b *Boolean) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 
 // String returns this object as a string.
 func (b *Boolean) String() string { return b.Token.Literal }
 
+// Blockstatement holds a group of statements, which are treated
+// as a block.  (For example the body of an `if` expression.)
 type BlockStatement struct {
-	Token      token.Token
+	// Token holds the actual token
+	Token token.Token
+
+	// Statements contain the set of statements within the block
 	Statements []Statement
 }
 
-func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) statementNode() {}
+
+// TokenLiteral returns the literal token.
 func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
 
 // String returns this object as a string.
@@ -325,14 +338,27 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
+// IfExpression holds an if-statement
 type IfExpression struct {
-	Token       token.Token
-	Condition   Expression
+	// Token is the actual token
+	Token token.Token
+
+	// Condition is the thing that is evaluated to determine
+	// which block should be executed.
+	Condition Expression
+
+	// Consequence is the set of statements executed if the
+	// condition is true.
 	Consequence *BlockStatement
+
+	// Alternative is the set of statements executed if the
+	// condition is not true (optional).
 	Alternative *BlockStatement
 }
 
-func (ie *IfExpression) expressionNode()      {}
+func (ie *IfExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
 
 // String returns this object as a string.
@@ -349,13 +375,23 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+// ForLoopExpression holds a for-loop
 type ForLoopExpression struct {
-	Token       token.Token
-	Condition   Expression
+	// Token is the actual token
+	Token token.Token
+
+	// Condition is the expression used to determine if the loop
+	// is still running.
+	Condition Expression
+
+	// Consequence is the set of statements to be executed for the
+	// loop body.
 	Consequence *BlockStatement
 }
 
-func (fle *ForLoopExpression) expressionNode()      {}
+func (fle *ForLoopExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (fle *ForLoopExpression) TokenLiteral() string { return fle.Token.Literal }
 
 // String returns this object as a string.
