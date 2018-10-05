@@ -58,7 +58,15 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(right) {
 			return right
 		}
-		return evalInfixExpression(node.Operator, left, right)
+		res := evalInfixExpression(node.Operator, left, right)
+		if isError(res) {
+			fmt.Printf("Error: %s\n", res.Inspect())
+			if PRAGMAS["strict"] == 1 {
+				os.Exit(1)
+			}
+		}
+		return (res)
+
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
@@ -265,7 +273,6 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
 	case operator == "||":
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
-
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
