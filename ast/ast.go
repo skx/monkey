@@ -675,7 +675,9 @@ type AssignStatement struct {
 	Value    Expression
 }
 
-func (as *AssignStatement) expressionNode()      {}
+func (as *AssignStatement) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
 
 // String returns this object as a string.
