@@ -277,6 +277,14 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
+	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
+		// convert the bools to strings.
+		l := &object.String{Value: string(left.Inspect())}
+		r := &object.String{Value: string(right.Inspect())}
+
+		// This is a bit icky, but allows "<=", "<", etc to
+		// "work" for booleans.
+		return evalStringInfixExpression(operator, l, r)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s",
 			left.Type(), operator, right.Type())
