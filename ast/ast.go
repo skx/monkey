@@ -578,12 +578,18 @@ func (bl *BacktickLiteral) TokenLiteral() string { return bl.Token.Literal }
 // String returns this object as a string.
 func (bl *BacktickLiteral) String() string { return bl.Token.Literal }
 
+// ArrayLiteral holds an inline array
 type ArrayLiteral struct {
-	Token    token.Token
+	// Token is the token
+	Token token.Token
+
+	// Elements holds the members of the array.
 	Elements []Expression
 }
 
-func (al *ArrayLiteral) expressionNode()      {}
+func (al *ArrayLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
 
 // String returns this object as a string.
@@ -599,13 +605,21 @@ func (al *ArrayLiteral) String() string {
 	return out.String()
 }
 
+// IndexExpression holds an index-expression
 type IndexExpression struct {
+	// Token is the actual token
 	Token token.Token
-	Left  Expression
+
+	// Left is the thing being indexed.
+	Left Expression
+
+	// Index is the value we're indexing
 	Index Expression
 }
 
-func (ie *IndexExpression) expressionNode()      {}
+func (ie *IndexExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
 func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
 
 // String returns this object as a string.
@@ -619,12 +633,19 @@ func (ie *IndexExpression) String() string {
 	return out.String()
 }
 
+// HashLiteral holds a hash definition
 type HashLiteral struct {
+	// Token holds the token
 	Token token.Token // the '{' token
+
+	// Pairs stores the name/value sets of the hash-content
 	Pairs map[Expression]Expression
 }
 
-func (hl *HashLiteral) expressionNode()      {}
+func (hl *HashLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
+
 func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
 
 // String returns this object as a string.
