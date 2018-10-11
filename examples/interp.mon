@@ -7,8 +7,12 @@
 
 
 let data = { "Name":"Steve", "Contact":"+358449...",  "Age": 32 };
-let out  = string.interpolate( "My name is ${Name}, I am ${Age}\n", data );
+let str  = "My name is ${Name}, I am ${Age}\n";
+let out  = str.interpolate( data );
 puts(out);
 
-let out = string.interpolate( "My ${Key} is missing!", data );
-puts(out);
+let out = "My ${Key} is ${null} missing!\n\tContact me at .. ${Contact}".interpolate( data );
+puts(out, "\n");
+
+
+puts( "Forename: Steve  Surname:${surname}".interpolate( { "surname": "Kemp" } ) , "\n");
