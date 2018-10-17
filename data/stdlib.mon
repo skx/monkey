@@ -30,11 +30,14 @@ const PI = 3.141592653589793;
 const E  =  2.718281828459045;
 
 //
-// Constants referring to file-handles, as used for STDIN, STDOUT, STDERR
+// File-objects for STDIN, STDOUT, and STDERR.
 //
-const STDIN  = 0;
-const STDOUT = 1;
-const STDERR = 2;
+// Rather than opening these by name/path we have magic-strings which
+// are recognized by our "open" primitive.
+//
+const STDIN = open( "!STDIN!" );
+const STDOUT = open( "!STDOUT!" );
+const STDERR = open( "!STDERR!" );
 
 
 //
@@ -97,7 +100,9 @@ assert( "true" );
 assert( true );
 assert( "! false;" );
 assert( !false );
-
+assert( "type( STDIN ) == \"file\"" );
+assert( "type( STDOUT ) == \"file\"" );
+assert( "type( STDERR ) == \"file\"" );
 
 
 

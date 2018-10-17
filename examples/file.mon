@@ -6,27 +6,27 @@
 //
 
 
-let fd = file.open( "/etc/passwd" );
-if ( fd < 0 ) {
-   puts( "Failed to open file\n" );
-   exit(0);
-}
+let fh = open( "/etc/passwd" );
 
 // Count of lines
 let lines = 0;
 
 // Read a line
-let r = read(fd);
+let r = fh.read();
 
-// Loop while that is none-empty
-for( len(r) > 0  ) {
+// Loop while that is non-empty
+for( len(r) > 0 ) {
 
+     // Bump the line-count
      lines++;
-     puts( "\tRead: ", r);
+
+     // strip newlines / space, and show the output
+     r = r.trim()
+     puts( "Read: '", r, "'\n");
 
      // loop
-     r = read(fd);
+     r = fh.read();
 };
-file.close(fd);
+fh.close();
 
 puts( "Read:" , lines, " lines.\n" );

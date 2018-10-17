@@ -364,9 +364,6 @@ os.getenv
 os.setenv
 os.environment
 directory.glob
-file.open
-file.close
-file.lines
 math.abs
 math.random
 math.sqrt
@@ -387,9 +384,6 @@ moi.kissa
 		{token.IDENT, "os.setenv"},
 		{token.IDENT, "os.environment"},
 		{token.IDENT, "directory.glob"},
-		{token.IDENT, "file.open"},
-		{token.IDENT, "file.close"},
-		{token.IDENT, "file.lines"},
 		{token.IDENT, "math.abs"},
 		{token.IDENT, "math.random"},
 		{token.IDENT, "math.sqrt"},
