@@ -157,6 +157,11 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 		}
 		return &String{Value: line}
 	}
+	if method == "rewind" {
+		// Rewind a handle by seeking to the beginning of the file.
+		f.Handle.Seek(0, 0)
+		return &Boolean{Value: true}
+	}
 	if method == "write" {
 
 		// check we have an argument to write.
