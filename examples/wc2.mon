@@ -4,14 +4,13 @@
 //
 //   Read 47 lines
 //
-// That maches :)
+// That matches :)
 //
 //   $ wc -l /etc/passwd
 //   47 /etc/passwd
 //
 
 // Open the file
-let lines = file.lines( "/etc/passwd" );
-if ( lines ) {
-   puts( "Read ", len(lines), " lines\n" )
-}
+let fh = open( "/etc/passwd", "r" );
+lines = fh.lines();
+puts( "Read ", len(lines), " lines\n" );

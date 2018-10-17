@@ -11,21 +11,17 @@
 // second argument:
 //
 let name = "/tmp/moi";
-let handle = file.open(name, "w");
-if ( handle < 0 ) {
-   puts("Failed to open ", name, " for writing\n");
-   exit(0);
-}
+let fh   = open(name, "w");
 
 //
 // Now we have a handle we can write (strings) to it:
-write(handle, "This is a test\n" );
-write(handle, string({ "Steve": "Kemp", "Age": 128}) + "\n");
+fh.write( "This is a test\n" );
+fh.write( string({ "Steve": "Kemp", "Age": 128}) + "\n" );
 
 //
 // And close it.
 //
-file.close( handle );
+fh.close();
 
 //
 // Show what we did.

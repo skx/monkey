@@ -4,7 +4,7 @@
 //
 //   Read 2572 characters
 //
-// That maches :)
+// That matches :)
 //
 //   $ wc -c /etc/passwd
 //   2572
@@ -12,8 +12,8 @@
 
 // Open the file
 let path = "/etc/passwd";
-let handle = file.open(path);
-if ( handle < 0 ) {
+let fh = open(path);
+if ( ! fh ) {
    puts( "Failed to open file" )
    exit(0);
 }
@@ -22,7 +22,7 @@ if ( handle < 0 ) {
 let c = 0;
 
 // Read a line
-let r = read(handle);
+let r = fh.read();
 
 // Loop while that is none-empty
 for( len(r) > 0  ) {
@@ -31,8 +31,8 @@ for( len(r) > 0  ) {
    c += len(r);
 
    // Read the next one.
-   r = read(handle);
+   r = fh.read();
 }
 
 puts( "Read " , c, " characters from ", path , "\n" );
-file.close(handle);
+fh.close();
