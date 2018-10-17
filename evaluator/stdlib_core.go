@@ -13,6 +13,38 @@ import (
 	"github.com/skx/monkey/parser"
 )
 
+// Change a mode of a file - note the second argument is a string
+// to emphasise octal.
+func chmodFun(args ...object.Object) object.Object {
+	if len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=2",
+			len(args))
+	}
+
+	path := args[0].Inspect()
+	mode := ""
+
+	switch args[1].(type) {
+	case *object.String:
+		mode = args[1].(*object.String).Value
+	default:
+		return newError("Second argument must be string, got %v", args[1])
+	}
+
+	// convert from octal -> decimal
+	result, err := strconv.ParseInt(mode, 8, 64)
+	if err != nil {
+		return &object.Boolean{Value: false}
+	}
+
+	// Change the mode.
+	err = os.Chmod(path, os.FileMode(result))
+	if err != nil {
+		return &object.Boolean{Value: false}
+	}
+	return &object.Boolean{Value: true}
+}
+
 // evaluate a string containing monkey-code
 func evalFun(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
@@ -171,6 +203,34 @@ func matchFun(args ...object.Object) object.Object {
 	return NULL
 }
 
+// mkdir
+func mkdirFun(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+
+	if args[0].Type() != object.STRING_OBJ {
+		return newError("argument to `mkdir` must be STRING, got %s",
+			args[0].Type())
+	}
+
+	path := args[0].(*object.String).Value
+
+	// Can't fail?
+	mode, err := strconv.ParseInt("755", 8, 64)
+	if err != nil {
+		return &object.Boolean{Value: false}
+	}
+
+	err = os.MkdirAll(path, os.FileMode(mode))
+	if err != nil {
+		return &object.Boolean{Value: false}
+	}
+	return &object.Boolean{Value: true}
+
+}
+
 // Open a file
 func openFun(args ...object.Object) object.Object {
 
@@ -278,6 +338,69 @@ func putsFun(args ...object.Object) object.Object {
 		fmt.Print(arg.Inspect())
 	}
 	return NULL
+}
+
+// Get file info.
+func statFun(args ...object.Object) object.Object {
+
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	path := args[0].Inspect()
+	info, err := os.Stat(path)
+
+	res := make(map[object.HashKey]object.HashPair)
+	if err != nil {
+		// Empty hash as we've not yet set anything
+		return &object.Hash{Pairs: res}
+	}
+
+	//
+	// OK populate the hash
+	//
+
+	// size -> int
+	size_data := &object.Integer{Value: info.Size()}
+	size_key := &object.String{Value: "size"}
+	size_hash := object.HashPair{Key: size_key, Value: size_data}
+	res[size_key.HashKey()] = size_hash
+
+	// mod-time -> int
+	mtime_data := &object.Integer{Value: info.ModTime().Unix()}
+	mtime_key := &object.String{Value: "mtime"}
+	mtime_hash := object.HashPair{Key: mtime_key, Value: mtime_data}
+	res[mtime_key.HashKey()] = mtime_hash
+
+	// Perm -> string
+	perm_data := &object.String{Value: info.Mode().String()}
+	perm_key := &object.String{Value: "perm"}
+	perm_hash := object.HashPair{Key: perm_key, Value: perm_data}
+	res[perm_key.HashKey()] = perm_hash
+
+	// Mode -> string  (because we want to emphasise the octal nature)
+	m := fmt.Sprintf("%04o", info.Mode().Perm())
+	mode_data := &object.String{Value: m}
+	mode_key := &object.String{Value: "mode"}
+	mode_hash := object.HashPair{Key: mode_key, Value: mode_data}
+	res[mode_key.HashKey()] = mode_hash
+
+	typeStr := "unknown"
+	if info.Mode().IsDir() {
+		typeStr = "directory"
+	}
+	if info.Mode().IsRegular() {
+		typeStr = "file"
+	}
+
+	// type: string
+	type_data := &object.String{Value: typeStr}
+	type_key := &object.String{Value: "type"}
+	type_hash := object.HashPair{Key: type_key, Value: type_data}
+	res[type_key.HashKey()] = type_hash
+
+	return &object.Hash{Pairs: res}
+
 }
 
 // Get hash keys
@@ -408,7 +531,28 @@ func typeFun(args ...object.Object) object.Object {
 			args[0].Type())
 	}
 }
+
+// Remove a file/directory.
+func unlinkFun(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+
+	path := args[0].Inspect()
+
+	err := os.Remove(path)
+	if err != nil {
+		return &object.Boolean{Value: false}
+	}
+	return &object.Boolean{Value: true}
+}
+
 func init() {
+	RegisterBuiltin("chmod",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (chmodFun(args...))
+		})
 	RegisterBuiltin("delete",
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (hashDelete(args...))
@@ -437,6 +581,10 @@ func init() {
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (matchFun(args...))
 		})
+	RegisterBuiltin("mkdir",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (mkdirFun(args...))
+		})
 	RegisterBuiltin("pragma",
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (pragmaFun(args...))
@@ -457,6 +605,10 @@ func init() {
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (setFun(args...))
 		})
+	RegisterBuiltin("stat",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (statFun(args...))
+		})
 	RegisterBuiltin("string",
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (strFun(args...))
@@ -464,5 +616,9 @@ func init() {
 	RegisterBuiltin("type",
 		func(env *object.Environment, args ...object.Object) object.Object {
 			return (typeFun(args...))
+		})
+	RegisterBuiltin("unlink",
+		func(env *object.Environment, args ...object.Object) object.Object {
+			return (unlinkFun(args...))
 		})
 }

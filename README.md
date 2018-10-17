@@ -449,6 +449,24 @@ By default three filehandles will be made available, as constants:
   * Used for writing messages.
 
 
+## 2.13 File Operations
+
+The primitive `stat` will return a hash of details about the given file, or
+directory entry.
+
+You can change the permissions of a file via the `chmod` function, but note that the second argument is an __octal__ string:
+
+    chmod( "/tmp/evil.sh", "755")
+    chmod( "/tmp/normal", "644")
+
+To remove a file, use `unlink`:
+
+    unlink( "/tmp/trash.txt" )
+
+And finally to make a directory:
+
+    mkdir( "/tmp/blah" );
+
 # 3. Object Methods
 
 There is now support for "object-methods".  Object methods are methods
