@@ -38,9 +38,21 @@ func (f *File) Inspect() string {
 func (f *File) Open(mode string) error {
 
 	//
-	// TODO - Special case STDIN, STDOUT, STDERR
-	// We'd just setup readers/writers for these.
+	// Special case STDIN, STDOUT, STDERR.
+	// We only need to setup readers/writers for these.
 	//
+	if f.Filename == "!STDIN!" {
+		f.Reader = bufio.NewReader(os.Stdin)
+		return nil
+	}
+	if f.Filename == "!STDOUT!" {
+		f.Writer = bufio.NewWriter(os.Stdout)
+		return nil
+	}
+	if f.Filename == "!STDERR!" {
+		f.Writer = bufio.NewWriter(os.Stderr)
+		return nil
+	}
 
 	//
 	// Default mode is to read.

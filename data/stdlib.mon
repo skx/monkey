@@ -29,6 +29,15 @@
 const PI = 3.141592653589793;
 const E  =  2.718281828459045;
 
+//
+// File-objects for STDIN, STDOUT, and STDERR.
+//
+// Rather than opening these by name/path we have magic-strings which
+// are recognized by our "open" primitive.
+//
+const STDIN = open( "!STDIN!" );
+const STDOUT = open( "!STDOUT!" );
+const STDERR = open( "!STDERR!" );
 
 
 //
@@ -91,7 +100,9 @@ assert( "true" );
 assert( true );
 assert( "! false;" );
 assert( !false );
-
+assert( "type( STDIN ) == \"file\"" );
+assert( "type( STDOUT ) == \"file\"" );
+assert( "type( STDERR ) == \"file\"" );
 
 
 
