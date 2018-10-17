@@ -30,7 +30,7 @@ func (l *Lexer) GetLine() int {
 	for i < l.readPosition && i < chars {
 
 		if l.characters[i] == rune('\n') {
-			line += 1
+			line++
 		}
 
 		i++
