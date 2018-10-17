@@ -407,6 +407,40 @@ capture groups in the match.
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 
 
+## 2.12 File I/O
+
+The `open` primitive is used to open files, and can be used to open files for either reading, or writing:
+
+    // Open a file for reading
+    fh = open( "/etc/passwd" );
+    fh = open( "/etc/passwd", "r" );
+
+    // Open a file for writing
+    fh = open( "/tmp/blah", "w" );
+
+    // Open a file for appending
+    fh = open( "/tmp/blah", "wa" );
+
+Once you have a file-object you can invoke methods upon it:
+
+* `read()`
+  * Read a line of input, returning that input as a string.
+* `readlines()`
+  * Read the lines of the given file, and return them as an array.
+* `write(data)`
+  * Write the data to the given file.
+
+These are demonstrated in the following examples:
+
+* [examples/file.mon](examples/file.mon)
+  * Simple example.
+* [examples/file-writing.mon](examples/file-writing.mon)
+  * Simple example.
+* [examples/wc.mon](examples/wc.mon)
+* [examples/wc2.mon](examples/wc2.mon)
+  * Counting lines.
+
+
 # 3. Object Methods
 
 There is now support for "object-methods".  Object methods are methods
