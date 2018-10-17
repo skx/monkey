@@ -440,6 +440,14 @@ These are demonstrated in the following examples:
 * [examples/wc2.mon](examples/wc2.mon)
   * Counting lines.
 
+By default three filehandles will be made available, as constants:
+
+* `STDIN`
+  * Use for reading STDIN.
+* `STDOUT`
+* `STDERR`
+  * Used for writing messages.
+
 
 # 3. Object Methods
 
