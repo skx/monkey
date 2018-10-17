@@ -238,9 +238,6 @@ func (l *Lexer) readIdentifier() string {
 	//
 	valid := map[string]bool{
 		"directory.glob":     true,
-		"file.close":         true,
-		"file.lines":         true,
-		"file.open":          true,
 		"math.abs":           true,
 		"math.random":        true,
 		"math.sqrt":          true,
