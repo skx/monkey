@@ -110,6 +110,8 @@ func lenFun(args ...object.Object) object.Object {
 	switch arg := args[0].(type) {
 	case *object.String:
 		return &object.Integer{Value: int64(utf8.RuneCountInString(arg.Value))}
+	case *object.Null:
+		return &object.Integer{Value: 0}
 	case *object.Array:
 		return &object.Integer{Value: int64(len(arg.Elements))}
 	default:
