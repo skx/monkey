@@ -1,7 +1,0 @@
-#!/bin/sh
-
-go test ./... || exit
-
-go build -ldflags "-X main.version=$(git describe --tags 2>/dev/null || echo 'master')" -o "monkey" || exit
-
-./monkey -eval 'puts("ok - stdlib\n"); exit(0);'
