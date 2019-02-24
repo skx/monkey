@@ -1,4 +1,3 @@
-[![Travis CI](https://img.shields.io/travis/skx/monkey/master.svg?style=flat-square)](https://travis-ci.org/skx/monkey)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skx/monkey)](https://goreportcard.com/report/github.com/skx/monkey)
 [![license](https://img.shields.io/github/license/skx/monkey.svg)](https://github.com/skx/monkey/blob/master/LICENSE)
 [![Release](https://img.shields.io/github/release/skx/monkey.svg)](https://github.com/skx/monkey/releases/latest)
@@ -528,6 +527,17 @@ implicit `self` name.  Invocation would look as you expect:
 You can see [data/stdlib.mon](data/stdlib.mon) implements some primitives
 in this fashion, for example the functional-programming methods `array.map`,
 `array.filter`, `string.toupper`, etc, etc.
+
+
+## Github Setup
+
+This repository is configured to run tests upon every commit, and when
+pull-requests are created/updated.  The testing is carried out via
+[.github/run-tests.sh](.github/run-tests.sh) which is used by the
+[github-action-tester](https://github.com/skx/github-action-tester) action.
+
+Releases are automated in a similar fashion via [.github/build](.github/build),
+and the [github-action-publish-binaries](https://github.com/skx/github-action-publish-binaries) action.
 
 
 Steve
