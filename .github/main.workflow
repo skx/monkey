@@ -33,6 +33,6 @@ action "Test" {
 ##
 action "Upload" {
   uses = "skx/github-action-publish-binaries@master"
-  args = "go*-*"
+  args = "monkey-*"
   secrets = ["GITHUB_TOKEN"]
 }
