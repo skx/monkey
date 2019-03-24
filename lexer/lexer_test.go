@@ -10,7 +10,7 @@ func TestNextToken1(t *testing.T) {
 	input := `=+(){},;`
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.ASSIGN, "="},
@@ -63,7 +63,7 @@ if(5<10){
 for
 `
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.LET, "let"},
@@ -191,7 +191,7 @@ let a = 1;
 // comment on two-lines`
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.ASSIGN, "="},
@@ -228,7 +228,7 @@ let a = 1;
  */`
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.ASSIGN, "="},
@@ -256,7 +256,7 @@ func TestIntegers(t *testing.T) {
 	input := `10 0x10 0xF0 0xFE 0b0101 0xFF 0b101 0xFF;`
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.INT, "10"},
@@ -288,7 +288,7 @@ func TestShebang(t *testing.T) {
 10;`
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.INT, "10"},
@@ -377,7 +377,7 @@ moi.kissa
 `
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.IDENT, "os.getenv"},
@@ -420,7 +420,7 @@ a?.b?();
 `
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.IDENT, "foo"},
@@ -464,7 +464,7 @@ func TestIntDotMethod(t *testing.T) {
 `
 
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.INT, "3"},

@@ -1,15 +1,15 @@
 package token
 
-// TokenType is a string
-type TokenType string
+// Type is a string
+type Type string
 
 // Token struct represent the lexer token
 type Token struct {
-	Type    TokenType
+	Type    Type
 	Literal string
 }
 
-// pre-defined TokenType
+// pre-defined Type
 const (
 	EOF             = "EOF"
 	IDENT           = "IDENT"
@@ -62,7 +62,7 @@ const (
 )
 
 // reversed keywords
-var keywords = map[string]TokenType{
+var keywords = map[string]Type{
 	"const":    CONST,
 	"else":     ELSE,
 	"false":    FALSE,
@@ -76,7 +76,7 @@ var keywords = map[string]TokenType{
 }
 
 // LookupIdentifier used to determinate whether identifier is keyword nor not
-func LookupIdentifier(identifier string) TokenType {
+func LookupIdentifier(identifier string) Type {
 	if tok, ok := keywords[identifier]; ok {
 		return tok
 	}

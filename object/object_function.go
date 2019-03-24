@@ -17,7 +17,7 @@ type Function struct {
 }
 
 // Type returns the type of this object.
-func (f *Function) Type() ObjectType {
+func (f *Function) Type() Type {
 	return FUNCTION_OBJ
 }
 

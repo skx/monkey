@@ -17,7 +17,7 @@ type String struct {
 }
 
 // Type returns the type of this object.
-func (s *String) Type() ObjectType {
+func (s *String) Type() Type {
 	return STRING_OBJ
 }
 

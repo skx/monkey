@@ -10,7 +10,7 @@ import (
 // HashKey is the structure used for hash-keys
 type HashKey struct {
 	// Type holds the type of the object.
-	Type ObjectType
+	Type Type
 
 	// Value holds the actual hash-key value.
 	Value uint64
@@ -32,7 +32,7 @@ type Hash struct {
 }
 
 // Type returns the type of this object.
-func (h *Hash) Type() ObjectType {
+func (h *Hash) Type() Type {
 	return HASH_OBJ
 }
 

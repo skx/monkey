@@ -7,7 +7,7 @@ type Error struct {
 }
 
 // Type returns the type of this object.
-func (e *Error) Type() ObjectType {
+func (e *Error) Type() Type {
 	return ERROR_OBJ
 }
 

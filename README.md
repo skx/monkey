@@ -2,6 +2,37 @@
 [![license](https://img.shields.io/github/license/skx/monkey.svg)](https://github.com/skx/monkey/blob/master/LICENSE)
 [![Release](https://img.shields.io/github/release/skx/monkey.svg)](https://github.com/skx/monkey/releases/latest)
 
+
+
+* [Monkey](#monkey)
+  * [My changes](#my-changes)
+* [1. Installation](#1-installation)
+  * [Source Installation go &lt;=  1.11](#source-installation-go---111)
+  * [Source installation go &gt;= 1.12](#source-installation-go--112)
+  * [Binary Releases](#binary-releases)
+* [1.1 Usage](#11-usage)
+* [2 Syntax](#2-syntax)
+  * [2.1 Definitions](#21-definitions)
+  * [2.2 Arithmetic operations](#22-arithmetic-operations)
+  * [2.3 Builtin containers](#23-builtin-containers)
+    * [2.3.1 Arrays](#231-arrays)
+    * [2.3.2 Hashes](#232-hashes)
+  * [2.4 Builtin functions](#24-builtin-functions)
+    * [2.4.1 The Standard Library](#241-the-standard-library)
+  * [2.5 Functions](#25-functions)
+  * [2.6 If-else statements](#26-if-else-statements)
+  * [2.7 For-loop statements](#27-for-loop-statements)
+  * [2.8 Comments](#28-comments)
+  * [2.9 Postfix Operators](#29-postfix-operators)
+  * [2.10 Command Execution](#210-command-execution)
+  * [2.11 Regular Expressions](#211-regular-expressions)
+  * [2.12 File I/O](#212-file-io)
+  * [2.13 File Operations](#213-file-operations)
+  * [3. Object Methods](#3-object-methods)
+      * [3.1 Defininig New Object Methods](#31-defininig-new-object-methods)
+* [Github Setup](#github-setup)
+
+
 # Monkey
 
 This repository contains an interpreter for the "Monkey" programming language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
@@ -47,9 +78,24 @@ The interpreter in _this_ repository has been significantly extended from the st
 
 ## 1. Installation
 
-If you have a working [golang](https://golang.org/) setup you can install the interpreter via:
+There are two ways to install `monkey` from source, depending upon the version of go you're using:
 
-    $ go get -u  github.com/skx/monkey
+### Source Installation go <=  1.11
+
+If you're using `go` before 1.11 then the following command should fetch/update `monkey`, and install it upon your system:
+
+     $ go get -u github.com/skx/monkey
+
+### Source installation go >= 1.12
+
+If you're using a more recent version of `go` (which is _highly_ recommended), you need to clone to a directory which is not present upon your `GOPATH`:
+
+    git clone https://github.com/skx/monkey
+    cd monkey
+    go install
+
+
+### Binary Releases
 
 Alternatively you could install a binary-release, from the [release page](https://github.com/skx/monkey/releases).
 

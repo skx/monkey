@@ -1,10 +1,10 @@
 // Package object contains our core-definitions for objects.
 package object
 
-// ObjectType describes the type of an object.
-type ObjectType string
+// Type describes the type of an object.
+type Type string
 
-// pre-defined constant ObjectType
+// pre-defined constant Type
 const (
 	INTEGER_OBJ      = "INTEGER"
 	FLOAT_OBJ        = "FLOAT"
@@ -24,7 +24,7 @@ const (
 type Object interface {
 
 	// Type returns the type of this object.
-	Type() ObjectType
+	Type() Type
 
 	// Inspect returns a string-representation of the given object.
 	Inspect() string
