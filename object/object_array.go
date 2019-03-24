@@ -13,7 +13,7 @@ type Array struct {
 }
 
 // Type returns the type of this object.
-func (ao *Array) Type() ObjectType {
+func (ao *Array) Type() Type {
 	return ARRAY_OBJ
 }
 

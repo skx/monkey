@@ -10,7 +10,7 @@ type Builtin struct {
 }
 
 // Type returns the type of this object.
-func (b *Builtin) Type() ObjectType {
+func (b *Builtin) Type() Type {
 	return BUILTIN_OBJ
 }
 

@@ -13,7 +13,7 @@ type Boolean struct {
 }
 
 // Type returns the type of this object.
-func (b *Boolean) Type() ObjectType {
+func (b *Boolean) Type() Type {
 	return BOOLEAN_OBJ
 }
 

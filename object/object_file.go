@@ -24,7 +24,7 @@ type File struct {
 }
 
 // Type returns the type of this object.
-func (f *File) Type() ObjectType {
+func (f *File) Type() Type {
 	return FILE_OBJ
 }
 

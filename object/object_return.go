@@ -7,7 +7,7 @@ type ReturnValue struct {
 }
 
 // Type returns the type of this object.
-func (rv *ReturnValue) Type() ObjectType {
+func (rv *ReturnValue) Type() Type {
 	return RETURN_VALUE_OBJ
 }
 

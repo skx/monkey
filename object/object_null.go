@@ -4,7 +4,7 @@ package object
 type Null struct{}
 
 // Type returns the type of this object.
-func (n *Null) Type() ObjectType {
+func (n *Null) Type() Type {
 	return NULL_OBJ
 }
 

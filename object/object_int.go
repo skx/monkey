@@ -18,7 +18,7 @@ func (i *Integer) Inspect() string {
 }
 
 // Type returns the type of this object.
-func (i *Integer) Type() ObjectType {
+func (i *Integer) Type() Type {
 	return INTEGER_OBJ
 }
 
