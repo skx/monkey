@@ -37,7 +37,7 @@ const (
 )
 
 // each token precedence
-var precedences = map[token.TokenType]int{
+var precedences = map[token.Type]int{
 	token.ASSIGN:          ASSIGN,
 	token.EQ:              EQUALS,
 	token.NOT_EQ:          EQUALS,
@@ -82,15 +82,15 @@ type Parser struct {
 
 	// prefixParseFns holds a map of parsing methods for
 	// prefix-based syntax.
-	prefixParseFns map[token.TokenType]prefixParseFn
+	prefixParseFns map[token.Type]prefixParseFn
 
 	// infixParseFns holds a map of parsing methods for
 	// infix-based syntax.
-	infixParseFns map[token.TokenType]infixParseFn
+	infixParseFns map[token.Type]infixParseFn
 
 	// postfixParseFns holds a map of parsing methods for
 	// postfix-based syntax.
-	postfixParseFns map[token.TokenType]postfixParseFn
+	postfixParseFns map[token.Type]postfixParseFn
 }
 
 // New returns our new parser-object.
@@ -99,7 +99,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.nextToken()
 
-	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
@@ -117,7 +117,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 
-	p.infixParseFns = make(map[token.TokenType]infixParseFn)
+	p.infixParseFns = make(map[token.Type]infixParseFn)
 	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.MOD, p.parseInfixExpression)
@@ -141,24 +141,24 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.ASTERISK_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
 
-	p.postfixParseFns = make(map[token.TokenType]postfixParseFn)
+	p.postfixParseFns = make(map[token.Type]postfixParseFn)
 	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
 	p.registerPostfix(token.MINUS_MINUS, p.parsePostfixExpression)
 	return p
 }
 
 // registerPrefix registers a function for handling a prefix-based statement
-func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+func (p *Parser) registerPrefix(tokenType token.Type, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
 
 // registerInfix registers a function for handling a infix-based statement
-func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+func (p *Parser) registerInfix(tokenType token.Type, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
 
 // registerPostfix registers a function for handling a postfix-based statement
-func (p *Parser) registerPostfix(tokenType token.TokenType, fn postfixParseFn) {
+func (p *Parser) registerPostfix(tokenType token.Type, fn postfixParseFn) {
 	p.postfixParseFns[tokenType] = fn
 }
 
@@ -168,7 +168,7 @@ func (p *Parser) Errors() []string {
 }
 
 // peekError raises an error if the next token is not the expected type.
-func (p *Parser) peekError(t token.TokenType) {
+func (p *Parser) peekError(t token.Type) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead around line %d", t, p.curToken.Type, p.l.GetLine())
 	p.errors = append(p.errors, msg)
 }
@@ -256,7 +256,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 }
 
 // no prefix parse function error
-func (p *Parser) noPrefixParseFnError(t token.TokenType) {
+func (p *Parser) noPrefixParseFnError(t token.Type) {
 	msg := fmt.Sprintf("no prefix parse function for %s found around line %d", t, p.l.GetLine())
 	p.errors = append(p.errors, msg)
 }
@@ -532,7 +532,7 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 }
 
 // parsearray elements literal
-func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
+func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 	list := make([]ast.Expression, 0)
 	if p.peekTokenIs(end) {
 		p.nextToken()
@@ -643,18 +643,18 @@ func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
 }
 
 // curTokenIs tests if the current token has the given type.
-func (p *Parser) curTokenIs(t token.TokenType) bool {
+func (p *Parser) curTokenIs(t token.Type) bool {
 	return p.curToken.Type == t
 }
 
 // peekTokenIs tests if the next token has the given type.
-func (p *Parser) peekTokenIs(t token.TokenType) bool {
+func (p *Parser) peekTokenIs(t token.Type) bool {
 	return p.peekToken.Type == t
 }
 
 // expectPeek validates the next token is of the given type,
 // and advances if so.  If it is not an error is stored.
-func (p *Parser) expectPeek(t token.TokenType) bool {
+func (p *Parser) expectPeek(t token.Type) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
