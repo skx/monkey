@@ -361,29 +361,29 @@ func statFun(args ...object.Object) object.Object {
 	//
 
 	// size -> int
-	size_data := &object.Integer{Value: info.Size()}
-	size_key := &object.String{Value: "size"}
-	size_hash := object.HashPair{Key: size_key, Value: size_data}
-	res[size_key.HashKey()] = size_hash
+	sizeData := &object.Integer{Value: info.Size()}
+	sizeKey := &object.String{Value: "size"}
+	sizeHash := object.HashPair{Key: sizeKey, Value: sizeData}
+	res[sizeKey.HashKey()] = sizeHash
 
 	// mod-time -> int
-	mtime_data := &object.Integer{Value: info.ModTime().Unix()}
-	mtime_key := &object.String{Value: "mtime"}
-	mtime_hash := object.HashPair{Key: mtime_key, Value: mtime_data}
-	res[mtime_key.HashKey()] = mtime_hash
+	mtimeData := &object.Integer{Value: info.ModTime().Unix()}
+	mtimeKey := &object.String{Value: "mtime"}
+	mtimeHash := object.HashPair{Key: mtimeKey, Value: mtimeData}
+	res[mtimeKey.HashKey()] = mtimeHash
 
 	// Perm -> string
-	perm_data := &object.String{Value: info.Mode().String()}
-	perm_key := &object.String{Value: "perm"}
-	perm_hash := object.HashPair{Key: perm_key, Value: perm_data}
-	res[perm_key.HashKey()] = perm_hash
+	permData := &object.String{Value: info.Mode().String()}
+	permKey := &object.String{Value: "perm"}
+	permHash := object.HashPair{Key: permKey, Value: permData}
+	res[permKey.HashKey()] = permHash
 
 	// Mode -> string  (because we want to emphasise the octal nature)
 	m := fmt.Sprintf("%04o", info.Mode().Perm())
-	mode_data := &object.String{Value: m}
-	mode_key := &object.String{Value: "mode"}
-	mode_hash := object.HashPair{Key: mode_key, Value: mode_data}
-	res[mode_key.HashKey()] = mode_hash
+	modeData := &object.String{Value: m}
+	modeKey := &object.String{Value: "mode"}
+	modeHash := object.HashPair{Key: modeKey, Value: modeData}
+	res[modeKey.HashKey()] = modeHash
 
 	typeStr := "unknown"
 	if info.Mode().IsDir() {
@@ -394,10 +394,10 @@ func statFun(args ...object.Object) object.Object {
 	}
 
 	// type: string
-	type_data := &object.String{Value: typeStr}
-	type_key := &object.String{Value: "type"}
-	type_hash := object.HashPair{Key: type_key, Value: type_data}
-	res[type_key.HashKey()] = type_hash
+	typeData := &object.String{Value: typeStr}
+	typeKey := &object.String{Value: "type"}
+	typeHash := object.HashPair{Key: typeKey, Value: typeData}
+	res[typeKey.HashKey()] = typeHash
 
 	return &object.Hash{Pairs: res}
 
