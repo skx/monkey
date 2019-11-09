@@ -55,6 +55,7 @@ const (
 	EQ              = "=="
 	NOT_EQ          = "!="
 	STRING          = "STRING"
+	REGEXP          = "REGEXP"
 	LBRACKET        = "["
 	RBRACKET        = "]"
 	COLON           = ":"
