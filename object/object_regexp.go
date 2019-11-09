@@ -2,7 +2,7 @@
 
 package object
 
-// Regexp wraps regular-expressions and implements Object and Hashable interfaces.
+// Regexp wraps regular-expressions and implements the Object interface.
 type Regexp struct {
 	// Value holds the string value this object wraps.
 	Value string
