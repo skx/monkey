@@ -60,6 +60,9 @@ const (
 	RBRACKET        = "]"
 	COLON           = ":"
 	PERIOD          = "."
+	CONTAINS        = "~="
+	NOT_CONTAINS    = "!~"
+	ILLEGAL         = "ILLEGAL"
 )
 
 // reversed keywords
