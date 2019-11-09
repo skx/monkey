@@ -275,8 +275,14 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
 	case operator == "||":
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
+	case operator == "!~":
+		return notMatches(left, right)
+	case operator == "~=":
+		return matches(left, right)
+
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
+
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
@@ -288,6 +294,45 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
+}
+
+func matches(left, right object.Object) object.Object {
+
+	str := left.Inspect()
+
+	// Compile the regular expression.
+	r, err := regexp.Compile(right.Inspect())
+
+	// Ensure it compiled
+	if err != nil {
+		return newError("error compiling regexp '%s': %s", right.Inspect(), err)
+	}
+
+	// Test if it matched
+	if r.MatchString(str) {
+		return TRUE
+	}
+
+	return FALSE
+}
+
+func notMatches(left, right object.Object) object.Object {
+	str := left.Inspect()
+
+	// Compile the regular expression.
+	r, err := regexp.Compile(right.Inspect())
+
+	// Ensure it compiled
+	if err != nil {
+		return newError("error compiling regexp '%s': %s", right.Inspect(), err)
+	}
+
+	// Test if it matched
+	if r.MatchString(str) {
+		return FALSE
+	}
+
+	return TRUE
 }
 
 // boolean operations
