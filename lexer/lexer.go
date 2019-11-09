@@ -1,17 +1,28 @@
 package lexer
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/skx/monkey/token"
 )
 
-// Lexer used to be as lexer for monkey programming language.
+// Lexer holds our object-state.
 type Lexer struct {
-	position     int    //current character position
-	readPosition int    //next character position
-	ch           rune   //current character
-	characters   []rune //rune slice of input string
+	// The current character position
+	position int
+
+	// The next character position
+	readPosition int
+
+	//The current character
+	ch rune
+
+	// A rune slice of our input string
+	characters []rune
+
+	// Previous token.
+	prevToken token.Token
 }
 
 // New a Lexer instance from string input.
@@ -140,7 +151,34 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			tok = token.Token{Type: token.SLASH_EQUALS, Literal: string(ch) + string(l.ch)}
 		} else {
-			tok = newToken(token.SLASH, l.ch)
+			// slash is mostly division, but could
+			// be the start of a regular expression
+
+			// We exclude:
+			//   a[b] / c       -> RBRACKET
+			//   ( a + b ) / c   -> RPAREN
+			//   a / c           -> IDENT
+			//   3.2 / c         -> FLOAT
+			//   1 / c           -> IDENT
+			//
+			if l.prevToken.Type == token.RBRACKET ||
+				l.prevToken.Type == token.RPAREN ||
+				l.prevToken.Type == token.IDENT ||
+				l.prevToken.Type == token.INT ||
+				l.prevToken.Type == token.FLOAT {
+
+				tok = newToken(token.SLASH, l.ch)
+			} else {
+				str, err := l.readRegexp()
+				if err == nil {
+					tok.Type = token.REGEXP
+					tok.Literal = str
+				} else {
+					fmt.Printf("%s\n", err.Error())
+					tok.Type = token.REGEXP
+					tok.Literal = str
+				}
+			}
 		}
 	case rune('*'):
 		if l.peekChar() == rune('*') {
@@ -170,13 +208,27 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.GT, l.ch)
 		}
+	case rune('~'):
+		if l.peekChar() == rune('=') {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.CONTAINS, Literal: string(ch) + string(l.ch)}
+		}
+
 	case rune('!'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.NOT_EQ, Literal: string(ch) + string(l.ch)}
 		} else {
-			tok = newToken(token.BANG, l.ch)
+			if l.peekChar() == rune('~') {
+				ch := l.ch
+				l.readChar()
+				tok = token.Token{Type: token.NOT_CONTAINS, Literal: string(ch) + string(l.ch)}
+
+			} else {
+				tok = newToken(token.BANG, l.ch)
+			}
 		}
 	case rune('"'):
 		tok.Type = token.STRING
@@ -194,14 +246,21 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
+
 		if isDigit(l.ch) {
-			return l.readDecimal()
+			tok := l.readDecimal()
+			l.prevToken = tok
+			return tok
+
 		}
 		tok.Literal = l.readIdentifier()
 		tok.Type = token.LookupIdentifier(tok.Literal)
+		l.prevToken = tok
+
 		return tok
 	}
 	l.readChar()
+	l.prevToken = tok
 	return tok
 }
 
@@ -468,6 +527,56 @@ func (l *Lexer) readString() string {
 	}
 
 	return out
+}
+
+// read a regexp, including flags.
+func (l *Lexer) readRegexp() (string, error) {
+	out := ""
+
+	for {
+		l.readChar()
+
+		if l.ch == rune(0) {
+			return "unterminated regular expression", fmt.Errorf("unterminated regular expression")
+		}
+		if l.ch == '/' {
+
+			// consume the terminating "/".
+			l.readChar()
+
+			// prepare to look for flags
+			flags := ""
+
+			// two flags are supported:
+			//   i -> Ignore-case
+			//   m -> Multiline
+			//
+			for l.ch == rune('i') || l.ch == rune('m') {
+
+				// save the char - unless it is a repeat
+				if !strings.Contains(flags, string(l.ch)) {
+
+					// we're going to sort the flags
+					tmp := strings.Split(flags, "")
+					tmp = append(tmp, string(l.ch))
+					flags = strings.Join(tmp, "")
+
+				}
+
+				// read the next
+				l.readChar()
+			}
+
+			// convert the regexp to go-lang
+			if len(flags) > 0 {
+				out = "(?" + flags + ")" + out
+			}
+			break
+		}
+		out = out + string(l.ch)
+	}
+
+	return out, nil
 }
 
 // read the end of a backtick-quoted string
