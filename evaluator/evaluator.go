@@ -1012,6 +1012,8 @@ func objectToNativeBoolean(o object.Object) bool {
 		return obj.Value
 	case *object.String:
 		return obj.Value != ""
+	case *object.Regexp:
+		return obj.Value != ""
 	case *object.Null:
 		return false
 	case *object.Integer:
