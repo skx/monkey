@@ -142,6 +142,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Array{Elements: elements}
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+	case *ast.RegexpLiteral:
+		return &object.Regexp{Value: node.Value}
 	case *ast.BacktickLiteral:
 		return backTickOperation(node.Value)
 	case *ast.IndexExpression:
