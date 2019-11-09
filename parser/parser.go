@@ -116,6 +116,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.BACKTICK, p.parseBacktickLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
 
 	p.infixParseFns = make(map[token.Type]infixParseFn)
 	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
@@ -517,6 +518,11 @@ func (p *Parser) parseFunctionParameters() (map[string]ast.Expression, []*ast.Id
 // parseStringLiteral parses a string-literal.
 func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+// parseRegexpLiteral parses a regular-expression.
+func (p *Parser) parseRegexpLiteral() ast.Expression {
+	return &ast.RegexpLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
 
 // parseBacktickLiteral parses a backtick-expression.
