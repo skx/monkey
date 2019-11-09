@@ -23,28 +23,32 @@ type (
 const (
 	_ int = iota
 	LOWEST
-	COND        // OR or AND
-	ASSIGN      // =
-	EQUALS      // == or !=
-	LESSGREATER // > or <
-	SUM         // + or -
-	PRODUCT     // * or /
-	POWER       // **
-	MOD         // %
-	PREFIX      // -X or !X
-	CALL        // myFunction(X)
-	INDEX       // array[index], map[key]
+	COND         // OR or AND
+	ASSIGN       // =
+	EQUALS       // == or !=
+	REGEXP_MATCH // !~ ~=
+	LESSGREATER  // > or <
+	SUM          // + or -
+	PRODUCT      // * or /
+	POWER        // **
+	MOD          // %
+	PREFIX       // -X or !X
+	CALL         // myFunction(X)
+	INDEX        // array[index], map[key]
 )
 
 // each token precedence
 var precedences = map[token.Type]int{
-	token.ASSIGN:          ASSIGN,
-	token.EQ:              EQUALS,
-	token.NOT_EQ:          EQUALS,
-	token.LT:              LESSGREATER,
-	token.LT_EQUALS:       LESSGREATER,
-	token.GT:              LESSGREATER,
-	token.GT_EQUALS:       LESSGREATER,
+	token.ASSIGN:       ASSIGN,
+	token.EQ:           EQUALS,
+	token.NOT_EQ:       EQUALS,
+	token.LT:           LESSGREATER,
+	token.LT_EQUALS:    LESSGREATER,
+	token.GT:           LESSGREATER,
+	token.GT_EQUALS:    LESSGREATER,
+	token.CONTAINS:     REGEXP_MATCH,
+	token.NOT_CONTAINS: REGEXP_MATCH,
+
 	token.PLUS:            SUM,
 	token.PLUS_EQUALS:     SUM,
 	token.MINUS:           SUM,
@@ -102,6 +106,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
 	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
@@ -141,6 +146,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.MINUS_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.ASTERISK_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.CONTAINS, p.parseInfixExpression)
+	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
 
 	p.postfixParseFns = make(map[token.Type]postfixParseFn)
 	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
