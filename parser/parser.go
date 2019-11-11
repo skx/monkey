@@ -529,7 +529,28 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 
 // parseRegexpLiteral parses a regular-expression.
 func (p *Parser) parseRegexpLiteral() ast.Expression {
-	return &ast.RegexpLiteral{Token: p.curToken, Value: p.curToken.Literal}
+
+	flags := ""
+
+	val := p.curToken.Literal
+	if strings.HasPrefix(val, "(?") {
+		val = strings.TrimPrefix(val, "(?")
+
+		i := 0
+		for i < len(val) {
+
+			if val[i] == ')' {
+
+				val = val[i+1:]
+				break
+			} else {
+				flags += string(val[i])
+			}
+
+			i++
+		}
+	}
+	return &ast.RegexpLiteral{Token: p.curToken, Value: val, Flags: flags}
 }
 
 // parseBacktickLiteral parses a backtick-expression.
