@@ -6,6 +6,9 @@ package object
 type Regexp struct {
 	// Value holds the string value this object wraps.
 	Value string
+
+	// Flags holds the flags for the object
+	Flags string
 }
 
 // Type returns the type of this object.
