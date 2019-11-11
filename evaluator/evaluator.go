@@ -143,7 +143,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
 	case *ast.RegexpLiteral:
-		return &object.Regexp{Value: node.Value}
+		return &object.Regexp{Value: node.Value, Flags: node.Flags}
 	case *ast.BacktickLiteral:
 		return backTickOperation(node.Value)
 	case *ast.IndexExpression:
@@ -300,8 +300,17 @@ func matches(left, right object.Object) object.Object {
 
 	str := left.Inspect()
 
+	if right.Type() != object.REGEXP_OBJ {
+		return newError("regexp required for regexp-match, given %s", right.Type())
+	}
+
+	val := right.(*object.Regexp).Value
+	if right.(*object.Regexp).Flags != "" {
+		val = "(?" + right.(*object.Regexp).Flags + ")" + val
+	}
+
 	// Compile the regular expression.
-	r, err := regexp.Compile(right.Inspect())
+	r, err := regexp.Compile(val)
 
 	// Ensure it compiled
 	if err != nil {
@@ -319,8 +328,17 @@ func matches(left, right object.Object) object.Object {
 func notMatches(left, right object.Object) object.Object {
 	str := left.Inspect()
 
+	if right.Type() != object.REGEXP_OBJ {
+		return newError("regexp required for regexp-match, given %s", right.Type())
+	}
+
+	val := right.(*object.Regexp).Value
+	if right.(*object.Regexp).Flags != "" {
+		val = "(?" + right.(*object.Regexp).Flags + ")" + val
+	}
+
 	// Compile the regular expression.
-	r, err := regexp.Compile(right.Inspect())
+	r, err := regexp.Compile(val)
 
 	// Ensure it compiled
 	if err != nil {
