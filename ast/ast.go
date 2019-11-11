@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/skx/monkey/token"
@@ -568,6 +569,9 @@ type RegexpLiteral struct {
 
 	// Value is the value of the regular expression.
 	Value string
+
+	// Flags contains any flags associated with the regexp.
+	Flags string
 }
 
 func (rl *RegexpLiteral) expressionNode() {}
@@ -578,17 +582,7 @@ func (rl *RegexpLiteral) TokenLiteral() string { return rl.Token.Literal }
 // String returns this object as a string.
 func (rl *RegexpLiteral) String() string {
 
-	start := "/"
-	val := rl.Token.Literal
-	end := "/"
-
-	if strings.HasPrefix(rl.Token.Literal, "(?i)") {
-		end = "/i"
-		val = strings.TrimPrefix(val, "(?i)")
-	}
-
-	str := start + val + end
-	return str
+	return (fmt.Sprintf("/%s/%s", rl.Value, rl.Flags))
 }
 
 // BacktickLiteral holds details of a command to be executed
