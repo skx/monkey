@@ -142,6 +142,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Array{Elements: elements}
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+	case *ast.RegexpLiteral:
+		return &object.Regexp{Value: node.Value, Flags: node.Flags}
 	case *ast.BacktickLiteral:
 		return backTickOperation(node.Value)
 	case *ast.IndexExpression:
@@ -273,8 +275,14 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
 	case operator == "||":
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
+	case operator == "!~":
+		return notMatches(left, right)
+	case operator == "~=":
+		return matches(left, right)
+
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
+
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
@@ -286,6 +294,63 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
+}
+
+func matches(left, right object.Object) object.Object {
+
+	str := left.Inspect()
+
+	if right.Type() != object.REGEXP_OBJ {
+		return newError("regexp required for regexp-match, given %s", right.Type())
+	}
+
+	val := right.(*object.Regexp).Value
+	if right.(*object.Regexp).Flags != "" {
+		val = "(?" + right.(*object.Regexp).Flags + ")" + val
+	}
+
+	// Compile the regular expression.
+	r, err := regexp.Compile(val)
+
+	// Ensure it compiled
+	if err != nil {
+		return newError("error compiling regexp '%s': %s", right.Inspect(), err)
+	}
+
+	// Test if it matched
+	if r.MatchString(str) {
+		return TRUE
+	}
+
+	return FALSE
+}
+
+func notMatches(left, right object.Object) object.Object {
+	str := left.Inspect()
+
+	if right.Type() != object.REGEXP_OBJ {
+		return newError("regexp required for regexp-match, given %s", right.Type())
+	}
+
+	val := right.(*object.Regexp).Value
+	if right.(*object.Regexp).Flags != "" {
+		val = "(?" + right.(*object.Regexp).Flags + ")" + val
+	}
+
+	// Compile the regular expression.
+	r, err := regexp.Compile(val)
+
+	// Ensure it compiled
+	if err != nil {
+		return newError("error compiling regexp '%s': %s", right.Inspect(), err)
+	}
+
+	// Test if it matched
+	if r.MatchString(str) {
+		return FALSE
+	}
+
+	return TRUE
 }
 
 // boolean operations
@@ -1009,6 +1074,8 @@ func objectToNativeBoolean(o object.Object) bool {
 	case *object.Boolean:
 		return obj.Value
 	case *object.String:
+		return obj.Value != ""
+	case *object.Regexp:
 		return obj.Value != ""
 	case *object.Null:
 		return false

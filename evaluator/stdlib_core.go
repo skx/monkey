@@ -510,6 +510,8 @@ func typeFun(args ...object.Object) object.Object {
 	switch args[0].(type) {
 	case *object.String:
 		return &object.String{Value: "string"}
+	case *object.Regexp:
+		return &object.String{Value: "regexp"}
 	case *object.Boolean:
 		return &object.String{Value: "bool"}
 	case *object.Builtin:

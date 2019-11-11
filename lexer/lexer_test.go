@@ -42,7 +42,7 @@ let add = fn(x, y){
   x+y;
 };
 let result = add(five, ten);
-!-/ *5;
+!- *5;
 5<10>5;
 
 if(5<10){
@@ -104,7 +104,6 @@ for
 		{token.SEMICOLON, ";"},
 		{token.BANG, "!"},
 		{token.MINUS, "-"},
-		{token.SLASH, "/"},
 		{token.ASTERISK, "*"},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
@@ -489,6 +488,119 @@ func TestIntDotMethod(t *testing.T) {
 		}
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt, tok)
+		}
+	}
+}
+
+// TestRegexp ensures a simple regexp can be parsed.
+func TestRegexp(t *testing.T) {
+	input := `if ( f ~= /steve/i )
+if ( f ~= /steve/m )
+if ( f ~= /steve/mi )
+if ( f ~= /steve/miiiiiiiiiiiiiiiiimmmmmmmmmmmmmiiiii )`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.REGEXP, "(?i)steve"},
+		{token.RPAREN, ")"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.REGEXP, "(?m)steve"},
+		{token.RPAREN, ")"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.REGEXP, "(?mi)steve"},
+		{token.RPAREN, ")"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.REGEXP, "(?mi)steve"},
+		{token.RPAREN, ")"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// TestIllegalRegexp is designed to look for an unterminated/illegal regexp
+func TestIllegalRegexp(t *testing.T) {
+	input := `if ( f ~= /steve )`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.REGEXP, "unterminated regular expression"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// TestDiv is designed to test that a division is recognized; that it is
+// not confused with a regular-expression.
+func TestDiv(t *testing.T) {
+	input := `a = b / c;
+a = 3/4;
+`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.IDENT, "b"},
+		{token.SLASH, "/"},
+		{token.IDENT, "c"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.INT, "3"},
+		{token.SLASH, "/"},
+		{token.INT, "4"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 		}
 	}
 }

@@ -55,10 +55,14 @@ const (
 	EQ              = "=="
 	NOT_EQ          = "!="
 	STRING          = "STRING"
+	REGEXP          = "REGEXP"
 	LBRACKET        = "["
 	RBRACKET        = "]"
 	COLON           = ":"
 	PERIOD          = "."
+	CONTAINS        = "~="
+	NOT_CONTAINS    = "!~"
+	ILLEGAL         = "ILLEGAL"
 )
 
 // reversed keywords
