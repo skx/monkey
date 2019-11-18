@@ -37,8 +37,6 @@
 
 This repository contains an interpreter for the "Monkey" programming language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
 
-This repository started life as the implementation written by [gaufung](https://github.com/gaufung/Monkey), but it has now diverged significantly in terms of both features and implementation.
-
 
 #### My changes
 
@@ -73,7 +71,8 @@ The interpreter in _this_ repository has been significantly extended from the st
   * Which allows executing monkey-code from a string.
 * Improved error-reporting from the parser.
   * It will now show the line-number of failures (where possible).
-
+* Added support for regular expressions, both literally and via `match`
+  * `if ( name ~= /steve/i ) { puts( "Hello Steve\n"); } `
 
 
 ## 1. Installation
@@ -280,8 +279,7 @@ implemented in 100% pure monkey:
 
 ## 2.4.1 The Standard Library
 
-In addition to the core built-in functions we also have a minimal-standard library.  The library includes some string/file primitives, a regular-expression
-matcher, and some maths-helpers.
+In addition to the core built-in functions we also have a minimal-standard library.  The library includes some string/file primitives, a regular-expression matcher, and some maths-helpers.
 
 You can see the implementation of the go-based standard-library beneath [evaluator/stdlib*](evaluator/), and several of these functions are documented in the various [examples/](examples/).
 
@@ -450,6 +448,11 @@ If a match fails NULL will be returned, otherwise a hash containing any
 capture groups in the match.
 
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
+
+You can also perform matching, but not capturing, with a literal regular expression object:
+
+    if ( Name ~= /steve/i ) { puts( "Hello Steve\n" ); }
+    if ( Name !~ /[aeiou]/i ) { puts( "You have no vowels.\n" ); }
 
 
 ## 2.12 File I/O
