@@ -7,12 +7,13 @@ import (
 )
 
 func TestNextToken1(t *testing.T) {
-	input := `=+(){},;`
+	input := "%=+(){},;?|| &&`/bin/ls`++--***="
 
 	tests := []struct {
 		expectedType    token.Type
 		expectedLiteral string
 	}{
+		{token.MOD, "%"},
 		{token.ASSIGN, "="},
 		{token.PLUS, "+"},
 		{token.LPAREN, "("},
@@ -21,6 +22,14 @@ func TestNextToken1(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.QUESTION, "?"},
+		{token.OR, "||"},
+		{token.AND, "&&"},
+		{token.BACKTICK, "/bin/ls"},
+		{token.PLUS_PLUS, "++"},
+		{token.MINUS_MINUS, "--"},
+		{token.POW, "**"},
+		{token.ASTERISK_EQUALS, "*="},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -61,6 +70,8 @@ if(5<10){
 0.3
 世界
 for
+2 >= 1
+1 <= 3
 `
 	tests := []struct {
 		expectedType    token.Type
@@ -156,6 +167,12 @@ for
 		{token.FLOAT, "0.3"},
 		{token.IDENT, "世界"},
 		{token.FOR, "for"},
+		{token.INT, "2"},
+		{token.GT_EQUALS, ">="},
+		{token.INT, "1"},
+		{token.INT, "1"},
+		{token.LT_EQUALS, "<="},
+		{token.INT, "3"},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -497,6 +514,7 @@ func TestRegexp(t *testing.T) {
 	input := `if ( f ~= /steve/i )
 if ( f ~= /steve/m )
 if ( f ~= /steve/mi )
+if ( f !~ /steve/mi )
 if ( f ~= /steve/miiiiiiiiiiiiiiiiimmmmmmmmmmmmmiiiii )`
 
 	tests := []struct {
@@ -519,6 +537,12 @@ if ( f ~= /steve/miiiiiiiiiiiiiiiiimmmmmmmmmmmmmiiiii )`
 		{token.LPAREN, "("},
 		{token.IDENT, "f"},
 		{token.CONTAINS, "~="},
+		{token.REGEXP, "(?mi)steve"},
+		{token.RPAREN, ")"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.NOT_CONTAINS, "!~"},
 		{token.REGEXP, "(?mi)steve"},
 		{token.RPAREN, ")"},
 		{token.IF, "if"},

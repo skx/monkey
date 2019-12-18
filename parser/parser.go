@@ -25,6 +25,7 @@ const (
 	LOWEST
 	COND         // OR or AND
 	ASSIGN       // =
+	TERNARY      // ? :
 	EQUALS       // == or !=
 	REGEXP_MATCH // !~ ~=
 	LESSGREATER  // > or <
@@ -39,6 +40,7 @@ const (
 
 // each token precedence
 var precedences = map[token.Type]int{
+	token.QUESTION:     TERNARY,
 	token.ASSIGN:       ASSIGN,
 	token.EQ:           EQUALS,
 	token.NOT_EQ:       EQUALS,
@@ -95,6 +97,11 @@ type Parser struct {
 	// postfixParseFns holds a map of parsing methods for
 	// postfix-based syntax.
 	postfixParseFns map[token.Type]postfixParseFn
+
+	// are we inside a ternary expression?
+	//
+	// Nested ternary expressions are illegal :)
+	tern bool
 }
 
 // New returns our new parser-object.
@@ -148,6 +155,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.CONTAINS, p.parseInfixExpression)
 	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
+	p.registerInfix(token.QUESTION, p.parseTernaryExpression)
 
 	p.postfixParseFns = make(map[token.Type]postfixParseFn)
 	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
@@ -379,6 +387,38 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	precedence := p.curPrecedence()
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
+	return expression
+}
+
+// parseTernaryExpression parses a ternary expression
+func (p *Parser) parseTernaryExpression(condition ast.Expression) ast.Expression {
+
+	if p.tern {
+		msg := fmt.Sprintf("nested ternary expressions are illegal, around line %d", p.l.GetLine())
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	p.tern = true
+	defer func() { p.tern = false }()
+
+	expression := &ast.TernaryExpression{
+		Token:     p.curToken,
+		Condition: condition,
+	}
+	p.nextToken() //skip the '?'
+	precedence := p.curPrecedence()
+	expression.IfTrue = p.parseExpression(precedence)
+
+	if !p.expectPeek(token.COLON) { //skip the ":"
+		return nil
+	}
+
+	// Get to next token, then parse the else part
+	p.nextToken()
+	expression.IfFalse = p.parseExpression(precedence)
+
+	p.tern = false
 	return expression
 }
 

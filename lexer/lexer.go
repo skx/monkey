@@ -107,6 +107,8 @@ func (l *Lexer) NextToken() token.Token {
 		}
 	case rune(';'):
 		tok = newToken(token.SEMICOLON, l.ch)
+	case rune('?'):
+		tok = newToken(token.QUESTION, l.ch)
 	case rune('('):
 		tok = newToken(token.LPAREN, l.ch)
 	case rune(')'):
