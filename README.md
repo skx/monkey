@@ -382,6 +382,8 @@ would expect with a C-background:
     puts( "max(1,2) -> ", max(1, 2), "\n" );
     puts( "max(-1,-2) -> ", max(-1, -2), "\n" );
 
+Note that in the interests of clarity nested ternary-expressions are illegal!
+
 ## 2.7 For-loop statements
 
 `monkey` supports a golang-style for-loop statement.
