@@ -74,6 +74,7 @@ The interpreter in _this_ repository has been significantly extended from the st
   * It will now show the line-number of failures (where possible).
 * Added support for regular expressions, both literally and via `match`
   * `if ( name ~= /steve/i ) { puts( "Hello Steve\n"); } `
+* Added support for [ternary expressions](#261-ternary-expressions).
 
 
 ## 1. Installation
