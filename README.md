@@ -21,6 +21,7 @@
     * [2.4.1 The Standard Library](#241-the-standard-library)
   * [2.5 Functions](#25-functions)
   * [2.6 If-else statements](#26-if-else-statements)
+  * [2.6.1 Ternary expressions](#261-ternary-expressions)
   * [2.7 For-loop statements](#27-for-loop-statements)
   * [2.8 Comments](#28-comments)
   * [2.9 Postfix Operators](#29-postfix-operators)
@@ -367,6 +368,18 @@ The same thing works for literal functions:
 
     puts( max(1, 2) );  // Outputs: 2
 
+
+## 2.6.1 Ternary Expressions
+
+`monkey` supports the use of ternary expressions, which work as you
+would expect with a C-background:
+
+    function max(a,b) {
+      return( a > b ? a : b );
+    };
+
+    puts( "max(1,2) -> ", max(1, 2), "\n" );
+    puts( "max(-1,-2) -> ", max(-1, -2), "\n" );
 
 ## 2.7 For-loop statements
 
