@@ -62,6 +62,7 @@ const (
 	PERIOD          = "."
 	CONTAINS        = "~="
 	NOT_CONTAINS    = "!~"
+	QUESTION        = "?"
 	ILLEGAL         = "ILLEGAL"
 )
 
