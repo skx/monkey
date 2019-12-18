@@ -370,7 +370,7 @@ The same thing works for literal functions:
     puts( max(1, 2) );  // Outputs: 2
 
 
-## 2.6.1 Ternary Expressions
+### 2.6.1 Ternary Expressions
 
 `monkey` supports the use of ternary expressions, which work as you
 would expect with a C-background:
