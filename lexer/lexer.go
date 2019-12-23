@@ -3,6 +3,7 @@ package lexer
 import (
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/skx/monkey/token"
 )
@@ -604,47 +605,17 @@ func (l *Lexer) peekChar() rune {
 
 // determinate ch is identifier or not
 func isIdentifier(ch rune) bool {
-	return !isDigit(ch) && !isWhitespace(ch) && !isBrace(ch) && !isOperator(ch) && !isComparison(ch) && !isCompound(ch) && !isBrace(ch) && !isParen(ch) && !isBracket(ch) && !isEmpty(ch)
+
+	if unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '.' || ch == '?' || ch == '_' {
+		return true
+	}
+
+	return false
 }
 
 // is white space
 func isWhitespace(ch rune) bool {
 	return ch == rune(' ') || ch == rune('\t') || ch == rune('\n') || ch == rune('\r')
-}
-
-// is operators
-func isOperator(ch rune) bool {
-	return ch == rune('+') || ch == rune('%') || ch == rune('-') || ch == rune('/') || ch == rune('*')
-}
-
-// is comparison
-func isComparison(ch rune) bool {
-	return ch == rune('=') || ch == rune('!') || ch == rune('>') || ch == rune('<')
-}
-
-// is compound
-func isCompound(ch rune) bool {
-	return ch == rune(',') || ch == rune(':') || ch == rune('"') || ch == rune(';')
-}
-
-// is brace
-func isBrace(ch rune) bool {
-	return ch == rune('{') || ch == rune('}')
-}
-
-// is bracket
-func isBracket(ch rune) bool {
-	return ch == rune('[') || ch == rune(']')
-}
-
-// is parenthesis
-func isParen(ch rune) bool {
-	return ch == rune('(') || ch == rune(')')
-}
-
-// is empty
-func isEmpty(ch rune) bool {
-	return rune(0) == ch
 }
 
 // is Digit
