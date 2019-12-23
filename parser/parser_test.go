@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/skx/monkey/ast"
@@ -867,5 +868,32 @@ func TestObjectMethodCall(t *testing.T) {
 		p := New(l)
 		_ = p.ParseProgram()
 		checkParserErrors(t, p)
+	}
+}
+
+// Test that incomplete blocks / statements are handled.
+func TestIncompleThings(t *testing.T) {
+	input := []string{
+		`if ( true ) { `,
+		`if ( true ) { puts( "OK" ) ; } else { `,
+		`return 3`,
+		`let x = `,
+		`const x =`,
+		`function foo( a, b ="steve", `,
+		`function foo() {`,
+	}
+
+	for _, str := range input {
+		l := lexer.New(str)
+		p := New(l)
+		_ = p.ParseProgram()
+
+		if len(p.errors) < 1 {
+			t.Errorf("unexpected error-count, got %d  expected %d", len(p.errors), 1)
+		}
+
+		if !strings.Contains(p.errors[0], "unterminated") {
+			t.Errorf("Unexpected error-message %s\n", p.errors[0])
+		}
 	}
 }

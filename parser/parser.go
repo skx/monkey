@@ -106,60 +106,69 @@ type Parser struct {
 
 // New returns our new parser-object.
 func New(l *lexer.Lexer) *Parser {
+
+	// Create the parser, and prime the pump
 	p := &Parser{l: l, errors: []string{}}
 	p.nextToken()
 	p.nextToken()
 
+	// Register prefix-functions
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
-	p.registerPrefix(token.IDENT, p.parseIdentifier)
-	p.registerPrefix(token.INT, p.parseIntegerLiteral)
-	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
-	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
-	p.registerPrefix(token.TRUE, p.parseBoolean)
-	p.registerPrefix(token.FALSE, p.parseBoolean)
+	p.registerPrefix(token.BACKTICK, p.parseBacktickLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
-	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
-	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.DEFINE_FUNCTION, p.parseFunctionDefinition)
+	p.registerPrefix(token.EOF, p.parsingBroken)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
+	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
 	p.registerPrefix(token.FOR, p.parseForLoopExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
-	p.registerPrefix(token.DEFINE_FUNCTION, p.parseFunctionDefinition)
-	p.registerPrefix(token.STRING, p.parseStringLiteral)
-	p.registerPrefix(token.BACKTICK, p.parseBacktickLiteral)
-	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.ILLEGAL, p.parsingBroken)
+	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
+	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
 
+	// Register infix functions
 	p.infixParseFns = make(map[token.Type]infixParseFn)
-	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
-	p.registerInfix(token.PLUS, p.parseInfixExpression)
-	p.registerInfix(token.MOD, p.parseInfixExpression)
-	p.registerInfix(token.MINUS, p.parseInfixExpression)
-	p.registerInfix(token.SLASH, p.parseInfixExpression)
-	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
-	p.registerInfix(token.POW, p.parseInfixExpression)
-	p.registerInfix(token.EQ, p.parseInfixExpression)
-	p.registerInfix(token.OR, p.parseInfixExpression)
 	p.registerInfix(token.AND, p.parseInfixExpression)
-	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
-	p.registerInfix(token.LT, p.parseInfixExpression)
-	p.registerInfix(token.GT, p.parseInfixExpression)
-	p.registerInfix(token.LT_EQUALS, p.parseInfixExpression)
-	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)
-	p.registerInfix(token.LPAREN, p.parseCallExpression)
-	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
-	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
-	p.registerInfix(token.MINUS_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
+	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK_EQUALS, p.parseAssignExpression)
-	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.CONTAINS, p.parseInfixExpression)
+	p.registerInfix(token.EQ, p.parseInfixExpression)
+	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.LT, p.parseInfixExpression)
+	p.registerInfix(token.LT_EQUALS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
+	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.OR, p.parseInfixExpression)
+	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
+	p.registerInfix(token.POW, p.parseInfixExpression)
 	p.registerInfix(token.QUESTION, p.parseTernaryExpression)
+	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.SLASH_EQUALS, p.parseAssignExpression)
 
+	// Register postfix functions.
 	p.postfixParseFns = make(map[token.Type]postfixParseFn)
-	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
 	p.registerPostfix(token.MINUS_MINUS, p.parsePostfixExpression)
+	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
+
+	// All done
 	return p
 }
 
@@ -237,6 +246,12 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	p.nextToken()
 	stmt.Value = p.parseExpression(LOWEST)
 	for !p.curTokenIs(token.SEMICOLON) {
+
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated let statement")
+			return nil
+		}
+
 		p.nextToken()
 	}
 	return stmt
@@ -255,6 +270,12 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	p.nextToken()
 	stmt.Value = p.parseExpression(LOWEST)
 	for !p.curTokenIs(token.SEMICOLON) {
+
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated const statement")
+			return nil
+		}
+
 		p.nextToken()
 	}
 	return stmt
@@ -266,6 +287,12 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	p.nextToken()
 	stmt.ReturnValue = p.parseExpression(LOWEST)
 	for !p.curTokenIs(token.SEMICOLON) {
+
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated return statement")
+			return nil
+		}
+
 		p.nextToken()
 	}
 	return stmt
@@ -307,6 +334,12 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		leftExp = infix(leftExp)
 	}
 	return leftExp
+}
+
+// parsingBroken is hit if we see an EOF in our input-stream
+// this means we're screwed
+func (p *Parser) parsingBroken() ast.Expression {
+	return nil
 }
 
 // parseIdentifier parses an identifier.
@@ -482,6 +515,14 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	block.Statements = []ast.Statement{}
 	p.nextToken()
 	for !p.curTokenIs(token.RBRACE) {
+
+		// Don't loop forever
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors,
+				"unterminated block statement")
+			return nil
+		}
+
 		stmt := p.parseStatement()
 		if stmt != nil {
 			block.Statements = append(block.Statements, stmt)
@@ -538,6 +579,11 @@ func (p *Parser) parseFunctionParameters() (map[string]ast.Expression, []*ast.Id
 
 	// Keep going until we find a ")"
 	for !p.curTokenIs(token.RPAREN) {
+
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated function parameters")
+			return nil, nil
+		}
 
 		// Get the identifier.
 		ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
