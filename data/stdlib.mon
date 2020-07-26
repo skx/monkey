@@ -297,6 +297,7 @@ function array.min() {
 }
 
 assert( "( [1,2,3].min() == 1 )" );
+assert( "( 1..10.min() == 1 )" );
 assert( "( [-1,-2,-3].min() == -3 )" );
 assert( "( [].min() == 0 )", "minimum of an empty array is zero" );
 
@@ -340,6 +341,7 @@ function array.max() {
    return max;
 }
 
+assert( "( 1..15.max() == 15 )" );
 assert( "( [1,2,3].max() == 3 )" );
 assert( "( [-1,-2,-3].max() == -1 )" );
 assert( "( [].max() == 0 )", "maximum of an empty array is zero" );
