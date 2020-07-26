@@ -75,7 +75,7 @@ The interpreter in _this_ repository has been significantly extended from the st
 * Added support for regular expressions, both literally and via `match`
   * `if ( name ~= /steve/i ) { puts( "Hello Steve\n"); } `
 * Added support for [ternary expressions](#261-ternary-expressions).
-
+* Added support for creating arrays of consecutive integers via the range operator (`1..10`).
 
 ## 1. Installation
 
@@ -211,6 +211,10 @@ With the definition we included that produces this output:
      Array index 1 contains 2.3
      Array index 2 contains array
      Array index 3 contains another
+
+As a helper you may define an array of consecutive integers via the range operator (`..`):
+
+     let a = 1..10;
 
 
 ### 2.3.2 Hashes

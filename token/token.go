@@ -60,6 +60,7 @@ const (
 	RBRACKET        = "]"
 	COLON           = ":"
 	PERIOD          = "."
+	DOTDOT          = ".."
 	CONTAINS        = "~="
 	NOT_CONTAINS    = "!~"
 	QUESTION        = "?"

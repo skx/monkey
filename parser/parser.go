@@ -35,13 +35,16 @@ const (
 	MOD          // %
 	PREFIX       // -X or !X
 	CALL         // myFunction(X)
+	DOTDOT       // ..
 	INDEX        // array[index], map[key]
+	HIGHEST
 )
 
 // each token precedence
 var precedences = map[token.Type]int{
 	token.QUESTION:     TERNARY,
 	token.ASSIGN:       ASSIGN,
+	token.DOTDOT:       DOTDOT,
 	token.EQ:           EQUALS,
 	token.NOT_EQ:       EQUALS,
 	token.LT:           LESSGREATER,
@@ -123,8 +126,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FOR, p.parseForLoopExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
-	p.registerPrefix(token.ILLEGAL, p.parsingBroken)
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.ILLEGAL, p.parsingBroken)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
@@ -142,6 +145,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.CONTAINS, p.parseInfixExpression)
+	p.registerInfix(token.DOTDOT, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)

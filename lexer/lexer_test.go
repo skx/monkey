@@ -7,7 +7,7 @@ import (
 )
 
 func TestNextToken1(t *testing.T) {
-	input := "%=+(){},;?|| &&`/bin/ls`++--***="
+	input := "%=+(){},;?|| &&`/bin/ls`++--***=.."
 
 	tests := []struct {
 		expectedType    token.Type
@@ -30,6 +30,7 @@ func TestNextToken1(t *testing.T) {
 		{token.MINUS_MINUS, "--"},
 		{token.POW, "**"},
 		{token.ASTERISK_EQUALS, "*="},
+		{token.DOTDOT, ".."},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -612,6 +613,34 @@ a = 3/4;
 		{token.INT, "3"},
 		{token.SLASH, "/"},
 		{token.INT, "4"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// TestDotDot is designed to ensure we get a ".." not an integer value.
+func TestDotDot(t *testing.T) {
+	input := `a = 1..10;`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.INT, "1"},
+		{token.DOTDOT, ".."},
+		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
