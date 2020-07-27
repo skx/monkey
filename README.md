@@ -424,18 +424,9 @@ Here you see that we've iterated over the items of the array, we can also see th
           puts( offset, "\t",  item , "\n");
      }
 
-A similar thing works for strings, and for hashes you can iterate over either the keys, or the values:
+The same style of iteration works for Arrays, Hashes, and the characters which make up a string.  You can see examples of this support in [examples/iteration.mon](examples/iteration.mon).
 
-    h = { "Foo": "Bar", "Steve": "Kemp"}
-    foreach key in h {
-        puts( "\t", key, "\n");
-    }
-
-    foreach key,val in h {
-        puts( "\t", key, "\t=>\t", val, "\n");
-    }
-
-Iteration is currently supported for Arrays, Hashes, and Strings.
+When iterating over hashes you can receive either the keys, or the keys and value at each step in the iteration, otherwise you receive the value and an optional index.
 
 
 ## 2.8 Comments
