@@ -226,14 +226,10 @@ assert( "let a = [ 1, 2, 3 , -1, \"steve\", 44 ];
 // Return the offset, if any, of the specified item in the array.
 //
 function array.find(item) {
-   let i = 0;
-   let l = len(self);
-
-   for( i < l ) {
-     if ( self[i] == item ) {
-       return i;
-     }
-     i++;
+   foreach index, value in self {
+       if ( value == item ) {
+           return index
+       }
    }
 
    // not found.
@@ -553,14 +549,11 @@ assert( "let a = [ 3, 2, 1 ]; a = a.sort(); a[2] == 3" );
 // invokes sort, just to ensure consistent results.
 //
 function array.map( fnc ) {
-   let i = 0;
-   let l = len(self);
+
    let result = [];
 
-   for( i < l ) {
-      let tmp = fnc(self[i]);
-      let result = push( result, tmp);
-      i++;
+   foreach item in self {
+      let result = push( result, fnc(item) );
    }
 
    return result;
@@ -592,12 +585,9 @@ assert( "let a = [2,-1,-12];
 function array.uniq() {
     tmp = {};
 
-    let i = 0;
-    let l = len(self);
-    for( i < l ) {
-         tmp = set( tmp, self[i], true );
-         i++;
-    };
+    foreach item in self {
+         tmp = set( tmp, item, true );
+    }
 
     // return the sorted keys
     return( tmp.keys().sort() );
@@ -666,14 +656,13 @@ assert( "3.to_f() == 3.0" );
 //
 function string.count(char) {
   let c = 0;
-  let l = len(self);
 
-  for( l > 0 ) {
-     if ( char == self[l-1] ) {
-       c += 1;
+  foreach chr in self {
+     if ( chr == char ) {
+        c += 1;
      }
-     l--;
   }
+
   return c;
 };
 
@@ -997,21 +986,15 @@ assert( " 1 ".trim() == "1", "string.trim failed" );
 // Convert the given string to lower-case.
 //
 function string.tolower() {
-   let i = 0;
-   let l = len(self);
    let r = "";
 
-   for( i < l ) {
-      let c = self[i];
-
-      if ( c >= "A" && c <= "Z" ) {
-           let c = c.ord();
-           c += 32;
-           c = c.chr();
+   foreach char in self {
+      if ( char >= "A" && char <= "Z" ) {
+           char = char.ord();
+           char += 32;
+           char = char.chr();
       }
-      i++;
-
-      r += c;
+      r += char;
    }
 
    return r;
@@ -1059,21 +1042,16 @@ assert( type("313".to_number() ) == "integer", "string.tonumber() failed" );
 // Convert the given string to upper-case.
 //
 function string.toupper() {
-   let i = 0;
-   let l = len(self);
    let r = "";
 
-   for( i < l ) {
-      let c = self[i];
-
-      if ( c >= "a" && c <= "z" ) {
-           let c = c.ord();
-           c -= 32;
-           c = c.chr();
+   foreach char in self {
+      if ( char >= "a" && char <= "z" ) {
+           char = char.ord();
+           char -= 32;
+           char = char.chr();
       }
-      i++;
 
-      r += c;
+      r += char;
    }
 
    return r;

@@ -41,3 +41,27 @@ type Hashable interface {
 	// HashKey returns a hash key for the given object.
 	HashKey() HashKey
 }
+
+// Iterable is an interface that some objects might support.
+//
+// If this interface is implemented then it will be possible to
+// use the `foreach` function to iterate over the object.  If
+// the interface is not implemented then a run-time error will
+// be generated instead.
+type Iterable interface {
+
+	// Reset the state of any previous iteration.
+	Reset()
+
+	// Get the next "thing" from the object being iterated
+	// over.
+	//
+	// The return values are the item which is to be returned
+	// next, the index of that object, and finally a boolean
+	// to say whether the function succeeded.
+	//
+	// If the boolean value returned is false then that
+	// means the iteration has completed and no further
+	// items are available.
+	Next() (Object, Object, bool)
+}

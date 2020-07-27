@@ -31,8 +31,10 @@
     "else"
     "fn"
     "for"
+    "foreach"
     "function"
     "if"
+    "in"
     "let"
     "return"
     ))

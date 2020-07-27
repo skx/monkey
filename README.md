@@ -23,6 +23,7 @@
   * [2.6 If-else statements](#26-if-else-statements)
     * [2.6.1 Ternary expressions](#261-ternary-expressions)
   * [2.7 For-loop statements](#27-for-loop-statements)
+    * [2.7.1 Foreach statements](#271-foreach-statements)
   * [2.8 Comments](#28-comments)
   * [2.9 Postfix Operators](#29-postfix-operators)
   * [2.10 Command Execution](#210-command-execution)
@@ -404,6 +405,28 @@ Note that in the interests of clarity nested ternary-expressions are illegal!
      };
 
      puts(sum(100));  // Outputs: 4950
+
+
+## 2.7.1 Foreach statements
+
+In addition to iterating over items with the `for` statement, as shown above, it is also possible to iterate over various items via the `foreach` statement.
+
+For example to iterate over an array:
+
+     a = [ "My", "name", "is", "Steve" ]
+     foreach item in a {
+          puts( "\t",  item , "\n");
+     }
+
+Here you see that we've iterated over the items of the array, we can also see their offsets like so:
+
+     foreach offset, item in a {
+          puts( offset, "\t",  item , "\n");
+     }
+
+The same style of iteration works for Arrays, Hashes, and the characters which make up a string.  You can see examples of this support in [examples/iteration.mon](examples/iteration.mon).
+
+When iterating over hashes you can receive either the keys, or the keys and value at each step in the iteration, otherwise you receive the value and an optional index.
 
 
 ## 2.8 Comments
