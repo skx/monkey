@@ -124,6 +124,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
 	p.registerPrefix(token.FOR, p.parseForLoopExpression)
+	p.registerPrefix(token.FOREACH, p.parseForEach)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.IF, p.parseIfExpression)
@@ -510,6 +511,62 @@ func (p *Parser) parseForLoopExpression() ast.Expression {
 		return nil
 	}
 	expression.Consequence = p.parseBlockStatement()
+	return expression
+}
+
+// parseForEach parses 'foreach x X { .. block .. }`
+func (p *Parser) parseForEach() ast.Expression {
+	expression := &ast.ForeachStatement{Token: p.curToken}
+
+	// get the id
+	p.nextToken()
+	expression.Ident = p.curToken.Literal
+
+	// If we find a "," we then get a second identifier too.
+	if p.peekTokenIs(token.COMMA) {
+
+		//
+		// Generally we have:
+		//
+		//    foreach IDENT in THING { .. }
+		//
+		// If we have two arguments the first becomes
+		// the index, and the second becomes the IDENT.
+		//
+
+		// skip the comma
+		p.nextToken()
+
+		if !p.peekTokenIs(token.IDENT) {
+			p.errors = append(p.errors, fmt.Sprintf("second argument to foreach must be ident, got %v", p.peekToken))
+			return nil
+		}
+		p.nextToken()
+
+		//
+		// Record the updated values.
+		//
+		expression.Index = expression.Ident
+		expression.Ident = p.curToken.Literal
+
+	}
+
+	// The next token, after the ident(s), should be `in`.
+	if !p.expectPeek(token.IN) {
+		return nil
+	}
+	p.nextToken()
+
+	// get the thing we're going to iterate  over.
+	expression.Value = p.parseExpression(LOWEST)
+	if expression.Value == nil {
+		return nil
+	}
+
+	// parse the block
+	p.nextToken()
+	expression.Body = p.parseBlockStatement()
+
 	return expression
 }
 
