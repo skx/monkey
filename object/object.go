@@ -33,6 +33,11 @@ type Object interface {
 	// InvokeMethod invokes a method against the object.
 	// (Built-in methods only.)
 	InvokeMethod(method string, env Environment, args ...Object) Object
+
+	// ToInterface converts the given object to a "native" golang value,
+	// which is required to ensure that we can use the object in our
+	// `sprintf` or `printf` primitives.
+	ToInterface() interface{}
 }
 
 // Hashable type can be hashed

@@ -198,3 +198,11 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 	}
 	return nil
 }
+
+// ToInterface converts this object to a go-interface, which will allow
+// it to be used naturally in our sprintf/printf primitives.
+//
+// It might also be helpful for embedded users.
+func (f *File) ToInterface() interface{} {
+	return "<FILE>"
+}

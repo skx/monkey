@@ -78,7 +78,8 @@ The interpreter in _this_ repository has been significantly extended from the st
 * Added support for [ternary expressions](#261-ternary-expressions).
 * Added support for creating arrays of consecutive integers via the range operator (`1..10`).
 * Added the ability to iterate over the contents of arrays, hashes, and strings via the `foreach` statement.
-
+* Added `printf` and `sprintf` primitives, which work as you would expect.
+  * `printf( "%d %s", 3, "Steve" );`
 
 
 ## 1. Installation
@@ -267,9 +268,13 @@ The core primitives are:
 * `push`
   * push an elements into the array.
 * `puts`
-  * print literal value of objects.
+  * Write literal value of objects to STDOUT.
+* `printf`
+  * Write values to STDOUT, via a format-string.
 * `set`
   * insert key value pair into the map.
+* `sprintf`
+  * Create strings, via a format-string.
 * `string`
   * convert the given item to a string.
 * `type`

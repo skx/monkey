@@ -58,3 +58,11 @@ func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) O
 	}
 	return nil
 }
+
+// ToInterface converts this object to a go-interface, which will allow
+// it to be used naturally in our sprintf/printf primitives.
+//
+// It might also be helpful for embedded users.
+func (b *Boolean) ToInterface() interface{} {
+	return b.Value
+}
