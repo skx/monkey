@@ -1,3 +1,5 @@
+// Package token contains constants which are used when lexing a program
+// written in the monkey language, as done by the parser.
 package token
 
 // Type is a string

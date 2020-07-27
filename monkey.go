@@ -1,9 +1,11 @@
+// Monkey is a scripting language implemented in golang, based upon
+// the book "Write an Interpreter in Go", written by Thorsten Ball.
 //
-// Driver for monkey.
+// This implementation adds a number of tweaks, improvements, and new
+// features.  For example we support file-based I/O, regular expressions,
+// the ternary operator, and more.
 //
-// If no argument is given will read from stdin, otherwise from the
-// named file.
-//
+// For full details please consult the project homepage https://github.com/skx/monkey/
 package main
 
 import (

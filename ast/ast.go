@@ -1,3 +1,5 @@
+// Package ast contains the definitions of the abstract-syntax tree
+// that our parse produces, and our interpreter executes.
 package ast
 
 import (

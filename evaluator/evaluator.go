@@ -1,3 +1,5 @@
+// Package evaluator contains the core of our interpreter, which walks
+// the AST produced by the parser and evaluates the user-submitted program.
 package evaluator
 
 import (

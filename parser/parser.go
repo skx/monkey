@@ -1,3 +1,5 @@
+// Package parser is used to parse input-programs written in monkey
+// and convert them to an abstract-syntax tree.
 package parser
 
 import (
