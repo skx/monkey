@@ -29,6 +29,9 @@ type HashPair struct {
 type Hash struct {
 	// Pairs holds the key/value pairs of the hash we wrap
 	Pairs map[HashKey]HashPair
+
+	// offset holds our iteration-offset.
+	offset int
 }
 
 // Type returns the type of this object.
@@ -87,4 +90,28 @@ func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Obje
 		return &Array{Elements: result}
 	}
 	return nil
+}
+
+// Reset implements the Iterable interface, and allows the contents
+// of the array to be reset to allow re-iteration.
+func (h *Hash) Reset() {
+	h.offset = 0
+}
+
+// Next implements the Iterable interface, and allows the contents
+// of our array to be iterated over.
+func (h *Hash) Next() (Object, Object, bool) {
+	if h.offset < len(h.Pairs) {
+		idx := 0
+
+		for _, pair := range h.Pairs {
+			if h.offset == idx {
+				h.offset++
+				return pair.Key, pair.Value, true
+			}
+			idx++
+		}
+	}
+
+	return nil, &Integer{Value: 0}, false
 }
