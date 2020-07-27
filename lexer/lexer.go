@@ -1,3 +1,5 @@
+// Package lexer contains the code to lex input-programs into a stream
+// of tokens, such that they may be parsed.
 package lexer
 
 import (
@@ -463,15 +465,6 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return str
-}
-
-// read until white space
-func (l *Lexer) readUntilWhitespace() string {
-	position := l.position
-	for !isWhitespace(l.ch) {
-		l.readChar()
-	}
-	return string(l.characters[position:l.position])
 }
 
 // read decimal
