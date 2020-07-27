@@ -23,7 +23,7 @@
   * [2.6 If-else statements](#26-if-else-statements)
     * [2.6.1 Ternary expressions](#261-ternary-expressions)
   * [2.7 For-loop statements](#27-for-loop-statements)
-  * [2.7.1 Foreach statements](#271-foreach-statements)
+    * [2.7.1 Foreach statements](#271-foreach-statements)
   * [2.8 Comments](#28-comments)
   * [2.9 Postfix Operators](#29-postfix-operators)
   * [2.10 Command Execution](#210-command-execution)
