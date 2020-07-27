@@ -58,7 +58,7 @@ func (h *Hash) Inspect() string {
 func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "keys" {
 		ents := len(h.Pairs)
-		array := make([]Object, ents, ents)
+		array := make([]Object, ents)
 
 		// Now copy the keys into it.
 		i := 0
@@ -74,16 +74,14 @@ func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Obje
 		dynamic := env.Names("hash.")
 
 		var names []string
-		for _, e := range static {
-			names = append(names, e)
-		}
+		names = append(names, static...)
 		for _, e := range dynamic {
 			bits := strings.Split(e, ".")
 			names = append(names, bits[1])
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names), len(names))
+		result := make([]Object, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

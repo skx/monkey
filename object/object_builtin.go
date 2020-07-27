@@ -25,7 +25,7 @@ func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) O
 	if method == "methods" {
 		names := []string{"methods"}
 
-		result := make([]Object, len(names), len(names))
+		result := make([]Object, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

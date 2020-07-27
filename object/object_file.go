@@ -130,7 +130,7 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 
 		// make results
 		l := len(lines)
-		result := make([]Object, l, l)
+		result := make([]Object, l)
 		for i, txt := range lines {
 			result[i] = &String{Value: txt}
 		}
@@ -141,16 +141,14 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 		dynamic := env.Names("file.")
 
 		var names []string
-		for _, e := range static {
-			names = append(names, e)
-		}
+		names = append(names, static...)
 		for _, e := range dynamic {
 			bits := strings.Split(e, ".")
 			names = append(names, bits[1])
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names), len(names))
+		result := make([]Object, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

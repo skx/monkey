@@ -41,16 +41,14 @@ func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) O
 		dynamic := env.Names("bool.")
 
 		var names []string
-		for _, e := range static {
-			names = append(names, e)
-		}
+		names = append(names, static...)
 		for _, e := range dynamic {
 			bits := strings.Split(e, ".")
 			names = append(names, bits[1])
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names), len(names))
+		result := make([]Object, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
