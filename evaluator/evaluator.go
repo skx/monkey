@@ -75,6 +75,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalTernaryExpression(node, env)
 	case *ast.ForLoopExpression:
 		return evalForLoopExpression(node, env)
+	case *ast.ForeachStatement:
+		return evalForeachExpression(node, env)
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
 		if isError(val) {
@@ -725,6 +727,46 @@ func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) 
 		}
 	}
 	return rt
+}
+
+// handle "for x [,y] in .."
+func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) object.Object {
+
+	// expression
+	val := Eval(fle.Value, env)
+
+	helper, ok := val.(object.Iterable)
+	if !ok {
+		return newError("%s object doesn't implement the Iterable interface", val.Type())
+	}
+
+	// Create a new environment for the block
+	child := object.NewEnclosedEnvironment(env)
+
+	// Reset the state of any previous iteration.
+	helper.Reset()
+
+	// Get the initial values.
+	ret, idx, ok := helper.Next()
+
+	for ok {
+
+		// Set the index + name
+		child.Set(fle.Ident, ret)
+
+		idxName := fle.Index
+		if idxName != "" {
+			child.Set(fle.Index, idx)
+		}
+
+		// Eval the block
+		Eval(fle.Body, child)
+
+		// Loop again
+		ret, idx, ok = helper.Next()
+	}
+
+	return &object.Null{}
 }
 
 func isTruthy(obj object.Object) bool {
