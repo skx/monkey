@@ -27,3 +27,11 @@ func (rv *ReturnValue) InvokeMethod(method string, env Environment, args ...Obje
 	//
 	return nil
 }
+
+// ToInterface converts this object to a go-interface, which will allow
+// it to be used naturally in our sprintf/printf primitives.
+//
+// It might also be helpful for embedded users.
+func (rv *ReturnValue) ToInterface() interface{} {
+	return "<RETURN_VALUE>"
+}
