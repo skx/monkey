@@ -21,7 +21,7 @@ func dirGlob(args ...object.Object) object.Object {
 
 	// Create an array to hold the results and populate it
 	l := len(entries)
-	result := make([]object.Object, l, l)
+	result := make([]object.Object, l)
 	for i, txt := range entries {
 		result[i] = &object.String{Value: txt}
 	}

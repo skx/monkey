@@ -35,7 +35,7 @@ func versionFun(args ...object.Object) object.Object {
 //
 func argsFun(args ...object.Object) object.Object {
 	l := len(os.Args[1:])
-	result := make([]object.Object, l, l)
+	result := make([]object.Object, l)
 	for i, txt := range os.Args[1:] {
 		result[i] = &object.String{Value: txt}
 	}

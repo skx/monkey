@@ -357,7 +357,7 @@ func (l *Lexer) readIdentifier() string {
 
 		// If not see if it has a type-prefix, which will
 		// let the definition succeed.
-		if ok == false {
+		if !ok {
 			for _, i := range types {
 				if strings.HasPrefix(id, i) {
 					ok = true

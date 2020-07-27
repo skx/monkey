@@ -418,7 +418,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	case "..":
 		len := int(rightVal-leftVal) + 1
-		array := make([]object.Object, len, len)
+		array := make([]object.Object, len)
 		i := 0
 		for i < len {
 			array[i] = &object.Integer{Value: leftVal}

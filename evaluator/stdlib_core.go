@@ -303,7 +303,7 @@ func pragmaFun(args ...object.Object) object.Object {
 	len := len(PRAGMAS)
 
 	// Create a new array for the results.
-	array := make([]object.Object, len, len)
+	array := make([]object.Object, len)
 
 	i := 0
 	for key := range PRAGMAS {
@@ -326,7 +326,7 @@ func pushFun(args ...object.Object) object.Object {
 	}
 	arr := args[0].(*object.Array)
 	length := len(arr.Elements)
-	newElements := make([]object.Object, length+1, length+1)
+	newElements := make([]object.Object, length+1)
 	copy(newElements, arr.Elements)
 	newElements[length] = args[1]
 	return &object.Array{Elements: newElements}
@@ -468,7 +468,7 @@ func hashKeys(args ...object.Object) object.Object {
 	ents := len(hash.Pairs)
 
 	// Create a new array for the results.
-	array := make([]object.Object, ents, ents)
+	array := make([]object.Object, ents)
 
 	// Now copy the keys into it.
 	i := 0
