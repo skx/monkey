@@ -77,6 +77,9 @@ The interpreter in _this_ repository has been significantly extended from the st
   * `if ( name ~= /steve/i ) { puts( "Hello Steve\n"); } `
 * Added support for [ternary expressions](#261-ternary-expressions).
 * Added support for creating arrays of consecutive integers via the range operator (`1..10`).
+* Added the ability to iterate over the contents of arrays, hashes, and strings via the `foreach` statement.
+
+
 
 ## 1. Installation
 
