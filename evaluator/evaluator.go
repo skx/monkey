@@ -751,8 +751,18 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 		return newError("%s object doesn't implement the Iterable interface", val.Type())
 	}
 
+	// The one/two values we're going to permit
+	var permit []string
+	permit = append(permit, fle.Ident)
+	if fle.Index != "" {
+		permit = append(permit, fle.Index)
+	}
+
 	// Create a new environment for the block
-	child := object.NewEnclosedEnvironment(env)
+	//
+	// This will allow writing EVERYTHING to the parent scope,
+	// except the two variables named in the permit-array
+	child := object.NewTemporaryScope(env, permit)
 
 	// Reset the state of any previous iteration.
 	helper.Reset()
@@ -771,7 +781,14 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 		}
 
 		// Eval the block
-		Eval(fle.Body, child)
+		rt := Eval(fle.Body, child)
+
+		//
+		// If we got an error/return then we handle it.
+		//
+		if !isError(rt) && (rt.Type() == object.RETURN_VALUE_OBJ || rt.Type() == object.ERROR_OBJ) {
+			return rt
+		}
 
 		// Loop again
 		ret, idx, ok = helper.Next()

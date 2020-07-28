@@ -105,8 +105,6 @@ assert( "type( STDOUT ) == \"file\"" );
 assert( "type( STDERR ) == \"file\"" );
 
 
-
-
 //
 // First element of an array
 //
@@ -121,8 +119,6 @@ function first( array ) {
 assert( "first( [0,1] ) == 0" );
 assert( "first([\"steve\",1]) == \"steve\"" );
 assert( "!first([])" );
-
-
 
 
 
@@ -147,8 +143,6 @@ assert( "len(rest( [0,2] ) ) == 1" );
 assert( "len(rest( [0,1,2] ) ) == 2" );
 assert( "len(rest( [0,1,2,3,4,5] ) ) == 5" );
 assert( "string(rest([\"steve\",1])) == \"[1]\"" );
-
-
 
 
 
@@ -228,13 +222,13 @@ assert( "let a = [ 1, 2, 3 , -1, \"steve\", 44 ];
 function array.find(item) {
    foreach index, value in self {
        if ( value == item ) {
-           return index
+           return index;
        }
    }
 
    // not found.
    return -1;
-};
+}
 
 assert( "[1,2,3].find(7) == -1" );
 assert( "[1,2,3].find(1) == 0" );
@@ -591,7 +585,7 @@ function array.uniq() {
 
     // return the sorted keys
     return( tmp.keys().sort() );
-};
+}
 
 assert( "string([1,1,1,1,2].uniq()) == \"[1, 2]\"" );
 
@@ -664,7 +658,7 @@ function string.count(char) {
   }
 
   return c;
-};
+}
 
 assert( "\"steve\".count(\"e\") == 2" );
 assert( "\"steve\".count(\"E\") == 0" );
@@ -845,7 +839,7 @@ function string.find( needle ) {
    }
 
    return -1;
-};
+}
 
 
 assert( "\"steve\".find(\"e\" ) == 2" );
@@ -952,7 +946,7 @@ function string.replace( old, new ) {
      s = pre + new + suf;
 
      index = s.find( old );
-  };
+  }
 
   return s;
 }
