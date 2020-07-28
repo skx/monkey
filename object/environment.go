@@ -17,6 +17,10 @@ type Environment struct {
 	// outer holds any parent environment.  Our env. allows
 	// nesting to implement scope.
 	outer *Environment
+
+	// permit stores the names of variables we can set in this
+	// environment, if any
+	permit []string
 }
 
 // NewEnvironment creates new environment
@@ -30,6 +34,19 @@ func NewEnvironment() *Environment {
 func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()
 	env.outer = outer
+	return env
+}
+
+// NewTemporaryScope creates a temporary scope where some values
+// are ignored.
+//
+// This is used as a sneaky hack to allow `foreach` to access all
+// global values as if they were local, but prevent the index/value
+// keys from persisting.
+func NewTemporaryScope(outer *Environment, keys []string) *Environment {
+	env := NewEnvironment()
+	env.outer = outer
+	env.permit = keys
 	return env
 }
 
@@ -92,6 +109,22 @@ func (e *Environment) Set(name string, val Object) Object {
 	//
 	// Store the (updated) value.
 	//
+	if len(e.permit) > 0 {
+		for _, v := range e.permit {
+			// we're permitted to store this variable
+			if v == name {
+				e.store[name] = val
+				return val
+			}
+		}
+		// ok we're not permitted, we must store in the parent
+		if e.outer != nil {
+			return e.outer.Set(name, val)
+		} else {
+			fmt.Printf("scoping weirdness; please report a bug\n")
+			os.Exit(5)
+		}
+	}
 	e.store[name] = val
 	return val
 }
