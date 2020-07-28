@@ -34,3 +34,17 @@ if (out) {
 } else {
    puts( "Not true!\n");
 }
+
+
+//
+// The same thing using literal a regular expression
+//
+
+ip = "192.168.1.1";
+
+if ( ip ~= /([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/  ) {
+   printf( "We matched an IP address succesfully.\n");
+   printf( "Captures: %s.%s.%s.%s\n", $1, $2, $3, $4 );
+}
+
+

@@ -60,7 +60,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(right) {
 			return right
 		}
-		res := evalInfixExpression(node.Operator, left, right)
+		res := evalInfixExpression(node.Operator, left, right, env)
 		if isError(res) {
 			fmt.Printf("Error: %s\n", res.Inspect())
 			if PRAGMAS["strict"] == 1 {
@@ -265,7 +265,7 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	}
 }
 
-func evalInfixExpression(operator string, left, right object.Object) object.Object {
+func evalInfixExpression(operator string, left, right object.Object, env *object.Environment) object.Object {
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -284,7 +284,7 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	case operator == "!~":
 		return notMatches(left, right)
 	case operator == "~=":
-		return matches(left, right)
+		return matches(left, right, env)
 
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
@@ -302,7 +302,7 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	}
 }
 
-func matches(left, right object.Object) object.Object {
+func matches(left, right object.Object, env *object.Environment) object.Object {
 
 	str := left.Inspect()
 
@@ -323,8 +323,17 @@ func matches(left, right object.Object) object.Object {
 		return newError("error compiling regexp '%s': %s", right.Inspect(), err)
 	}
 
+	res := r.FindStringSubmatch(str)
+
+	// Do we have any captures?
+	if len(res) > 1 {
+		for i := 1; i < len(res); i++ {
+			env.Set(fmt.Sprintf("$%d", i), &object.String{Value: res[i]})
+		}
+	}
+
 	// Test if it matched
-	if r.MatchString(str) {
+	if len(res) > 0 {
 		return TRUE
 	}
 
@@ -582,14 +591,24 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 // if the condition matches, and running any optional else block
 // otherwise.
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
-	condition := Eval(ie.Condition, env)
+	//
+	// Create an environment for handling regexps
+	//
+	var permit []string
+	i := 1
+	for i < 32 {
+		permit = append(permit, fmt.Sprintf("$%d", i))
+		i++
+	}
+	nEnv := object.NewTemporaryScope(env, permit)
+	condition := Eval(ie.Condition, nEnv)
 	if isError(condition) {
 		return condition
 	}
 	if isTruthy(condition) {
-		return Eval(ie.Consequence, env)
+		return Eval(ie.Consequence, nEnv)
 	} else if ie.Alternative != nil {
-		return Eval(ie.Alternative, env)
+		return Eval(ie.Alternative, nEnv)
 	} else {
 		return NULL
 	}
@@ -637,7 +656,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("+=", current, evaluated)
+		res := evalInfixExpression("+=", current, evaluated, env)
 		if isError(res) {
 			fmt.Printf("Error handling += %s\n", res.Inspect())
 			return res
@@ -654,7 +673,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("-=", current, evaluated)
+		res := evalInfixExpression("-=", current, evaluated, env)
 		if isError(res) {
 			fmt.Printf("Error handling -= %s\n", res.Inspect())
 			return res
@@ -670,7 +689,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("*=", current, evaluated)
+		res := evalInfixExpression("*=", current, evaluated, env)
 		if isError(res) {
 			fmt.Printf("Error handling *= %s\n", res.Inspect())
 			return res
@@ -687,7 +706,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return newError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("/=", current, evaluated)
+		res := evalInfixExpression("/=", current, evaluated, env)
 		if isError(res) {
 			fmt.Printf("Error handling /= %s\n", res.Inspect())
 			return res

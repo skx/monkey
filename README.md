@@ -500,11 +500,16 @@ capture groups in the match.
 
 This is demonstrated in the [examples/regexp.mon](examples/regexp.mon) example.
 
-You can also perform matching, but not capturing, with a literal regular expression object:
+You can also perform matching (complete with captures), with a literal regular expression object:
 
     if ( Name ~= /steve/i ) { puts( "Hello Steve\n" ); }
     if ( Name !~ /[aeiou]/i ) { puts( "You have no vowels.\n" ); }
 
+    // captures become $1, $2, $N, etc.
+    ip = "192.168.1.1";
+    if ( ip ~= /([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/  ) {
+        printf("Matched! %s.%s.%s.%s\n", $1, $2, $3, $4 );
+    }
 
 ## 2.12 File I/O
 
