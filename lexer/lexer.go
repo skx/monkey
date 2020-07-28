@@ -605,7 +605,7 @@ func (l *Lexer) peekChar() rune {
 // determinate ch is identifier or not
 func isIdentifier(ch rune) bool {
 
-	if unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '.' || ch == '?' || ch == '_' {
+	if unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '.' || ch == '?' || ch == '$' || ch == '_' {
 		return true
 	}
 
