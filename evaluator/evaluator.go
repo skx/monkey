@@ -591,14 +591,24 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 // if the condition matches, and running any optional else block
 // otherwise.
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
-	condition := Eval(ie.Condition, env)
+	//
+	// Create an environment for handling regexps
+	//
+	var permit []string
+	i := 1
+	for i < 32 {
+		permit = append(permit, fmt.Sprintf("$%d", i))
+		i++
+	}
+	nEnv := object.NewTemporaryScope(env, permit)
+	condition := Eval(ie.Condition, nEnv)
 	if isError(condition) {
 		return condition
 	}
 	if isTruthy(condition) {
-		return Eval(ie.Consequence, env)
+		return Eval(ie.Consequence, nEnv)
 	} else if ie.Alternative != nil {
-		return Eval(ie.Alternative, env)
+		return Eval(ie.Alternative, nEnv)
 	} else {
 		return NULL
 	}
