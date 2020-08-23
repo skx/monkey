@@ -31,7 +31,7 @@ func (i *Integer) HashKey() HashKey {
 // (Built-in methods only.)
 func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) Object {
 	if method == "chr" {
-		return &String{Value: string(i.Value)}
+		return &String{Value: string(rune(i.Value))}
 	}
 	if method == "methods" {
 		static := []string{"chr", "methods"}
