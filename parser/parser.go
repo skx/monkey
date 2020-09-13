@@ -397,20 +397,17 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 
 	// switch
 	expression := &ast.SwitchExpression{Token: p.curToken}
-	if expression == nil {
-		return nil
-	}
+
+	// look for (xx)
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 	p.nextToken()
 	expression.Value = p.parseExpression(LOWEST)
 	if expression.Value == nil {
-		fmt.Printf("error\n")
 		return nil
 	}
 	if !p.expectPeek(token.RPAREN) {
-		fmt.Printf("error\n")
 		return nil
 	}
 
@@ -424,6 +421,10 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 	// various case-statements
 	for !p.curTokenIs(token.RBRACE) {
 
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated switch statement")
+			return nil
+		}
 		tmp := &ast.CaseExpression{Token: p.curToken}
 
 		// Default will be handled specially
@@ -437,8 +438,15 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 			// skip "case"
 			p.nextToken()
 
-			// parse the match-expression.
-			tmp.Expr = p.parseExpression(LOWEST)
+			// Here we allow "case default" even though
+			// most people would prefer to write "default".
+			if p.curTokenIs(token.DEFAULT) {
+				tmp.Default = true
+			} else {
+
+				// parse the match-expression.
+				tmp.Expr = p.parseExpression(LOWEST)
+			}
 		}
 
 		if !p.expectPeek(token.LBRACE) {
@@ -471,6 +479,19 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 		return nil
 	}
 
+	// More than one default is a bug
+	count := 0
+	for _, c := range expression.Choices {
+		if c.Default {
+			count++
+		}
+	}
+	if count > 1 {
+		msg := fmt.Sprintf("A switch-statement should only have one default block")
+		p.errors = append(p.errors, msg)
+		return nil
+
+	}
 	return expression
 
 }
