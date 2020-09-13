@@ -747,28 +747,32 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 			continue
 		}
 
-		// Get the value of the case
-		val := Eval(opt.Expr, env)
+		// Look at any expression we've got in this case.
+		for _, val := range opt.Expr {
 
-		// Is it a literal match?
-		if obj.Type() == val.Type() &&
-			(obj.Inspect() == val.Inspect()) {
+			// Get the value of the case
+			out := Eval(val, env)
 
-			// Evaluate the block and return the value
-			out := evalBlockStatement(opt.Block, env)
-			return out
-		}
-
-		// Is it a regexp-match?
-		if val.Type() == object.REGEXP_OBJ {
-
-			m := matches(obj, val, env)
-			if m == TRUE {
+			// Is it a literal match?
+			if obj.Type() == out.Type() &&
+				(obj.Inspect() == out.Inspect()) {
 
 				// Evaluate the block and return the value
 				out := evalBlockStatement(opt.Block, env)
 				return out
+			}
 
+			// Is it a regexp-match?
+			if out.Type() == object.REGEXP_OBJ {
+
+				m := matches(obj, out, env)
+				if m == TRUE {
+
+					// Evaluate the block and return the value
+					out := evalBlockStatement(opt.Block, env)
+					return out
+
+				}
 			}
 		}
 	}

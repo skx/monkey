@@ -5,7 +5,7 @@ function test( name ) {
   m = false;
 
   switch( name ) {
-    case /^steve$/i {
+    case /^steve$/ , /^STEVE$/i {
        printf("Hello Steve - we matched you via a regexp\n");
        m = true;
     }
@@ -13,8 +13,8 @@ function test( name ) {
 	printf("Hello SteveN, you were matched via an expression\n" );
         m = true;
     }
-    case 3 {
-        printf("Hello number three, we matched you literally.\n");
+    case 3, 6, 9 {
+        printf("Hello multiple of three, we matched you literally: %d\n", int(name));
         m = true;
     }
     default {
@@ -28,6 +28,7 @@ function test( name ) {
 
 // Test the switch statement
 test( "Steve" );   // Regexp match
+test( "steve" );   // Regexp match
 test( "Steven" );  // Literal match
 test( 3 );         // Literal match
 

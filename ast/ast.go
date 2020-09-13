@@ -795,7 +795,7 @@ type CaseExpression struct {
 	Default bool
 
 	// The thing we match
-	Expr Expression
+	Expr []Expression
 
 	// The code to execute if there is a match
 	Block *BlockStatement
@@ -814,7 +814,12 @@ func (ce *CaseExpression) String() string {
 		out.WriteString("default ")
 	} else {
 		out.WriteString("case ")
-		out.WriteString(ce.Expr.String())
+
+		tmp := []string{}
+		for _, exp := range ce.Expr {
+			tmp = append(tmp, exp.String())
+		}
+		out.WriteString(strings.Join(tmp, ","))
 	}
 	out.WriteString(ce.Block.String())
 	return out.String()

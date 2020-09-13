@@ -445,7 +445,18 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 			} else {
 
 				// parse the match-expression.
-				tmp.Expr = p.parseExpression(LOWEST)
+				tmp.Expr = append(tmp.Expr, p.parseExpression(LOWEST))
+				for p.peekTokenIs(token.COMMA) {
+
+					// skip the comma
+					p.nextToken()
+
+					// setup the expression.
+					p.nextToken()
+
+					tmp.Expr = append(tmp.Expr, p.parseExpression(LOWEST))
+
+				}
 			}
 		}
 
