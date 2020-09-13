@@ -19,10 +19,12 @@ const (
 	ASTERISK_EQUALS = "*="
 	BACKTICK        = "`"
 	BANG            = "!"
+	CASE            = "case"
 	COLON           = ":"
 	COMMA           = ","
 	CONST           = "CONST"
 	CONTAINS        = "~="
+	DEFAULT         = "DEFAULT"
 	DEFINE_FUNCTION = "DEFINE_FUNCTION"
 	DOTDOT          = ".."
 	ELSE            = "ELSE"
@@ -36,9 +38,9 @@ const (
 	GT              = ">"
 	GT_EQUALS       = ">="
 	IDENT           = "IDENT"
-	IN              = "IN"
 	IF              = "IF"
 	ILLEGAL         = "ILLEGAL"
+	IN              = "IN"
 	INT             = "INT"
 	LBRACE          = "{"
 	LBRACKET        = "["
@@ -68,12 +70,15 @@ const (
 	SLASH           = "/"
 	SLASH_EQUALS    = "/="
 	STRING          = "STRING"
+	SWITCH          = "switch"
 	TRUE            = "TRUE"
 )
 
 // reversed keywords
 var keywords = map[string]Type{
+	"case":     CASE,
 	"const":    CONST,
+	"default":  DEFAULT,
 	"else":     ELSE,
 	"false":    FALSE,
 	"fn":       FUNCTION,
@@ -84,6 +89,7 @@ var keywords = map[string]Type{
 	"in":       IN,
 	"let":      LET,
 	"return":   RETURN,
+	"switch":   SWITCH,
 	"true":     TRUE,
 }
 
