@@ -22,14 +22,15 @@
   * [2.5 Functions](#25-functions)
   * [2.6 If-else statements](#26-if-else-statements)
     * [2.6.1 Ternary expressions](#261-ternary-expressions)
-  * [2.7 For-loop statements](#27-for-loop-statements)
-    * [2.7.1 Foreach statements](#271-foreach-statements)
-  * [2.8 Comments](#28-comments)
-  * [2.9 Postfix Operators](#29-postfix-operators)
-  * [2.10 Command Execution](#210-command-execution)
-  * [2.11 Regular Expressions](#211-regular-expressions)
-  * [2.12 File I/O](#212-file-io)
-  * [2.13 File Operations](#213-file-operations)
+  * [2.7 Switch statements](#27-switch-statements)
+  * [2.8 For-loop statements](#28-for-loop-statements)
+    * [2.8.1 Foreach statements](#281-foreach-statements)
+  * [2.9 Comments](#29-comments)
+  * [2.10 Postfix Operators](#29-postfix-operators)
+  * [2.11 Command Execution](#211-command-execution)
+  * [2.12 Regular Expressions](#212-regular-expressions)
+  * [2.13 File I/O](#213-file-io)
+  * [2.14 File Operations](#214-file-operations)
   * [3. Object Methods](#3-object-methods)
       * [3.1 Defininig New Object Methods](#31-defininig-new-object-methods)
 * [Github Setup](#github-setup)
@@ -80,6 +81,8 @@ The interpreter in _this_ repository has been significantly extended from the st
 * Added the ability to iterate over the contents of arrays, hashes, and strings via the `foreach` statement.
 * Added `printf` and `sprintf` primitives, which work as you would expect.
   * `printf( "%d %s", 3, "Steve" );`
+* Added support for `switch` statements, with block-based `case` expressions.
+  * No bugs due to C-style "fall-through".
 
 
 ## 1. Installation
@@ -397,7 +400,33 @@ would expect with a C-background:
 
 Note that in the interests of clarity nested ternary-expressions are illegal!
 
-## 2.7 For-loop statements
+## 2.7 Switch Statements
+
+Monkey supports the `switch` and `case` expressions, as the following example demonstrates:
+
+```
+  name = "Steve";
+
+  switch( name ) {
+    case /^steve$/i {
+       printf("Hello Steve - we matched you via a regexp\n");
+    }
+    case "St" + "even" {
+       printf("Hello SteveN, you were matched via an expression\n" );
+    }
+    case 3 {
+       printf("Hello number three, we matched you literally.\n");
+    }
+    default {
+       printf("Default case: %s\n", string(name) );
+    }
+  }
+```
+
+See also [examples/switch.mon](examples/switch.mon).
+
+
+## 2.8 For-loop statements
 
 `monkey` supports a golang-style for-loop statement.
 
@@ -415,7 +444,7 @@ Note that in the interests of clarity nested ternary-expressions are illegal!
      puts(sum(100));  // Outputs: 4950
 
 
-## 2.7.1 Foreach statements
+## 2.8.1 Foreach statements
 
 In addition to iterating over items with the `for` statement, as shown above, it is also possible to iterate over various items via the `foreach` statement.
 
@@ -437,7 +466,7 @@ The same style of iteration works for Arrays, Hashes, and the characters which m
 When iterating over hashes you can receive either the keys, or the keys and value at each step in the iteration, otherwise you receive the value and an optional index.
 
 
-## 2.8 Comments
+## 2.9 Comments
 
 `monkey` support two kinds of comments:
 
@@ -445,7 +474,7 @@ When iterating over hashes you can receive either the keys, or the keys and valu
 * Multiline comments between `/*` and `*/`.
 
 
-## 2.9 Postfix Operators
+## 2.10 Postfix Operators
 
 The `++` and `--` modifiers are permitted for integer-variables, for example the following works as you would expect showing the numbers from `0` to `5`:
 
@@ -473,7 +502,7 @@ The update-operators work with integers and doubles by default, when it comes to
     puts( str );           // -> "Forename Surname\n"
 
 
-## 2.10 Command Execution
+## 2.11 Command Execution
 
 As with many scripting languages commands may be executed via the backtick
 operator (`\``).
@@ -491,7 +520,7 @@ The output will be a hash with two keys `stdout` and `stderr`.  NULL is
 returned if the execution fails.  This can be seen in [examples/exec.mon](examples/exec.mon).
 
 
-## 2.11 Regular Expressions
+## 2.12 Regular Expressions
 
 The `match` function allows matching a string against a regular-expression.
 
@@ -511,7 +540,7 @@ You can also perform matching (complete with captures), with a literal regular e
         printf("Matched! %s.%s.%s.%s\n", $1, $2, $3, $4 );
     }
 
-## 2.12 File I/O
+## 2.13 File I/O
 
 The `open` primitive is used to open files, and can be used to open files for either reading, or writing:
 
@@ -553,7 +582,7 @@ By default three filehandles will be made available, as constants:
   * Used for writing messages.
 
 
-## 2.13 File Operations
+## 2.14 File Operations
 
 The primitive `stat` will return a hash of details about the given file, or
 directory entry.
