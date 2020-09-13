@@ -166,6 +166,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalAssignStatement(node, env)
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
+	case *ast.SwitchExpression:
+		return evalSwitchStatement(node, env)
 	}
 	return nil
 }
@@ -729,6 +731,60 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		env.Set(a.Name.String(), evaluated)
 	}
 	return evaluated
+}
+
+func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) object.Object {
+
+	// Get the value.
+	obj := Eval(se.Value, env)
+
+	// Try all the choices
+	for _, opt := range se.Choices {
+
+		// skipping the default-case, which we'll
+		// handle later.
+		if opt.Default {
+			continue
+		}
+
+		// Get the value of the case
+		val := Eval(opt.Expr, env)
+
+		// Is it a literal match?
+		if obj.Type() == val.Type() &&
+			(obj.Inspect() == val.Inspect()) {
+
+			// Evaluate the block and return the value
+			out := evalBlockStatement(opt.Block, env)
+			return out
+		}
+
+		// Is it a regexp-match?
+		if val.Type() == object.REGEXP_OBJ {
+
+			m := matches(obj, val, env)
+			if m == TRUE {
+
+				// Evaluate the block and return the value
+				out := evalBlockStatement(opt.Block, env)
+				return out
+
+			}
+		}
+	}
+
+	// No match?  Handle default if present
+	for _, opt := range se.Choices {
+
+		// skip default
+		if opt.Default {
+
+			out := evalBlockStatement(opt.Block, env)
+			return out
+		}
+	}
+
+	return nil
 }
 
 func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {
