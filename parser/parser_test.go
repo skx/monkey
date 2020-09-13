@@ -881,6 +881,7 @@ func TestIncompleThings(t *testing.T) {
 		`const x =`,
 		`function foo( a, b ="steve", `,
 		`function foo() {`,
+		`switch (foo) { `,
 	}
 
 	for _, str := range input {
@@ -895,5 +896,35 @@ func TestIncompleThings(t *testing.T) {
 		if !strings.Contains(p.errors[0], "unterminated") {
 			t.Errorf("Unexpected error-message %s\n", p.errors[0])
 		}
+	}
+}
+
+func TestMultiDefault(t *testing.T) {
+	input := `
+switch( val ) {
+   case 1 {
+      printf("yksi");
+   }
+   case 2 {
+      printf("kaksi");
+   }
+   case default {
+      printf("OK\n");
+   }
+   default {
+      printf("Two default blocks?  Oh noes\n" );
+   }
+}`
+
+	l := lexer.New(input)
+	p := New(l)
+	_ = p.ParseProgram()
+
+	if len(p.errors) < 1 {
+		t.Errorf("unexpected error-count, got %d expected %d", len(p.errors), 1)
+	}
+
+	if !strings.Contains(p.errors[0], "only have one default block") {
+		t.Errorf("Unexpected error-message %s\n", p.errors[0])
 	}
 }

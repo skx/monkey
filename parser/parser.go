@@ -139,6 +139,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
 	p.registerPrefix(token.REGEXP, p.parseRegexpLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
+	p.registerPrefix(token.SWITCH, p.parseSwitchStatement)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 
 	// Register infix functions
@@ -389,6 +390,121 @@ func (p *Parser) parseFloatLiteral() ast.Expression {
 	}
 	flo.Value = value
 	return flo
+}
+
+// parseSwitchStatement handles a switch statement
+func (p *Parser) parseSwitchStatement() ast.Expression {
+
+	// switch
+	expression := &ast.SwitchExpression{Token: p.curToken}
+
+	// look for (xx)
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	p.nextToken()
+	expression.Value = p.parseExpression(LOWEST)
+	if expression.Value == nil {
+		return nil
+	}
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	// Now we have a block containing blocks.
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	p.nextToken()
+
+	// Process the block which we think will contain
+	// various case-statements
+	for !p.curTokenIs(token.RBRACE) {
+
+		if p.curTokenIs(token.EOF) {
+			p.errors = append(p.errors, "unterminated switch statement")
+			return nil
+		}
+		tmp := &ast.CaseExpression{Token: p.curToken}
+
+		// Default will be handled specially
+		if p.curTokenIs(token.DEFAULT) {
+
+			// We have a default-case here.
+			tmp.Default = true
+
+		} else if p.curTokenIs(token.CASE) {
+
+			// skip "case"
+			p.nextToken()
+
+			// Here we allow "case default" even though
+			// most people would prefer to write "default".
+			if p.curTokenIs(token.DEFAULT) {
+				tmp.Default = true
+			} else {
+
+				// parse the match-expression.
+				tmp.Expr = append(tmp.Expr, p.parseExpression(LOWEST))
+				for p.peekTokenIs(token.COMMA) {
+
+					// skip the comma
+					p.nextToken()
+
+					// setup the expression.
+					p.nextToken()
+
+					tmp.Expr = append(tmp.Expr, p.parseExpression(LOWEST))
+
+				}
+			}
+		}
+
+		if !p.expectPeek(token.LBRACE) {
+
+			msg := fmt.Sprintf("expected token to be '{', got %s instead", p.curToken.Type)
+			p.errors = append(p.errors, msg)
+			fmt.Printf("error\n")
+			return nil
+		}
+
+		// parse the block
+		tmp.Block = p.parseBlockStatement()
+
+		if !p.curTokenIs(token.RBRACE) {
+			msg := fmt.Sprintf("Syntax Error: expected token to be '}', got %s instead", p.curToken.Type)
+			p.errors = append(p.errors, msg)
+			fmt.Printf("error\n")
+			return nil
+
+		}
+		p.nextToken()
+
+		// save the choice away
+		expression.Choices = append(expression.Choices, tmp)
+
+	}
+
+	// ensure we're at the the closing "}"
+	if !p.curTokenIs(token.RBRACE) {
+		return nil
+	}
+
+	// More than one default is a bug
+	count := 0
+	for _, c := range expression.Choices {
+		if c.Default {
+			count++
+		}
+	}
+	if count > 1 {
+		msg := fmt.Sprintf("A switch-statement should only have one default block")
+		p.errors = append(p.errors, msg)
+		return nil
+
+	}
+	return expression
+
 }
 
 // parseBoolean parses a boolean token.
