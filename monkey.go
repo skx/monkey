@@ -9,6 +9,7 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -20,8 +21,11 @@ import (
 	"github.com/skx/monkey/parser"
 )
 
-// This version-string will be updated via travis for generated binaries.
+// This version-string will be updated via CI system for generated binaries.
 var version = "master/unreleased"
+
+//go:embed data/stdlib.mon
+var stdlib string
 
 //
 // Implemention of "version()" function.
@@ -73,23 +77,9 @@ func Execute(input string) int {
 		})
 
 	//
-	// Our standard-library is mostly written in C,
-	// and can be found implemented in evaluator/stdlib*.go
-	//
-	// However there is also data/stdlib.mon, and here we
-	// load that
-	//
-	tmpl, err := getResource("data/stdlib.mon")
-	if err != nil {
-		fmt.Printf("Failed to load our standard-library: %s",
-			err.Error())
-		os.Exit(33)
-	}
-
-	//
 	//  Parse and evaluate our standard-library.
 	//
-	initL := lexer.New(string(tmpl))
+	initL := lexer.New(stdlib)
 	initP := parser.New(initL)
 	initProg := initP.ParseProgram()
 	evaluator.Eval(initProg, env)
