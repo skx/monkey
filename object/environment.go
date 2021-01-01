@@ -120,10 +120,9 @@ func (e *Environment) Set(name string, val Object) Object {
 		// ok we're not permitted, we must store in the parent
 		if e.outer != nil {
 			return e.outer.Set(name, val)
-		} else {
-			fmt.Printf("scoping weirdness; please report a bug\n")
-			os.Exit(5)
 		}
+		fmt.Printf("scoping weirdness; please report a bug\n")
+		os.Exit(5)
 	}
 	e.store[name] = val
 	return val
