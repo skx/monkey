@@ -203,7 +203,8 @@ func TestUnicodeLexer(t *testing.T) {
 func TestSimpleComment(t *testing.T) {
 	input := `=+// This is a comment
 // This is still a comment
-let a = 1;
+# I like comments
+let a = 1; # This is a comment too.
 // This is a final
 // comment on two-lines`
 
