@@ -252,7 +252,7 @@ changing it in-place).
 You can access keys with two methods: using `map[key]` or `map.key`:
 
 
-    let a = {name:"monkey", point:{x:10, y:20}};
+    let a = {"name":"monkey", "point":{"x":10, "y":20}};
     puts(a["name"]); // Outputs: monkey
     puts(a.name); // Outputs: monkey
     puts(a["point"].x); // Outputs: 10

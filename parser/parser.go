@@ -71,7 +71,6 @@ var precedences = map[token.Type]int{
 	token.LPAREN:          CALL,
 	token.PERIOD:          CALL,
 	token.LBRACKET:        INDEX,
-	token.FIELD:           INDEX,
 }
 
 // Parser object
@@ -155,7 +154,6 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	p.registerInfix(token.FIELD, p.parseFieldExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.LT_EQUALS, p.parseInfixExpression)
@@ -165,7 +163,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
-	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
+	p.registerInfix(token.PERIOD, p.parseIndexOrMethodCallExpression)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.POW, p.parseInfixExpression)
@@ -863,21 +861,6 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	return exp
 }
 
-// parseIndexExpression parse an array-index expression.
-func (p *Parser) parseFieldExpression(left ast.Expression) ast.Expression {
-	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
-	p.nextToken()
-	exp.Index = p.parseStringLiteral()
-
-	// error?
-	if exp.Index == nil {
-		msg := fmt.Sprintf("unexpected nil expression %s instead around line", left.TokenLiteral(), p.l.GetLine())
-		p.errors = append(p.errors, msg)
-		return nil
-	}
-	return exp
-}
-
 // parseAssignExpression parses a bare assignment, without a `let`.
 func (p *Parser) parseAssignExpression(name ast.Expression) ast.Expression {
 	stmt := &ast.AssignStatement{Token: p.curToken}
@@ -948,12 +931,19 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	return hash
 }
 
-// parseMethodCallExpression parses an object-based method-call.
-func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
-	methodCall := &ast.ObjectCallExpression{Token: p.curToken, Object: obj}
+// parseIndexOrMethodCallExpression parses an index with DOT separator or object-based method-call.
+func (p *Parser) parseIndexOrMethodCallExpression(obj ast.Expression) ast.Expression {
+	curToken := p.curToken
 	p.nextToken()
 	name := p.parseIdentifier()
+
+	if p.curToken.Type == token.IDENT {
+		ix := &ast.IndexExpression{Token: curToken, Left: obj, Index: &ast.StringLiteral{Token: token.Token{token.IDENT, name.TokenLiteral()}, Value: name.String()}}
+		return ix
+	}
+
 	p.nextToken()
+	methodCall := &ast.ObjectCallExpression{Token: curToken, Object: obj}
 	methodCall.Call = p.parseCallExpression(name)
 	return methodCall
 }

@@ -18,7 +18,7 @@ type Lexer struct {
 	// The next character position
 	readPosition int
 
-	//The current character
+	// The current character
 	ch rune
 
 	// A rune slice of our input string
@@ -72,7 +72,7 @@ func (l *Lexer) NextToken() token.Token {
 	if l.ch == rune('#') ||
 		(l.ch == rune('/') && l.peekChar() == rune('/')) {
 		l.skipComment()
-		return (l.NextToken())
+		return l.NextToken()
 	}
 
 	// multi-line comments
@@ -118,15 +118,6 @@ func (l *Lexer) NextToken() token.Token {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.DOTDOT, Literal: string(ch) + string(l.ch)}
-		} else if !isDigit(rune(l.prevToken.Literal[0])) && (l.prevToken.Type == token.RPAREN ||
-			l.prevToken.Type == token.IDENT ||
-			l.prevToken.Type == token.RBRACKET ||
-			l.prevToken.Type == token.RBRACE) {
-			//   ( a + b ) . c   -> RPAREN
-			//   a . c           -> IDENT
-			//   foo[3] . a      -> RBRACKET
-			//   {a:1} . c       -> RBRACE
-			tok = token.Token{Type: token.FIELD, Literal: string(l.ch)}
 		} else {
 			tok = newToken(token.PERIOD, l.ch)
 		}
