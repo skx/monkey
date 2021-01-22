@@ -531,6 +531,14 @@ func TestHashIndexExpression(t *testing.T) {
 		expected interface{}
 	}{
 		{
+			`{"foo":5}.foo`,
+			5,
+		},
+		{
+			`{"foo":{"bar":5}}.foo["bar"]`,
+			5,
+		},
+		{
 			`{"foo":5}["foo"]`,
 			5,
 		},

@@ -232,11 +232,16 @@ A hash is a key/value container, but note that keys may only be of type `boolean
 
     let a = {"name":"monkey",
              true:1,
-             7:"seven"};
+             7:"seven",
+             point:{x:10 , y:20}};
 
     puts(a); // Outputs: {name: monkey, true: 1, 7: seven}
 
     puts(a["name"]); // Outputs: monkey
+    puts(a.name); // Outputs: monkey
+    puts(a["point"].x); // Outputs: 10
+    puts(a.point["y"]); // Outputs: 20
+    puts({"foo":{"bar":5}}.foo["bar"]); // Outputs: 5
 
 Updating a hash is done via the `set` function, but note that this returns
 an updated hash - rather than changing in-place:

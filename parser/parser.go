@@ -38,7 +38,7 @@ const (
 	PREFIX       // -X or !X
 	CALL         // myFunction(X)
 	DOTDOT       // ..
-	INDEX        // array[index], map[key]
+	INDEX        // array[index], map[key], map.key
 	HIGHEST
 )
 
@@ -71,6 +71,7 @@ var precedences = map[token.Type]int{
 	token.LPAREN:          CALL,
 	token.PERIOD:          CALL,
 	token.LBRACKET:        INDEX,
+	token.FIELD:           INDEX,
 }
 
 // Parser object
@@ -154,6 +155,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.GT_EQUALS, p.parseInfixExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.FIELD, p.parseFieldExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.LT_EQUALS, p.parseInfixExpression)
@@ -325,7 +327,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	postfix := p.postfixParseFns[p.curToken.Type]
 	if postfix != nil {
-		return (postfix())
+		return postfix()
 	}
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
@@ -562,11 +564,11 @@ func (p *Parser) parseTernaryExpression(condition ast.Expression) ast.Expression
 		Token:     p.curToken,
 		Condition: condition,
 	}
-	p.nextToken() //skip the '?'
+	p.nextToken() // skip the '?'
 	precedence := p.curPrecedence()
 	expression.IfTrue = p.parseExpression(precedence)
 
-	if !p.expectPeek(token.COLON) { //skip the ":"
+	if !p.expectPeek(token.COLON) { // skip the ":"
 		return nil
 	}
 
@@ -856,6 +858,21 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	p.nextToken()
 	exp.Index = p.parseExpression(LOWEST)
 	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+	return exp
+}
+
+// parseIndexExpression parse an array-index expression.
+func (p *Parser) parseFieldExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+	p.nextToken()
+	exp.Index = p.parseStringLiteral()
+
+	// error?
+	if exp.Index == nil {
+		msg := fmt.Sprintf("unexpected nil expression %s instead around line", left.TokenLiteral(), p.l.GetLine())
+		p.errors = append(p.errors, msg)
 		return nil
 	}
 	return exp

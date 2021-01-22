@@ -72,6 +72,7 @@ const (
 	STRING          = "STRING"
 	SWITCH          = "switch"
 	TRUE            = "TRUE"
+	FIELD           = "FIELD"
 )
 
 // reversed keywords
