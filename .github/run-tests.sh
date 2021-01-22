@@ -23,7 +23,7 @@ echo "Launching linter .."
 if [ -s lint.out ]; then
     echo "Linter errors: "
     cat lint.out
-    exit 0
+    exit 1
 else
     rm lint.out
 fi
