@@ -16,9 +16,9 @@ func (e *Error) Inspect() string {
 	return "ERROR: " + e.Message
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (e *Error) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (e *Error) GetMethod(string) BuiltinFunction {
 
 	//
 	// There are no methods available upon a return-object.

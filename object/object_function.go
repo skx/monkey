@@ -37,26 +37,28 @@ func (f *Function) Inspect() string {
 	return out.String()
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (f *Function) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (f *Function) GetMethod(method string) BuiltinFunction {
 	if method == "methods" {
-		static := []string{"methods"}
-		dynamic := env.Names("function.")
+		return func(env *Environment, args ...Object) Object {
+			static := []string{"methods"}
+			dynamic := env.Names("function.")
 
-		var names []string
-		names = append(names, static...)
-		for _, e := range dynamic {
-			bits := strings.Split(e, ".")
-			names = append(names, bits[1])
-		}
-		sort.Strings(names)
+			var names []string
+			names = append(names, static...)
+			for _, e := range dynamic {
+				bits := strings.Split(e, ".")
+				names = append(names, bits[1])
+			}
+			sort.Strings(names)
 
-		result := make([]Object, len(names))
-		for i, txt := range names {
-			result[i] = &String{Value: txt}
+			result := make([]Object, len(names))
+			for i, txt := range names {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
 		}
-		return &Array{Elements: result}
 	}
 	return nil
 }

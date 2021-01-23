@@ -33,29 +33,33 @@ func (ao *Array) Inspect() string {
 	return out.String()
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
-	if method == "len" {
-		return &Integer{Value: int64(len(ao.Elements))}
-	}
-	if method == "methods" {
-		static := []string{"len", "methods"}
-		dynamic := env.Names("array.")
-
-		var names []string
-		names = append(names, static...)
-		for _, e := range dynamic {
-			bits := strings.Split(e, ".")
-			names = append(names, bits[1])
+func (ao *Array) GetMethod(method string) BuiltinFunction {
+	switch method {
+	case "len":
+		return func(env *Environment, args ...Object) Object {
+			return &Integer{Value: int64(len(ao.Elements))}
 		}
-		sort.Strings(names)
+	case "methods":
+		return func(env *Environment, args ...Object) Object {
+			static := []string{"len", "methods"}
+			dynamic := env.Names("array.")
 
-		result := make([]Object, len(names))
-		for i, txt := range names {
-			result[i] = &String{Value: txt}
+			var names []string
+			names = append(names, static...)
+			for _, e := range dynamic {
+				bits := strings.Split(e, ".")
+				names = append(names, bits[1])
+			}
+			sort.Strings(names)
+
+			result := make([]Object, len(names))
+			for i, txt := range names {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
 		}
-		return &Array{Elements: result}
 	}
 	return nil
 }

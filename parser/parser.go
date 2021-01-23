@@ -163,7 +163,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
-	p.registerInfix(token.PERIOD, p.parseIndexOrMethodCallExpression)
+	p.registerInfix(token.PERIOD, p.parseIndexDotExpression)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.POW, p.parseInfixExpression)
@@ -931,21 +931,22 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	return hash
 }
 
-// parseIndexOrMethodCallExpression parses an index with DOT separator or object-based method-call.
-func (p *Parser) parseIndexOrMethodCallExpression(obj ast.Expression) ast.Expression {
+// parseIndexDotExpression parses an index with DOT separator.
+func (p *Parser) parseIndexDotExpression(obj ast.Expression) ast.Expression {
 	curToken := p.curToken
 	p.nextToken()
 	name := p.parseIdentifier()
-
-	if p.curToken.Type == token.IDENT {
-		ix := &ast.IndexExpression{Token: curToken, Left: obj, Index: &ast.StringLiteral{Token: token.Token{token.IDENT, name.TokenLiteral()}, Value: name.String()}}
-		return ix
+	return &ast.IndexExpression{
+		Token: curToken,
+		Left:  obj,
+		Index: &ast.StringLiteral{
+			Token: token.Token{
+				token.IDENT,
+				name.TokenLiteral(),
+			},
+			Value: name.String(),
+		},
 	}
-
-	p.nextToken()
-	methodCall := &ast.ObjectCallExpression{Token: curToken, Object: obj}
-	methodCall.Call = p.parseCallExpression(name)
-	return methodCall
 }
 
 // curTokenIs tests if the current token has the given type.

@@ -104,95 +104,101 @@ func (f *File) Open(mode string) error {
 	return nil
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (f *File) InvokeMethod(method string, env Environment, args ...Object) Object {
-	if method == "close" {
-		f.Handle.Close()
-		return &Boolean{Value: true}
-	}
-	if method == "lines" {
-
-		// Do we not have a reader?
-		if f.Reader == nil {
-			return (&Null{})
-		}
-
-		// Result.
-		var lines []string
-		for {
-			line, err := f.Reader.ReadString('\n')
-			if err != nil {
-				break
-			}
-			lines = append(lines, line)
-		}
-
-		// make results
-		l := len(lines)
-		result := make([]Object, l)
-		for i, txt := range lines {
-			result[i] = &String{Value: txt}
-		}
-		return &Array{Elements: result}
-	}
-	if method == "methods" {
-		static := []string{"methods"}
-		dynamic := env.Names("file.")
-
-		var names []string
-		names = append(names, static...)
-		for _, e := range dynamic {
-			bits := strings.Split(e, ".")
-			names = append(names, bits[1])
-		}
-		sort.Strings(names)
-
-		result := make([]Object, len(names))
-		for i, txt := range names {
-			result[i] = &String{Value: txt}
-		}
-		return &Array{Elements: result}
-	}
-	if method == "read" {
-		// Check we have a reader.
-		if f.Reader == nil {
-			return (&String{Value: ""})
-		}
-
-		// Read and return a line.
-		line, err := f.Reader.ReadString('\n')
-		if err != nil {
-			return (&String{Value: ""})
-		}
-		return &String{Value: line}
-	}
-	if method == "rewind" {
-		// Rewind a handle by seeking to the beginning of the file.
-		f.Handle.Seek(0, 0)
-		return &Boolean{Value: true}
-	}
-	if method == "write" {
-
-		// check we have an argument to write.
-		if len(args) < 1 {
-			return &Error{Message: "Missing argument to write()!"}
-		}
-
-		// Ensure we have a writer.
-		if f.Writer == nil {
-			return (&Null{})
-		}
-
-		// Write the text - coorcing to a string first.
-		txt := args[0].Inspect()
-		_, err := f.Writer.Write([]byte(txt))
-		if err == nil {
-			f.Writer.Flush()
+func (f *File) GetMethod(method string) BuiltinFunction {
+	switch method {
+	case "close":
+		return func(env *Environment, args ...Object) Object {
+			f.Handle.Close()
 			return &Boolean{Value: true}
 		}
+	case "lines":
+		return func(env *Environment, args ...Object) Object {
+			// Do we not have a reader?
+			if f.Reader == nil {
+				return (&Null{})
+			}
 
-		return &Boolean{Value: false}
+			// Result.
+			var lines []string
+			for {
+				line, err := f.Reader.ReadString('\n')
+				if err != nil {
+					break
+				}
+				lines = append(lines, line)
+			}
+
+			// make results
+			l := len(lines)
+			result := make([]Object, l)
+			for i, txt := range lines {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
+		}
+	case "methods":
+		return func(env *Environment, args ...Object) Object {
+			static := []string{"methods"}
+			dynamic := env.Names("file.")
+
+			var names []string
+			names = append(names, static...)
+			for _, e := range dynamic {
+				bits := strings.Split(e, ".")
+				names = append(names, bits[1])
+			}
+			sort.Strings(names)
+
+			result := make([]Object, len(names))
+			for i, txt := range names {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
+		}
+	case "read":
+		return func(env *Environment, args ...Object) Object {
+			// Check we have a reader.
+			if f.Reader == nil {
+				return (&String{Value: ""})
+			}
+
+			// Read and return a line.
+			line, err := f.Reader.ReadString('\n')
+			if err != nil {
+				return (&String{Value: ""})
+			}
+			return &String{Value: line}
+		}
+	case "rewind":
+		return func(env *Environment, args ...Object) Object {
+			// Rewind a handle by seeking to the beginning of the file.
+			f.Handle.Seek(0, 0)
+			return &Boolean{Value: true}
+		}
+	case "write":
+		return func(env *Environment, args ...Object) Object {
+			// check we have an argument to write.
+			if len(args) < 1 {
+				return &Error{Message: "Missing argument to write()!"}
+			}
+
+			// Ensure we have a writer.
+			if f.Writer == nil {
+				return (&Null{})
+			}
+
+			// Write the text - coorcing to a string first.
+			txt := args[0].Inspect()
+			_, err := f.Writer.Write([]byte(txt))
+			if err == nil {
+				f.Writer.Flush()
+				return &Boolean{Value: true}
+			}
+
+			return &Boolean{Value: false}
+		}
 	}
 	return nil
 }
