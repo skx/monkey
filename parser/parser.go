@@ -38,7 +38,7 @@ const (
 	PREFIX       // -X or !X
 	CALL         // myFunction(X)
 	DOTDOT       // ..
-	INDEX        // array[index], map[key]
+	INDEX        // array[index], map[key], map.key
 	HIGHEST
 )
 
@@ -163,7 +163,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_CONTAINS, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
-	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
+	p.registerInfix(token.PERIOD, p.parseIndexDotExpression)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.PLUS_EQUALS, p.parseAssignExpression)
 	p.registerInfix(token.POW, p.parseInfixExpression)
@@ -325,7 +325,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	postfix := p.postfixParseFns[p.curToken.Type]
 	if postfix != nil {
-		return (postfix())
+		return postfix()
 	}
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
@@ -562,11 +562,11 @@ func (p *Parser) parseTernaryExpression(condition ast.Expression) ast.Expression
 		Token:     p.curToken,
 		Condition: condition,
 	}
-	p.nextToken() //skip the '?'
+	p.nextToken() // skip the '?'
 	precedence := p.curPrecedence()
 	expression.IfTrue = p.parseExpression(precedence)
 
-	if !p.expectPeek(token.COLON) { //skip the ":"
+	if !p.expectPeek(token.COLON) { // skip the ":"
 		return nil
 	}
 
@@ -931,14 +931,22 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	return hash
 }
 
-// parseMethodCallExpression parses an object-based method-call.
-func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
-	methodCall := &ast.ObjectCallExpression{Token: p.curToken, Object: obj}
+// parseIndexDotExpression parses an index with DOT separator.
+func (p *Parser) parseIndexDotExpression(obj ast.Expression) ast.Expression {
+	curToken := p.curToken
 	p.nextToken()
 	name := p.parseIdentifier()
-	p.nextToken()
-	methodCall.Call = p.parseCallExpression(name)
-	return methodCall
+	return &ast.IndexExpression{
+		Token: curToken,
+		Left:  obj,
+		Index: &ast.StringLiteral{
+			Token: token.Token{
+				token.IDENT,
+				name.TokenLiteral(),
+			},
+			Value: name.String(),
+		},
+	}
 }
 
 // curTokenIs tests if the current token has the given type.

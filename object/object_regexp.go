@@ -21,9 +21,9 @@ func (r *Regexp) Inspect() string {
 	return r.Value
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (r *Regexp) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (r *Regexp) GetMethod(string) BuiltinFunction {
 	return nil
 }
 

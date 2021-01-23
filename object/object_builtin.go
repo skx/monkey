@@ -19,17 +19,19 @@ func (b *Builtin) Inspect() string {
 	return "builtin function"
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (b *Builtin) GetMethod(method string) BuiltinFunction {
 	if method == "methods" {
-		names := []string{"methods"}
+		return func(env *Environment, args ...Object) Object {
+			names := []string{"methods"}
 
-		result := make([]Object, len(names))
-		for i, txt := range names {
-			result[i] = &String{Value: txt}
+			result := make([]Object, len(names))
+			for i, txt := range names {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
 		}
-		return &Array{Elements: result}
 	}
 	return nil
 }

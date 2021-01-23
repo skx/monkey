@@ -36,47 +36,54 @@ func (s *String) HashKey() HashKey {
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
-	if method == "len" {
-		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
-	}
-	if method == "methods" {
-		static := []string{"len", "methods", "ord", "to_i", "to_f"}
-		dynamic := env.Names("string.")
+func (s *String) GetMethod(method string) BuiltinFunction {
+	switch method {
+	case "len":
+		return func(env *Environment, args ...Object) Object {
+			return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
+		}
+	case "methods":
+		return func(env *Environment, args ...Object) Object {
+			static := []string{"len", "methods", "ord", "to_i", "to_f"}
+			dynamic := env.Names("string.")
 
-		var names []string
-		names = append(names, static...)
+			var names []string
+			names = append(names, static...)
 
-		for _, e := range dynamic {
-			bits := strings.Split(e, ".")
-			names = append(names, bits[1])
-		}
-		sort.Strings(names)
+			for _, e := range dynamic {
+				bits := strings.Split(e, ".")
+				names = append(names, bits[1])
+			}
+			sort.Strings(names)
 
-		result := make([]Object, len(names))
-		for i, txt := range names {
-			result[i] = &String{Value: txt}
+			result := make([]Object, len(names))
+			for i, txt := range names {
+				result[i] = &String{Value: txt}
+			}
+			return &Array{Elements: result}
 		}
-		return &Array{Elements: result}
-	}
-	if method == "ord" {
-		return &Integer{Value: int64(s.Value[0])}
-	}
-	if method == "to_i" {
-		i, err := strconv.ParseInt(s.Value, 0, 64)
-		if err != nil {
-			i = 0
+	case "ord":
+		return func(env *Environment, args ...Object) Object {
+			return &Integer{Value: int64(s.Value[0])}
 		}
-		return &Integer{Value: int64(i)}
-	}
-	if method == "to_f" {
-		i, err := strconv.ParseFloat(s.Value, 64)
-		if err != nil {
-			i = 0
+	case "to_i":
+		return func(env *Environment, args ...Object) Object {
+			i, err := strconv.ParseInt(s.Value, 0, 64)
+			if err != nil {
+				i = 0
+			}
+			return &Integer{Value: int64(i)}
 		}
-		return &Float{Value: i}
+	case "to_f":
+		return func(env *Environment, args ...Object) Object {
+			i, err := strconv.ParseFloat(s.Value, 64)
+			if err != nil {
+				i = 0
+			}
+			return &Float{Value: i}
+		}
 	}
 	return nil
 }

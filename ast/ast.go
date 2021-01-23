@@ -590,35 +590,6 @@ func (ce *CallExpression) String() string {
 	return out.String()
 }
 
-// ObjectCallExpression is used when calling a method on an object.
-type ObjectCallExpression struct {
-	// Token is the literal token
-	Token token.Token
-
-	// Object is the object against which the call is invoked.
-	Object Expression
-
-	// Call is the method-name.
-	Call Expression
-}
-
-func (oce *ObjectCallExpression) expressionNode() {}
-
-// TokenLiteral returns the literal token.
-func (oce *ObjectCallExpression) TokenLiteral() string {
-	return oce.Token.Literal
-}
-
-// String returns this object as a string.
-func (oce *ObjectCallExpression) String() string {
-	var out bytes.Buffer
-	out.WriteString(oce.Object.String())
-	out.WriteString(".")
-	out.WriteString(oce.Call.String())
-
-	return out.String()
-}
-
 // StringLiteral holds a string
 type StringLiteral struct {
 	// Token is the token

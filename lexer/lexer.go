@@ -18,7 +18,7 @@ type Lexer struct {
 	// The next character position
 	readPosition int
 
-	//The current character
+	// The current character
 	ch rune
 
 	// A rune slice of our input string
@@ -72,7 +72,7 @@ func (l *Lexer) NextToken() token.Token {
 	if l.ch == rune('#') ||
 		(l.ch == rune('/') && l.peekChar() == rune('/')) {
 		l.skipComment()
-		return (l.NextToken())
+		return l.NextToken()
 	}
 
 	// multi-line comments

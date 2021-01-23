@@ -839,6 +839,26 @@ func TestParsingHashLiteralWithExpression(t *testing.T) {
 	}
 }
 
+func TestFieldExpression(t *testing.T) {
+	input := `a.b;`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has not enough statements. got=%d",
+			len(program.Statements))
+	}
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.IndexExpression. got=%T", stmt.Expression)
+	}
+	if !testIdentifier(t, indexExp.Left, "a") {
+		return
+	}
+}
+
 // Test operators: +=, -=, /=, and *=.
 func TestMutators(t *testing.T) {
 	input := []string{"let w = 5; w *= 3;",

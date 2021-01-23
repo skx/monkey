@@ -21,6 +21,23 @@ const (
 	REGEXP_OBJ       = "REGEXP"
 )
 
+// SystemTypesMap map system types by type name
+var SystemTypesMap = map[Type]Object{
+	INTEGER_OBJ:      &Integer{},
+	FLOAT_OBJ:        &Float{},
+	BOOLEAN_OBJ:      &Boolean{},
+	NULL_OBJ:         &Null{},
+	RETURN_VALUE_OBJ: &ReturnValue{},
+	ERROR_OBJ:        &Error{},
+	FUNCTION_OBJ:     &Function{},
+	STRING_OBJ:       &String{},
+	BUILTIN_OBJ:      &Builtin{},
+	ARRAY_OBJ:        &Array{},
+	HASH_OBJ:         &Hash{},
+	FILE_OBJ:         &File{},
+	REGEXP_OBJ:       &Regexp{},
+}
+
 // Object is the interface that all of our various object-types must implmenet.
 type Object interface {
 
@@ -30,9 +47,9 @@ type Object interface {
 	// Inspect returns a string-representation of the given object.
 	Inspect() string
 
-	// InvokeMethod invokes a method against the object.
+	// GetMethod returns a method against the object.
 	// (Built-in methods only.)
-	InvokeMethod(method string, env Environment, args ...Object) Object
+	GetMethod(method string) BuiltinFunction
 
 	// ToInterface converts the given object to a "native" golang value,
 	// which is required to ensure that we can use the object in our

@@ -13,9 +13,9 @@ func (n *Null) Inspect() string {
 	return "null"
 }
 
-// InvokeMethod invokes a method against the object.
+// GetMethod returns a method against the object.
 // (Built-in methods only.)
-func (n *Null) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (n *Null) GetMethod(string) BuiltinFunction {
 	return nil
 }
 

@@ -46,7 +46,10 @@ func TestNextToken1(t *testing.T) {
 }
 
 func TestNextToken2(t *testing.T) {
-	input := `let five=5;
+	input := `a.b;
+{}.a;
+a[b].c;
+let five=5;
 let ten =10;
 let add = fn(x, y){
   x+y;
@@ -78,6 +81,22 @@ for
 		expectedType    token.Type
 		expectedLiteral string
 	}{
+		{token.IDENT, "a"},
+		{token.PERIOD, "."},
+		{token.IDENT, "b"},
+		{token.SEMICOLON, ";"},
+		{token.LBRACE, "{"},
+		{token.RBRACE, "}"},
+		{token.PERIOD, "."},
+		{token.IDENT, "a"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "a"},
+		{token.LBRACKET, "["},
+		{token.IDENT, "b"},
+		{token.RBRACKET, "]"},
+		{token.PERIOD, "."},
+		{token.IDENT, "c"},
+		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "five"},
 		{token.ASSIGN, "="},
@@ -177,6 +196,7 @@ for
 		{token.EOF, ""},
 	}
 	l := New(input)
+
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
