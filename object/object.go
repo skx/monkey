@@ -21,39 +21,22 @@ const (
 	REGEXP_OBJ       = "REGEXP"
 )
 
-var (
-	SystemTypes = []Type{
-		INTEGER_OBJ,
-		FLOAT_OBJ,
-		BOOLEAN_OBJ,
-		NULL_OBJ,
-		RETURN_VALUE_OBJ,
-		ERROR_OBJ,
-		FUNCTION_OBJ,
-		STRING_OBJ,
-		BUILTIN_OBJ,
-		ARRAY_OBJ,
-		HASH_OBJ,
-		FILE_OBJ,
-		REGEXP_OBJ,
-	}
-
-	SystemTypesMap = map[Type]Object{
-		INTEGER_OBJ:      &Integer{},
-		FLOAT_OBJ:        &Float{},
-		BOOLEAN_OBJ:      &Boolean{},
-		NULL_OBJ:         &Null{},
-		RETURN_VALUE_OBJ: &ReturnValue{},
-		ERROR_OBJ:        &Error{},
-		FUNCTION_OBJ:     &Function{},
-		STRING_OBJ:       &String{},
-		BUILTIN_OBJ:      &Builtin{},
-		ARRAY_OBJ:        &Array{},
-		HASH_OBJ:         &Hash{},
-		FILE_OBJ:         &File{},
-		REGEXP_OBJ:       &Regexp{},
-	}
-)
+// SystemTypesMap map system types by type name
+var SystemTypesMap = map[Type]Object{
+	INTEGER_OBJ:      &Integer{},
+	FLOAT_OBJ:        &Float{},
+	BOOLEAN_OBJ:      &Boolean{},
+	NULL_OBJ:         &Null{},
+	RETURN_VALUE_OBJ: &ReturnValue{},
+	ERROR_OBJ:        &Error{},
+	FUNCTION_OBJ:     &Function{},
+	STRING_OBJ:       &String{},
+	BUILTIN_OBJ:      &Builtin{},
+	ARRAY_OBJ:        &Array{},
+	HASH_OBJ:         &Hash{},
+	FILE_OBJ:         &File{},
+	REGEXP_OBJ:       &Regexp{},
+}
 
 // Object is the interface that all of our various object-types must implmenet.
 type Object interface {
