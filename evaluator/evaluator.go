@@ -4,6 +4,7 @@ package evaluator
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"math"
 	"os"
@@ -21,6 +22,7 @@ var (
 	TRUE    = &object.Boolean{Value: true}
 	FALSE   = &object.Boolean{Value: false}
 	PRAGMAS = make(map[string]int)
+	CTX     = context.Background()
 )
 
 // The built-in functions / standard-library methods are stored here.
@@ -28,6 +30,17 @@ var builtins = map[string]*object.Builtin{}
 
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
+
+	//
+	// We test our context at every iteration of our main-loop.
+	//
+	select {
+	case <-CTX.Done():
+		return &object.Error{Message: CTX.Err().Error()}
+	default:
+		// nop
+	}
+
 	switch node := node.(type) {
 
 	//Statements
@@ -1132,6 +1145,12 @@ func upwrapReturnValue(obj object.Object) object.Object {
 // our "standard library" functions.
 func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 	builtins[name] = &object.Builtin{Fn: fun}
+}
+
+// SetContext lets you configure a context, which is helpful if you wish to
+// cause execution to timeout after a given period, for example.
+func SetContext(ctx context.Context) {
+	CTX = ctx
 }
 
 // evalObjectCallExpression invokes methods against objects.
