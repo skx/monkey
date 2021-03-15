@@ -30,13 +30,19 @@ var builtins = map[string]*object.Builtin{}
 
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
+	return EvalContext(context.Background(), node, env)
+}
+
+// EvalContext is our core function for evaluating nodes.
+// The context.Context provided can be used to cancel a running script instance.
+func EvalContext(ctx context.Context, node ast.Node, env *object.Environment) object.Object {
 
 	//
 	// We test our context at every iteration of our main-loop.
 	//
 	select {
-	case <-CTX.Done():
-		return &object.Error{Message: CTX.Err().Error()}
+	case <-ctx.Done():
+		return &object.Error{Message: ctx.Err().Error()}
 	default:
 		// nop
 	}
