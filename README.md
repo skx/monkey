@@ -7,8 +7,6 @@
 * [Monkey](#monkey)
   * [My changes](#my-changes)
 * [1. Installation](#1-installation)
-  * [Source Installation go &lt;=  1.11](#source-installation-go---111)
-  * [Source installation go &gt;= 1.12](#source-installation-go--112)
   * [Binary Releases](#binary-releases)
 * [1.1 Usage](#11-usage)
 * [2 Syntax](#2-syntax)
@@ -87,17 +85,9 @@ The interpreter in _this_ repository has been significantly extended from the st
 
 ## 1. Installation
 
-There are two ways to install `monkey` from source, depending upon the version of go you're using:
+Due to the embedded [standard-library implementation](data/stdlib.mon), which is implemented in monkey, you'll need to compile this project with go version 1.16beta1 or higher.
 
-### Source Installation go <=  1.11
-
-If you're using `go` before 1.11 then the following command should fetch/update `monkey`, and install it upon your system:
-
-     $ go get -u github.com/skx/monkey
-
-### Source installation go >= 1.12
-
-If you're using a more recent version of `go` (which is _highly_ recommended), you need to clone to a directory which is not present upon your `GOPATH`:
+You can install from source like so:
 
     git clone https://github.com/skx/monkey
     cd monkey
@@ -303,21 +293,13 @@ You can see the implementation of the go-based standard-library beneath [evaluat
 
 **NOTE**: Parts of our standard-library are implemented in 100% pure monkey,
 and these are embedded in our compiled interpreter.  The source of the functions
-can be viewed in [data/stdlib.mon](data/stdlib.mon), but to ease compilation
-these are included in the compiled interpreter via [static.go](static.go).
+can be viewed in [data/stdlib.mon](data/stdlib.mon).
 
 If you wish to make changes to the monkey-based standard-library you'll
-need to rebuild `static.go` after editing `stdlib.mon`.  To do this use the
-`implant` tool.
+need to rebuild the interpreter after making your changes, to ensure they are bundled into the executable.
 
-If you don't already have `implant` installed fetch it like so:
+Nothing special is required, the following will suffice as you'd expect:
 
-     go get -u  github.com/skx/implant/
-
-Now regenerate the embedded version of the standard-library and rebuild the
-binary to make your changes:
-
-    implant -input data/ -output static.go
     go build .
 
 

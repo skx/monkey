@@ -777,8 +777,8 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 				(obj.Inspect() == out.Inspect()) {
 
 				// Evaluate the block and return the value
-				out = evalBlockStatement(opt.Block, env)
-				return out
+				blockOut := evalBlockStatement(opt.Block, env)
+				return blockOut
 			}
 
 			// Is it a regexp-match?

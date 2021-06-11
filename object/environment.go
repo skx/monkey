@@ -121,7 +121,6 @@ func (e *Environment) Set(name string, val Object) Object {
 		if e.outer != nil {
 			return e.outer.Set(name, val)
 		}
-
 		fmt.Printf("scoping weirdness; please report a bug\n")
 		os.Exit(5)
 	}
