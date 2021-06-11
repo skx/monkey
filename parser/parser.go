@@ -395,19 +395,12 @@ func (p *Parser) parseFloatLiteral() ast.Expression {
 // parseSwitchStatement handles a switch statement
 func (p *Parser) parseSwitchStatement() ast.Expression {
 
-	// switch
+	// switch statement
 	expression := &ast.SwitchExpression{Token: p.curToken}
 
-	// look for (xx)
-	if !p.expectPeek(token.LPAREN) {
-		return nil
-	}
-	p.nextToken()
-	expression.Value = p.parseExpression(LOWEST)
+	// look for the expression
+	expression.Value = p.parseBracketExpression()
 	if expression.Value == nil {
-		return nil
-	}
-	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
@@ -458,6 +451,10 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 
 				}
 			}
+		} else {
+			// error - unexpected token
+			p.errors = append(p.errors, fmt.Sprintf("expected case|default, got %s", p.curToken.Type))
+			return nil
 		}
 
 		if !p.expectPeek(token.LBRACE) {
@@ -485,11 +482,6 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 
 	}
 
-	// ensure we're at the the closing "}"
-	if !p.curTokenIs(token.RBRACE) {
-		return nil
-	}
-
 	// More than one default is a bug
 	count := 0
 	for _, c := range expression.Choices {
@@ -498,7 +490,7 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 		}
 	}
 	if count > 1 {
-		msg := fmt.Sprintf("A switch-statement should only have one default block")
+		msg := "A switch-statement should only have one default block"
 		p.errors = append(p.errors, msg)
 		return nil
 
@@ -592,26 +584,93 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 // parseIfCondition parses an if-expression.
 func (p *Parser) parseIfExpression() ast.Expression {
 	expression := &ast.IfExpression{Token: p.curToken}
-	if !p.expectPeek(token.LPAREN) {
+	if expression == nil {
+		p.errors = append(p.errors, "unexpected nil expression")
 		return nil
 	}
-	p.nextToken()
-	expression.Condition = p.parseExpression(LOWEST)
-	if !p.expectPeek(token.RPAREN) {
+
+	// Look for the condition, surrounded by "(" + ")".
+	expression.Condition = p.parseBracketExpression()
+	if expression.Condition == nil {
 		return nil
 	}
+
+	// Now "{"
 	if !p.expectPeek(token.LBRACE) {
+		msg := fmt.Sprintf("expected '{' but got %s", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
 		return nil
 	}
+
+	// The consequence
 	expression.Consequence = p.parseBlockStatement()
+	if expression.Consequence == nil {
+		p.errors = append(p.errors, "unexpected nil expression")
+		return nil
+	}
+
+	// Else?
 	if p.peekTokenIs(token.ELSE) {
 		p.nextToken()
+
+		// else if
+		if p.peekTokenIs(token.IF) {
+
+			p.nextToken()
+
+			expression.Alternative = &ast.BlockStatement{
+				Statements: []ast.Statement{
+					&ast.ExpressionStatement{
+						Expression: p.parseIfExpression(),
+					},
+				},
+			}
+
+			return expression
+		}
+
+		// else { block }
 		if !p.expectPeek(token.LBRACE) {
+			msg := fmt.Sprintf("expected '{' but got %s", p.curToken.Literal)
+			p.errors = append(p.errors, msg)
 			return nil
 		}
 		expression.Alternative = p.parseBlockStatement()
+		if expression.Alternative == nil {
+			p.errors = append(p.errors, "unexpected nil expression")
+			return nil
+		}
 	}
 	return expression
+}
+
+// parseBracketExpression looks for an expression surrounded by "(" + ")".
+//
+// Used by parseSwitchStatement and parseIfExpression.
+func (p *Parser) parseBracketExpression() ast.Expression {
+
+	// look for (
+	if !p.expectPeek(token.LPAREN) {
+		msg := fmt.Sprintf("expected '(' but got %s", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	p.nextToken()
+
+	// Look for the expression itself
+	tmp := p.parseExpression(LOWEST)
+	if tmp == nil {
+		return nil
+	}
+
+	// look for )
+	if !p.expectPeek(token.RPAREN) {
+		msg := fmt.Sprintf("expected ')' but got %s", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	return tmp
 }
 
 // parseForLoopExpression parses a for-loop.
