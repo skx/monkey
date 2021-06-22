@@ -62,6 +62,8 @@ func EvalContext(ctx context.Context, node ast.Node, env *object.Environment) ob
 		return &object.Float{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
+	case *ast.NullLiteral:
+		return NULL
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
 		if isError(right) {
