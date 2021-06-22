@@ -300,6 +300,20 @@ func (pe *PostfixExpression) String() string {
 	return out.String()
 }
 
+// NullLiteral represents a literal null
+type NullLiteral struct {
+	// Token holds the actual token
+	Token token.Token
+}
+
+func (n *NullLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (n *NullLiteral) TokenLiteral() string { return n.Token.Literal }
+
+// String returns this object as a string.
+func (n *NullLiteral) String() string { return n.Token.Literal }
+
 // Boolean holds a boolean type
 type Boolean struct {
 	// Token holds the actual token
