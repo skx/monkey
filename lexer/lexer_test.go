@@ -6,6 +6,30 @@ import (
 	"github.com/skx/monkey/token"
 )
 
+func TestNull(t *testing.T) {
+	input := "a = null;"
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.NULL, "null"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
 func TestNextToken1(t *testing.T) {
 	input := "%=+(){},;?|| &&`/bin/ls`++--***=.."
 
@@ -200,6 +224,28 @@ func TestUnicodeLexer(t *testing.T) {
 	}
 }
 
+func TestString(t *testing.T) {
+	input := `"\n\r\t\\\""`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.STRING, "\n\r\t\\\""},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+
+}
 func TestSimpleComment(t *testing.T) {
 	input := `=+// This is a comment
 // This is still a comment
