@@ -6,6 +6,7 @@
 
 * [Monkey](#monkey)
   * [My changes](#my-changes)
+  * [See also](#see-also)
 * [1. Installation](#1-installation)
   * [Binary Releases](#binary-releases)
 * [1.1 Usage](#11-usage)
@@ -81,6 +82,31 @@ The interpreter in _this_ repository has been significantly extended from the st
   * `printf( "%d %s", 3, "Steve" );`
 * Added support for `switch` statements, with block-based `case` expressions.
   * No bugs due to C-style "fall-through".
+* Add support for explicit `null` usage:
+  * `a = null;  if ( a == null ) { .. }`
+
+
+#### See Also
+
+If you enjoyed this repository you might find the related ones interesting:
+
+* A tutorial-lead approach to implementing a FORTH interpreter:
+  * https://github.com/skx/foth
+* A simple TCL-like interpreter:
+  * https://github.com/skx/critical
+* A BASIC interpreter:
+  * https://github.com/skx/gobasic
+* An embedded scripting language, based upon the same Monkey core
+  * This follows the second book, but large parts of the code were replaced with different implementations, and things were extended a lot.
+  * https://github.com/skx/evalfilter
+
+Finally I put together a couple of "complex" compilers, which convert input into AMD64 assembly language:
+
+* A mathematical compiler
+  * https://github.com/skx/math-compiler
+* A brainfuck compiler:
+  * https://github.com/skx/bfcc
+
 
 
 ## 1. Installation
