@@ -75,7 +75,7 @@ const (
 	TRUE            = "TRUE"
 )
 
-// reversed keywords
+// reserved keywords
 var keywords = map[string]Type{
 	"case":     CASE,
 	"const":    CONST,
