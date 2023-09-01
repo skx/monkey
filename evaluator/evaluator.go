@@ -30,7 +30,7 @@ var builtins = map[string]*object.Builtin{}
 
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
-	return EvalContext(context.Background(), node, env)
+	return EvalContext(CTX, node, env)
 }
 
 // EvalContext is our core function for evaluating nodes.
@@ -957,13 +957,13 @@ func evalExpression(exps []ast.Expression, env *object.Environment) []object.Obj
 //
 // So this input:
 //
-//   /bin/sh -c "ls /etc"
+//	/bin/sh -c "ls /etc"
 //
 // Would give output of the form:
-//   /bin/sh
-//   -c
-//   ls /etc
 //
+//	/bin/sh
+//	-c
+//	ls /etc
 func splitCommand(input string) []string {
 
 	//
