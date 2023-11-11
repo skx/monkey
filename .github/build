@@ -3,6 +3,10 @@
 # The basename of our binary
 BASE="monkey"
 
+
+# I don't even ..
+go env -w GOFLAGS="-buildvcs=false"
+
 #
 # We build on multiple platforms/archs
 #
