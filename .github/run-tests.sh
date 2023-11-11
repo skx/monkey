@@ -1,8 +1,12 @@
 #!/bin/sh
 
+
+# I don't even ..
+go env -w GOFLAGS="-buildvcs=false"
+
 # Install the lint-tool, and the shadow-tool
-go get -u golang.org/x/lint/golint
-go get -u golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
+go install golang.org/x/lint/golint@latest
+go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
 
 # At this point failures cause aborts
 set -e

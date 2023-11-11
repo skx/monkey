@@ -55,6 +55,11 @@ func testEval(input string) object.Object {
 	p := parser.New(l)
 	program := p.ParseProgram()
 	env := object.NewEnvironment()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	defer cancel()
+	SetContext(ctx)
+
 	return Eval(program, env)
 }
 
@@ -651,6 +656,35 @@ for ( true ) {
 
 	if !strings.Contains(errObj.Message, "deadline") {
 		t.Errorf("got error, but wasn't timeout: %s", errObj.Message)
+	}
+
+}
+
+// Test90 tests hash-key iteration, which was reported in #90
+func Test90(t *testing.T) {
+	input := `
+a = { 1: "one", 2: "two", 3: "three" }
+total = 0
+foreach key in a {
+    total += key
+}
+return total;
+`
+	count := 0
+
+	for count < 10 {
+
+		evaluated := testEval(input)
+		result, ok := evaluated.(*object.Integer)
+		if !ok {
+			t.Fatalf("Eval did't return number. got=%T(%+v)",
+				evaluated, evaluated)
+		}
+		if result.Value != 6 {
+			t.Fatalf("key iteration %d resulted in %d != 6", count, result)
+		}
+
+		count++
 	}
 
 }
