@@ -102,10 +102,36 @@ func (h *Hash) Next() (Object, Object, bool) {
 	if h.offset < len(h.Pairs) {
 		idx := 0
 
-		for _, pair := range h.Pairs {
+		//
+		// Bug: #90
+		//
+		// Using "range" to iterate over a map will
+		// return the values in a random order.
+		//
+		// We need to sort the keys, that will give us
+		// a standard order.
+		//
+		//  x -> sorted keys
+		//  y -> key/val map, for simplicity
+		//
+		x := []Object{}
+		y := make(map[Object]Object)
+		// x is now the keys
+		for _, ent := range h.Pairs {
+			x = append(x, ent.Key)
+			y[ent.Key] = ent.Value
+		}
+
+		// sort the keys
+		sort.Slice(x, func(i, j int) bool {
+			return x[i].Inspect() < x[j].Inspect()
+		})
+
+		// Now range over the keys
+		for _, key := range x {
 			if h.offset == idx {
 				h.offset++
-				return pair.Key, pair.Value, true
+				return key, y[key], true
 			}
 			idx++
 		}
