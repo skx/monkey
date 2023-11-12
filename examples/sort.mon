@@ -6,8 +6,8 @@
 
 
 // Dump the array.
-function dump( in ) {
-  if ( in.sorted?() ) {
+function dump( input ) {
+  if ( input.sorted?() ) {
      puts( "\tThe array is sorted\n");
   } else {
      puts( "\tThe array is not sorted\n");
