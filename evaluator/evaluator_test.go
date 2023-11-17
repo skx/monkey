@@ -699,7 +699,7 @@ if ( name ~= /+/i ) { puts( "Hello\n" ); }
 	ev1 := testEval(literal)
 	er1, ok1 := ev1.(*object.Error)
 	if !ok1 {
-		t.Errorf("Expected an error wit hab ogus regexp, got none")
+		t.Errorf("Expected an error with a bogus regexp, got none")
 	}
 
 	if !strings.Contains(er1.Inspect(), "parsing regexp") {
