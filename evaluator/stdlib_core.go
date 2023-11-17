@@ -171,7 +171,11 @@ func matchFun(args ...object.Object) object.Object {
 	//
 	// Compile and match
 	//
-	reg := regexp.MustCompile(args[0].(*object.String).Value)
+	reg, err := regexp.Compile(args[0].(*object.String).Value)
+	if err != nil {
+		return newError("failed to compile regexp %s: %s",
+			args[0].Inspect(), err)
+	}
 	res := reg.FindStringSubmatch(args[1].(*object.String).Value)
 
 	if len(res) > 0 {
