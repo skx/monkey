@@ -688,3 +688,36 @@ return total;
 	}
 
 }
+
+// TestIssue94 tests #94 - that malformed regexps are caught
+func TestIssue94(t *testing.T) {
+	literal := `
+name = "Steve"
+
+if ( name ~= /+/i ) { puts( "Hello\n" ); }
+`
+	ev1 := testEval(literal)
+	er1, ok1 := ev1.(*object.Error)
+	if !ok1 {
+		t.Errorf("Expected an error with a bogus regexp, got none")
+	}
+
+	if !strings.Contains(er1.Inspect(), "parsing regexp") {
+		t.Errorf("Got an error, but not the right one:%v", er1.Inspect())
+	}
+
+	match := `
+name = "Steve"
+
+if (match( "+", name) ) { puts( "Hello\n" ); }
+`
+	ev2 := testEval(match)
+	er2, ok2 := ev2.(*object.Error)
+	if !ok2 {
+		t.Errorf("Expected an error with a bogus regexp, got none")
+	}
+	if !strings.Contains(er2.Inspect(), "parsing regexp") {
+		t.Errorf("Got an error, but not the right one:%v", er2.Inspect())
+	}
+
+}
