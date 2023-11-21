@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"regexp"
@@ -65,7 +66,7 @@ func evalFun(env *object.Environment, args ...object.Object) object.Object {
 		program := p.ParseProgram()
 		if len(p.Errors()) == 0 {
 			// evaluate it, and return the output.
-			return (Eval(program, env))
+			return EvalContext(context.Background(), program, env)
 		}
 
 		// Otherwise abort.  We should have try { } catch

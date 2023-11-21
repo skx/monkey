@@ -58,9 +58,8 @@ func testEval(input string) object.Object {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
 	defer cancel()
-	SetContext(ctx)
 
-	return Eval(program, env)
+	return EvalContext(ctx, program, env)
 }
 
 func testDecimalObject(t *testing.T, obj object.Object, expected interface{}) bool {
@@ -638,15 +637,16 @@ for ( true ) {
   i++;
 }
 `
-	ctx, cancel := context.WithTimeout(context.Background(), 350*time.Millisecond)
-	defer cancel()
 
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
 	env := object.NewEnvironment()
-	SetContext(ctx)
-	evaluated := Eval(program, env)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 350*time.Millisecond)
+	defer cancel()
+
+	evaluated := EvalContext(ctx, program, env)
 
 	errObj, ok := evaluated.(*object.Error)
 	if !ok {
