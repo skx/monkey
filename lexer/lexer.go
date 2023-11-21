@@ -3,6 +3,7 @@
 package lexer
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"unicode"
@@ -237,11 +238,23 @@ func (l *Lexer) NextToken() token.Token {
 			}
 		}
 	case rune('"'):
-		tok.Type = token.STRING
-		tok.Literal = l.readString()
+		str, err := l.readString('"')
+		if err == nil {
+			tok.Literal = str
+			tok.Type = token.STRING
+		} else {
+			tok.Literal = err.Error()
+			tok.Type = token.ILLEGAL
+		}
 	case rune('`'):
-		tok.Type = token.BACKTICK
-		tok.Literal = l.readBacktick()
+		str, err := l.readString('`')
+		if err == nil {
+			tok.Literal = str
+			tok.Type = token.BACKTICK
+		} else {
+			tok.Literal = err.Error()
+			tok.Type = token.ILLEGAL
+		}
 	case rune('['):
 		tok = newToken(token.LBRACKET, l.ch)
 	case rune(']'):
@@ -284,16 +297,16 @@ func newToken(tokenType token.Type, ch rune) token.Token {
 //
 // So with input like this:
 //
-//   a.blah();
+//	a.blah();
 //
 // Our identifier should be "a" (then we have a period, then a second
 // identifier "blah", followed by opening & closing parenthesis).
 //
 // However we also have to cover the case of:
 //
-//    string.toupper( "blah" );
-//    os.getenv( "PATH" );
-//    ..
+//	string.toupper( "blah" );
+//	os.getenv( "PATH" );
+//	..
 //
 // So we have a horrid implementation..
 func (l *Lexer) readIdentifier() string {
@@ -488,22 +501,36 @@ func (l *Lexer) readDecimal() token.Token {
 	return token.Token{Type: token.INT, Literal: integer}
 }
 
-// read string
-func (l *Lexer) readString() string {
+// read a string, deliminated by the given character.
+func (l *Lexer) readString(delim rune) (string, error) {
 	out := ""
 
 	for {
 		l.readChar()
-		if l.ch == '"' {
+
+		if l.ch == rune(0) {
+			return "", fmt.Errorf("unterminated string")
+		}
+		if l.ch == delim {
 			break
 		}
-
 		//
 		// Handle \n, \r, \t, \", etc.
 		//
 		if l.ch == '\\' {
+
+			// Line ending with "\" + newline
+			if l.peekChar() == '\n' {
+				// consume the newline.
+				l.readChar()
+				continue
+			}
+
 			l.readChar()
 
+			if l.ch == rune(0) {
+				return "", errors.New("unterminated string")
+			}
 			if l.ch == rune('n') {
 				l.ch = '\n'
 			}
@@ -521,9 +548,10 @@ func (l *Lexer) readString() string {
 			}
 		}
 		out = out + string(l.ch)
+
 	}
 
-	return out
+	return out, nil
 }
 
 // read a regexp, including flags.
@@ -574,19 +602,6 @@ func (l *Lexer) readRegexp() (string, error) {
 	}
 
 	return out, nil
-}
-
-// read the end of a backtick-quoted string
-func (l *Lexer) readBacktick() string {
-	position := l.position + 1
-	for {
-		l.readChar()
-		if l.ch == '`' {
-			break
-		}
-	}
-	out := string(l.characters[position:l.position])
-	return out
 }
 
 // peek character

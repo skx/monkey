@@ -244,15 +244,17 @@ func TestString(t *testing.T) {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 		}
 	}
-
 }
+
 func TestSimpleComment(t *testing.T) {
 	input := `=+// This is a comment
 // This is still a comment
 # I like comments
 let a = 1; # This is a comment too.
 // This is a final
-// comment on two-lines`
+// comment on two-lines
+/*
+`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -673,6 +675,11 @@ a = 3/4;
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 		}
 	}
+
+	x := l.GetLine()
+	if x != 2 {
+		t.Fatalf("unexpected line. %d", x)
+	}
 }
 
 // TestDotDot is designed to ensure we get a ".." not an integer value.
@@ -700,5 +707,73 @@ func TestDotDot(t *testing.T) {
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 		}
+	}
+}
+
+// TestIllegalString is designed to look for an unterminated/illegal string
+func TestIllegalString(t *testing.T) {
+
+	// Illegal strings
+	bad := []string{
+		`if ( f ~= "steve\
+ )`,
+		`if ( f ~= "steve\`,
+	}
+
+	for _, input := range bad {
+
+		tests := []struct {
+			expectedType    token.Type
+			expectedLiteral string
+		}{
+			{token.IF, "if"},
+			{token.LPAREN, "("},
+			{token.IDENT, "f"},
+			{token.CONTAINS, "~="},
+			{token.ILLEGAL, "unterminated string"},
+			{token.EOF, ""},
+		}
+		l := New(input)
+		for i, tt := range tests {
+			tok := l.NextToken()
+			if tok.Type != tt.expectedType {
+				t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+			}
+			if tok.Literal != tt.expectedLiteral {
+				t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+			}
+		}
+	}
+}
+
+// TestIllegalString is designed to look for an unterminated/illegal backtick
+func TestIllegalBacktick(t *testing.T) {
+	input := "if ( f ~= `steve )"
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "f"},
+		{token.CONTAINS, "~="},
+		{token.ILLEGAL, "unterminated string"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+
+	x := l.GetLine()
+	if x != 0 {
+		t.Fatalf("unexpected line. %d", x)
 	}
 }
