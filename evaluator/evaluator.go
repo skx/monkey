@@ -277,6 +277,11 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+	// Found by fuzzing
+	if right == nil {
+		return newError("null operand %v", right)
+	}
+
 	switch obj := right.(type) {
 	case *object.Integer:
 		return &object.Integer{Value: -obj.Value}
@@ -288,6 +293,12 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 }
 
 func evalInfixExpression(operator string, left, right object.Object, env *object.Environment) object.Object {
+
+	// Found by fuzzing
+	if left == nil || right == nil {
+		return newError("null operand %v %v", left, right)
+	}
+
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -412,6 +423,11 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 }
 
 func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+	// Found by fuzzing
+	if left == nil || right == nil {
+		return newError("null operand %v %v", left, right)
+	}
+
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
@@ -420,6 +436,11 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "+=":
 		return &object.Integer{Value: leftVal + rightVal}
 	case "%":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
+
 		return &object.Integer{Value: leftVal % rightVal}
 	case "**":
 		return &object.Integer{Value: int64(math.Pow(float64(leftVal), float64(rightVal)))}
@@ -432,6 +453,10 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "*=":
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Integer{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Integer{Value: leftVal / rightVal}
@@ -498,6 +523,10 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -538,6 +567,10 @@ func evalFloatIntegerInfixExpression(operator string, left, right object.Object)
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -578,6 +611,10 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -1009,9 +1046,29 @@ func trimQuotes(in string, c byte) string {
 // `stderr`, `stdout`, and `error` will be the fields
 func backTickOperation(command string) object.Object {
 
+	command = strings.TrimSpace(command)
+	if command == "" {
+		return newError("empty command")
+	}
+
+	// default arguments, if none are found
+	args := []string{}
+
 	// split the command
 	toExec := splitCommand(command)
-	cmd := exec.Command(toExec[0], toExec[1:]...)
+
+	// Did that work?
+	if len(args) == 0 {
+		return newError("error - empty command")
+	}
+
+	// Use the real args if we got any
+	if len(args) > 1 {
+		args = toExec[1:]
+	}
+
+	// Run the ocmmand.
+	cmd := exec.Command(toExec[0], args...)
 
 	// get the result
 	var outb, errb bytes.Buffer
@@ -1171,6 +1228,11 @@ func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 func evalObjectCallExpression(ctx context.Context, call *ast.ObjectCallExpression, env *object.Environment) object.Object {
 
 	obj := EvalContext(ctx, call.Object, env)
+
+	if obj == nil {
+		return newError("impossible object-call on an empty object")
+	}
+
 	if method, ok := call.Call.(*ast.CallExpression); ok {
 
 		//

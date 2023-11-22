@@ -271,7 +271,26 @@ func (l *Lexer) NextToken() token.Token {
 			return tok
 
 		}
+
+		// Not printable?  That's a bug
+		if !unicode.IsPrint(l.ch) {
+			tok.Literal = string(l.ch)
+			tok.Type = token.ILLEGAL
+
+			// skip the characters
+			l.readChar()
+			return tok
+		}
+
 		tok.Literal = l.readIdentifier()
+
+		// Did we fail to read a token?
+		if len(tok.Literal) == 0 {
+			// Then we've got an illegal
+			tok.Type = token.ILLEGAL
+			l.readChar()
+			return tok
+		}
 		tok.Type = token.LookupIdentifier(tok.Literal)
 		l.prevToken = tok
 
