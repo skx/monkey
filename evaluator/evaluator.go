@@ -1183,6 +1183,11 @@ func evalHashLiteral(ctx context.Context, node *ast.HashLiteral, env *object.Env
 }
 
 func applyFunction(ctx context.Context, env *object.Environment, fn object.Object, args []object.Object) object.Object {
+
+	// Found by fuzzing
+	if fn == nil {
+		return newError("impossible empty body on function-call")
+	}
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(ctx, fn, args)
