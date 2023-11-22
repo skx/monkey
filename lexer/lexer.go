@@ -181,7 +181,6 @@ func (l *Lexer) NextToken() token.Token {
 					tok.Type = token.REGEXP
 					tok.Literal = str
 				} else {
-					fmt.Printf("%s\n", err.Error())
 					tok.Type = token.REGEXP
 					tok.Literal = str
 				}

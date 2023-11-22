@@ -680,7 +680,6 @@ func evalAssignStatement(ctx context.Context, a *ast.AssignStatement, env *objec
 
 		res := evalInfixExpression("+=", current, evaluated, env)
 		if isError(res) {
-			fmt.Printf("Error handling += %s\n", res.Inspect())
 			return res
 		}
 
@@ -697,7 +696,6 @@ func evalAssignStatement(ctx context.Context, a *ast.AssignStatement, env *objec
 
 		res := evalInfixExpression("-=", current, evaluated, env)
 		if isError(res) {
-			fmt.Printf("Error handling -= %s\n", res.Inspect())
 			return res
 		}
 
@@ -713,7 +711,6 @@ func evalAssignStatement(ctx context.Context, a *ast.AssignStatement, env *objec
 
 		res := evalInfixExpression("*=", current, evaluated, env)
 		if isError(res) {
-			fmt.Printf("Error handling *= %s\n", res.Inspect())
 			return res
 		}
 
@@ -730,7 +727,6 @@ func evalAssignStatement(ctx context.Context, a *ast.AssignStatement, env *objec
 
 		res := evalInfixExpression("/=", current, evaluated, env)
 		if isError(res) {
-			fmt.Printf("Error handling /= %s\n", res.Inspect())
 			return res
 		}
 

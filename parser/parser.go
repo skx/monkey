@@ -462,7 +462,6 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 
 			msg := fmt.Sprintf("expected token to be '{', got %s instead", p.curToken.Type)
 			p.errors = append(p.errors, msg)
-			fmt.Printf("error\n")
 			return nil
 		}
 
@@ -472,7 +471,6 @@ func (p *Parser) parseSwitchStatement() ast.Expression {
 		if !p.curTokenIs(token.RBRACE) {
 			msg := fmt.Sprintf("Syntax Error: expected token to be '}', got %s instead", p.curToken.Type)
 			p.errors = append(p.errors, msg)
-			fmt.Printf("error\n")
 			return nil
 
 		}
