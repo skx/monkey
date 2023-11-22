@@ -33,12 +33,14 @@
   * [3. Object Methods](#3-object-methods)
       * [3.1 Defininig New Object Methods](#31-defininig-new-object-methods)
 * [Github Setup](#github-setup)
+* [Fuzz Testing](#fuzz-testing)
+
+
 
 
 # Monkey
 
 This repository contains an interpreter for the "Monkey" programming language, as described in [Write an Interpreter in Go](https://interpreterbook.com).
-
 
 #### My changes
 
@@ -84,7 +86,6 @@ The interpreter in _this_ repository has been significantly extended from the st
   * No bugs due to C-style "fall-through".
 * Add support for explicit `null` usage:
   * `a = null;  if ( a == null ) { .. }`
-
 
 #### See Also
 
@@ -149,10 +150,13 @@ If no script-name is passed to the interpreter it will read from STDIN and
 execute that instead, allowing simple tests to be made.
 
 
+
+
 # 2 Syntax
 
 **NOTE**: Example-programs can be found beneath [examples/](examples/) which
 demonstrate these things, as well as parts of the standard-library.
+
 
 
 ## 2.1 Definitions
@@ -184,6 +188,7 @@ typos will cause much confusion!
      puts( "Hello, " + name + "\n");
 
 
+
 ## 2.2 Arithmetic operations
 
 `monkey` supports all the basic arithmetic operation of `int` and `float` types.
@@ -202,6 +207,7 @@ The `int` type is represented by `int64` and `float` type is represented by `flo
 
 Here `**` is used to raise the first number to the power of the second.
 When operating with integers the modulus operator is available too, via `%`.
+
 
 
 ## 2.3 Builtin containers
@@ -267,6 +273,7 @@ changing it in-place).
 Hash functions are demonstrated in the [examples/hash.mon](examples/hash.mon) sample.
 
 
+
 ## 2.4 Builtin functions
 
 The core primitives are:
@@ -329,6 +336,7 @@ Nothing special is required, the following will suffice as you'd expect:
     go build .
 
 
+
 ## 2.5 Functions
 
 `monkey` uses `fn` to define a function which will be assigned to a variable for
@@ -379,6 +387,7 @@ The same thing works for literal functions:
     meh( {"Steve":"Kemp", true:1, false:0, 7:"seven"} );
 
 
+
 ## 2.6 If-else statements
 
 `monkey` supports if-else statements.
@@ -408,6 +417,8 @@ would expect with a C-background:
 
 Note that in the interests of clarity nested ternary-expressions are illegal!
 
+
+
 ## 2.7 Switch Statements
 
 Monkey supports the `switch` and `case` expressions, as the following example demonstrates:
@@ -434,6 +445,7 @@ Monkey supports the `switch` and `case` expressions, as the following example de
 See also [examples/switch.mon](examples/switch.mon).
 
 
+
 ## 2.8 For-loop statements
 
 `monkey` supports a golang-style for-loop statement.
@@ -450,6 +462,7 @@ See also [examples/switch.mon](examples/switch.mon).
      };
 
      puts(sum(100));  // Outputs: 4950
+
 
 
 ## 2.8.1 Foreach statements
@@ -474,12 +487,14 @@ The same style of iteration works for Arrays, Hashes, and the characters which m
 When iterating over hashes you can receive either the keys, or the keys and value at each step in the iteration, otherwise you receive the value and an optional index.
 
 
+
 ## 2.9 Comments
 
 `monkey` support two kinds of comments:
 
 * Single-line comments begin with `//` and last until the end of the line.
 * Multiline comments between `/*` and `*/`.
+
 
 
 ## 2.10 Postfix Operators
@@ -510,6 +525,7 @@ The update-operators work with integers and doubles by default, when it comes to
     puts( str );           // -> "Forename Surname\n"
 
 
+
 ## 2.11 Command Execution
 
 As with many scripting languages commands may be executed via the backtick
@@ -526,6 +542,7 @@ operator (`\``).
 
 The output will be a hash with two keys `stdout` and `stderr`.  NULL is
 returned if the execution fails.  This can be seen in [examples/exec.mon](examples/exec.mon).
+
 
 
 ## 2.12 Regular Expressions
@@ -547,6 +564,8 @@ You can also perform matching (complete with captures), with a literal regular e
     if ( ip ~= /([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/  ) {
         printf("Matched! %s.%s.%s.%s\n", $1, $2, $3, $4 );
     }
+
+
 
 ## 2.13 File I/O
 
@@ -590,6 +609,7 @@ By default three filehandles will be made available, as constants:
   * Used for writing messages.
 
 
+
 ## 2.14 File Operations
 
 The primitive `stat` will return a hash of details about the given file, or
@@ -607,6 +627,9 @@ To remove a file, use `unlink`:
 And finally to make a directory:
 
     mkdir( "/tmp/blah" );
+
+
+
 
 # 3. Object Methods
 
@@ -649,6 +672,7 @@ The `string` object has the most methods at the time of writing, but
 no doubt things will change over time.
 
 
+
 ## 3.1 Defininig New Object Methods
 
 The object-methods mentioned above are implemented in Go, however it is also
@@ -671,6 +695,7 @@ in this fashion, for example the functional-programming methods `array.map`,
 `array.filter`, `string.toupper`, etc, etc.
 
 
+
 ## Github Setup
 
 This repository is configured to run tests upon every commit, and when
@@ -681,6 +706,50 @@ pull-requests are created/updated.  The testing is carried out via
 Releases are automated in a similar fashion via [.github/build](.github/build),
 and the [github-action-publish-binaries](https://github.com/skx/github-action-publish-binaries) action.
 
+
+
+## Fuzz Testing
+
+Fuzz-testing involves creating random input, and running the program to test with that, to see what happens.
+
+The intention is that most of the random inputs will be invalid, so you'll be able to test your error-handling and see where you failed to consider specific input things.
+
+The 1.18 release of the golang compiler/toolset has integrated support for fuzz-testing, and you can launch it like so:
+
+```sh
+go test -fuzztime=300s -parallel=1 -fuzz=FuzzMonkey -v
+```
+
+Sample output looks like this:
+
+```
+$ go test -fuzztime=300s -parallel=1 -fuzz=FuzzMonkey -v
+=== RUN   FuzzMonkey
+fuzz: elapsed: 0s, gathering baseline coverage: 0/240 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 240/240 completed, now fuzzing with 1 workers
+fuzz: elapsed: 3s, execs: 4321 (1440/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 6s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+cfuzz: elapsed: 9s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 12s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 15s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 18s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 21s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 24s, execs: 4321 (0/sec), new interesting: 6 (total: 246)
+fuzz: elapsed: 27s, execs: 73463 (23060/sec), new interesting: 17 (total: 257)
+fuzz: elapsed: 30s, execs: 75639 (725/sec), new interesting: 18 (total: 258)
+fuzz: elapsed: 33s, execs: 125712 (16701/sec), new interesting: 25 (total: 265)
+fuzz: elapsed: 36s, execs: 139338 (4543/sec), new interesting: 34 (total: 274)
+fuzz: elapsed: 39s, execs: 173881 (11511/sec), new interesting: 49 (total: 289)
+fuzz: elapsed: 42s, execs: 198046 (8055/sec), new interesting: 55 (total: 295)
+fuzz: elapsed: 45s, execs: 210203 (4054/sec), new interesting: 75 (total: 315)
+fuzz: elapsed: 48s, execs: 262945 (17580/sec), new interesting: 85 (total: 325)
+fuzz: elapsed: 51s, execs: 297505 (11517/sec), new interesting: 108 (total: 348)
+fuzz: elapsed: 54s, execs: 308672 (3722/sec), new interesting: 116 (total: 356)
+fuzz: elapsed: 57s, execs: 341614 (10984/sec), new interesting: 123 (total: 363)
+fuzz: elapsed: 1m0s, execs: 366053 (8146/sec), new interesting: 131 (total: 371)
+fuzz: elapsed: 1m3s, execs: 396575 (10172/sec), new interesting: 137 (total: 377
+...
+```
 
 Steve
 --
