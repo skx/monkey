@@ -488,6 +488,11 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 			step = -1.0
 		}
 
+		// Found by fuzzing
+		if len > 2048 {
+			return newError("impossible large range for .. operator")
+		}
+
 		// Make an array to hold the return value
 		array := make([]object.Object, len)
 
