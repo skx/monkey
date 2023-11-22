@@ -277,6 +277,11 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+	// Found by fuzzing
+	if right == nil {
+		return newError("null operand %v", right)
+	}
+
 	switch obj := right.(type) {
 	case *object.Integer:
 		return &object.Integer{Value: -obj.Value}
@@ -288,6 +293,12 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 }
 
 func evalInfixExpression(operator string, left, right object.Object, env *object.Environment) object.Object {
+
+	// Found by fuzzing
+	if left == nil || right == nil {
+		return newError("null operand %v %v", left, right)
+	}
+
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -412,6 +423,11 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 }
 
 func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+	// Found by fuzzing
+	if left == nil || right == nil {
+		return newError("null operand %v %v", left, right)
+	}
+
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
@@ -420,6 +436,11 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "+=":
 		return &object.Integer{Value: leftVal + rightVal}
 	case "%":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
+
 		return &object.Integer{Value: leftVal % rightVal}
 	case "**":
 		return &object.Integer{Value: int64(math.Pow(float64(leftVal), float64(rightVal)))}
@@ -432,6 +453,10 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "*=":
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Integer{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Integer{Value: leftVal / rightVal}
@@ -461,6 +486,11 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 
 		if rightVal < leftVal {
 			step = -1.0
+		}
+
+		// Found by fuzzing
+		if len > 2048 {
+			return newError("impossible large range for .. operator")
 		}
 
 		// Make an array to hold the return value
@@ -498,6 +528,10 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -538,6 +572,10 @@ func evalFloatIntegerInfixExpression(operator string, left, right object.Object)
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -578,6 +616,10 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 	case "**":
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
 	case "/":
+		// Found by fuzzing
+		if rightVal == 0 {
+			return newError("divide by zero")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "/=":
 		return &object.Float{Value: leftVal / rightVal}
@@ -1009,9 +1051,29 @@ func trimQuotes(in string, c byte) string {
 // `stderr`, `stdout`, and `error` will be the fields
 func backTickOperation(command string) object.Object {
 
+	command = strings.TrimSpace(command)
+	if command == "" {
+		return newError("empty command")
+	}
+
+	// default arguments, if none are found
+	args := []string{}
+
 	// split the command
 	toExec := splitCommand(command)
-	cmd := exec.Command(toExec[0], toExec[1:]...)
+
+	// Did that work?
+	if len(args) == 0 {
+		return newError("error - empty command")
+	}
+
+	// Use the real args if we got any
+	if len(args) > 1 {
+		args = toExec[1:]
+	}
+
+	// Run the ocmmand.
+	cmd := exec.Command(toExec[0], args...)
 
 	// get the result
 	var outb, errb bytes.Buffer
@@ -1049,6 +1111,12 @@ func backTickOperation(command string) object.Object {
 }
 
 func evalIndexExpression(left, index object.Object) object.Object {
+
+	// Found by fuzzing
+	if left == nil || index == nil {
+		return newError("null operand %v[%v]", left, index)
+	}
+
 	switch {
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
 		return evalArrayIndexExpression(left, index)
@@ -1126,6 +1194,11 @@ func evalHashLiteral(ctx context.Context, node *ast.HashLiteral, env *object.Env
 }
 
 func applyFunction(ctx context.Context, env *object.Environment, fn object.Object, args []object.Object) object.Object {
+
+	// Found by fuzzing
+	if fn == nil {
+		return newError("impossible empty body on function-call")
+	}
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(ctx, fn, args)
@@ -1171,6 +1244,11 @@ func RegisterBuiltin(name string, fun object.BuiltinFunction) {
 func evalObjectCallExpression(ctx context.Context, call *ast.ObjectCallExpression, env *object.Environment) object.Object {
 
 	obj := EvalContext(ctx, call.Object, env)
+
+	if obj == nil {
+		return newError("impossible object-call on an empty object")
+	}
+
 	if method, ok := call.Call.(*ast.CallExpression); ok {
 
 		//

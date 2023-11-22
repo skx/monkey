@@ -930,7 +930,12 @@ func (p *Parser) parseAssignExpression(name ast.Expression) ast.Expression {
 	if n, ok := name.(*ast.Identifier); ok {
 		stmt.Name = n
 	} else {
-		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead around line %d", name.TokenLiteral(), p.l.GetLine())
+		msg := "expected assign token to be IDENT, got null instead"
+
+		// found by fuzzer
+		if name != nil {
+			msg = fmt.Sprintf("expected assign token to be IDENT, got %s instead around line %d", name.TokenLiteral(), p.l.GetLine())
+		}
 		p.errors = append(p.errors, msg)
 	}
 
