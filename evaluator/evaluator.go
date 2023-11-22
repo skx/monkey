@@ -1106,6 +1106,12 @@ func backTickOperation(command string) object.Object {
 }
 
 func evalIndexExpression(left, index object.Object) object.Object {
+
+	// Found by fuzzing
+	if left == nil || index == nil {
+		return newError("null operand %v[%v]", left, index)
+	}
+
 	switch {
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
 		return evalArrayIndexExpression(left, index)
