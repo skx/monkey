@@ -721,3 +721,27 @@ if (match( "+", name) ) { puts( "Hello\n" ); }
 	}
 
 }
+
+func TestRangeOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		// normal
+		{"return 0..3;", "[0, 1, 2, 3]"},
+		{"return 0..1;", "[0, 1]"},
+		{"return 0..0;", "[0]"},
+		{"a = -3; b = 3; return a..b;", "[-3, -2, -1, 0, 1, 2, 3]"},
+		// reversed
+		{"return 3..0;", "[3, 2, 1, 0]"},
+		{"return 1..0;", "[1, 0]"},
+		{"return 0..0;", "[0]"},
+		{"return 3..-5;", "[3, 2, 1, 0, -1, -2, -3, -4, -5]"},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		if tt.expected != evaluated.Inspect() {
+			t.Fatalf("unexpected output for range operator, got %s for input %s", evaluated.Inspect(), tt.input)
+		}
+	}
+}

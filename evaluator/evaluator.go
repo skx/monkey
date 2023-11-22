@@ -448,12 +448,29 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "!=":
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	case "..":
-		len := int(rightVal-leftVal) + 1
+		// The start and end might not be ascending, so the size
+		// will be the span
+		diff := float64(rightVal - leftVal)
+		len := int(math.Abs(diff)) + 1
+
+		// Step is generally +1, but if we're going to
+		// express the range "10..0" it will be -1 to allow
+		// us to count down via subtraction
+		var step int64
+		step = 1.0
+
+		if rightVal < leftVal {
+			step = -1.0
+		}
+
+		// Make an array to hold the return value
 		array := make([]object.Object, len)
+
+		// Now make the range of integers, counting via the step.
 		i := 0
 		for i < len {
 			array[i] = &object.Integer{Value: leftVal}
-			leftVal++
+			leftVal += step
 			i++
 		}
 		return &object.Array{Elements: array}
