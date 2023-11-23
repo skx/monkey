@@ -28,6 +28,7 @@
 
 (defvar monkey-keywords
   '(
+    "case"
     "else"
     "fn"
     "for"
@@ -37,6 +38,7 @@
     "in"
     "let"
     "return"
+    "switch"
     ))
 
 ;; The language-core and functions from the standard-library.
