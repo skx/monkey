@@ -48,13 +48,13 @@ func EvalContext(ctx context.Context, node ast.Node, env *object.Environment) ob
 
 	switch node := node.(type) {
 
-	//Statements
+	// Statements
 	case *ast.Program:
 		return evalProgram(ctx, node, env)
 	case *ast.ExpressionStatement:
 		return EvalContext(ctx, node.Expression, env)
 
-	//Expressions
+	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.FloatLiteral:
@@ -1122,7 +1122,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
-	case left.Type() == object.STRING_OBJ:
+	case left.Type() == object.STRING_OBJ && index.Type() == object.INTEGER_OBJ:
 		return evalStringIndexExpression(left, index)
 	default:
 		return newError("index operator not support:%s", left.Type())
