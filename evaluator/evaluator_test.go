@@ -458,40 +458,66 @@ func TestStringIndexExpression(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected interface{}
+		err      bool
 	}{
 		{
 			"\"Steve\"[0]",
 			"S",
+			false,
 		},
 		{
 			"\"Steve\"[1]",
 			"t",
+			false,
 		},
 		{
 			"\"Steve\"[101]",
 			nil,
+			true,
 		},
 		{
 			"\"Steve\"[-1]",
 			nil,
+			true,
 		},
 		{
 			"\"狐犬\"[0]",
 			"狐",
+			false,
 		},
 		{
 			"\"狐犬\"[1]",
 			"犬",
+			false,
+		},
+		{
+			"\"狐犬\"[\"x\"]",
+			"",
+			true,
+		},
+		{
+			"\"狐犬\"[-3]",
+			"",
+			true,
 		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 
-		str, ok := tt.expected.(string)
-		if ok {
-			testStringObject(t, evaluated, str)
+		_, err := evaluated.(*object.Error)
+
+		if err {
+			if tt.err == false {
+				t.Fatalf("expected error for input '%s', got %T", tt.input, evaluated)
+			}
 		} else {
-			testNullObject(t, evaluated)
+			str, ok := tt.expected.(string)
+			if ok {
+				testStringObject(t, evaluated, str)
+			} else {
+
+				testNullObject(t, evaluated)
+			}
 		}
 	}
 }

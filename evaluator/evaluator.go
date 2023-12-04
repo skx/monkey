@@ -1154,17 +1154,22 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 
 func evalStringIndexExpression(input, index object.Object) object.Object {
 	str := input.(*object.String).Value
-	idx := index.(*object.Integer).Value
+	idx, isInt := index.(*object.Integer)
+	if !isInt {
+		return newError("expected an integer for string index, got something else")
+	}
+
+	i := idx.Value
 	max := int64(len(str))
-	if idx < 0 || idx > max {
-		return NULL
+	if i < 0 || i > max {
+		return newError("index out of bounds")
 	}
 
 	// Get the characters as an array of runes
 	chars := []rune(str)
 
 	// Now index
-	ret := chars[idx]
+	ret := chars[i]
 
 	// And return as a string.
 	return &object.String{Value: string(ret)}
