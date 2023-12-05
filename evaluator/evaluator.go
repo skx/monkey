@@ -5,12 +5,15 @@ package evaluator
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/skx/monkey/ast"
 	"github.com/skx/monkey/object"
@@ -48,13 +51,13 @@ func EvalContext(ctx context.Context, node ast.Node, env *object.Environment) ob
 
 	switch node := node.(type) {
 
-	//Statements
+	// Statements
 	case *ast.Program:
 		return evalProgram(ctx, node, env)
 	case *ast.ExpressionStatement:
 		return EvalContext(ctx, node.Expression, env)
 
-	//Expressions
+	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.FloatLiteral:
@@ -1006,9 +1009,8 @@ func evalExpression(ctx context.Context, exps []ast.Expression, env *object.Envi
 	return result
 }
 
-// Split a line of text into tokens, but keep anything "quoted"
-// together..
-//
+// parseCommandLine takes a command string and splits it into individual arguments,
+// respecting quotes and escaping within the command.
 // So this input:
 //
 //	/bin/sh -c "ls /etc"
@@ -1018,96 +1020,121 @@ func evalExpression(ctx context.Context, exps []ast.Expression, env *object.Envi
 //	/bin/sh
 //	-c
 //	ls /etc
-func splitCommand(input string) []string {
+func parseCommandLine(command string) ([]string, error) {
+	var args []string
+	var current strings.Builder
+	inQuotes := false
+	var quoteChar rune
 
-	//
-	// This does the split into an array
-	//
-	r := regexp.MustCompile(`[^\s"']+|"([^"]*)"|'([^']*)`)
-	res := r.FindAllString(input, -1)
-
-	//
-	// However the resulting pieces might be quoted.
-	// So we have to remove them, if present.
-	//
-	var result []string
-	for _, e := range res {
-		result = append(result, trimQuotes(e, '"'))
-	}
-	return (result)
-}
-
-// Remove balanced characters around a string.
-func trimQuotes(in string, c byte) string {
-	if len(in) >= 2 {
-		if in[0] == c && in[len(in)-1] == c {
-			return in[1 : len(in)-1]
+	// flush appends the current argument to the args slice and resets the current string builder.
+	flush := func() {
+		if current.Len() > 0 {
+			args = append(args, current.String())
+			current.Reset()
 		}
 	}
-	return in
+
+	// Iterate through each character in the command string.
+	for _, c := range command {
+		switch {
+		case unicode.IsSpace(c) && !inQuotes:
+			// If a space is encountered outside of quotes, flush the current argument.
+			flush()
+		case (c == '\'' || c == '"') && !inQuotes:
+			// If a single or double quote is encountered and we're not inside quotes,
+			// mark the start of quoted text and record the quote character.
+			inQuotes = true
+			quoteChar = c
+		case c == quoteChar && inQuotes:
+			// If the matching closing quote is found while inside quotes, mark the end of quoted text
+			// and flush the current argument.
+			inQuotes = false
+			flush()
+		default:
+			// Otherwise, append the character to the current argument.
+			current.WriteRune(c)
+		}
+	}
+
+	// If still inside quotes at the end of parsing, return an error for unclosed quotes.
+	if inQuotes {
+		return nil, fmt.Errorf("unclosed quote in command line: %s", command)
+	}
+
+	// Flush any remaining argument and return the parsed arguments.
+	flush()
+	return args, nil
 }
 
-// Run a command and return a hash containing the result.
-// `stderr`, `stdout`, and `error` will be the fields
+// backTickOperation executes a shell command and returns a hash object containing the result.
+// The hash includes 'stdout', 'stderr', and 'code' fields.
+// If the command is empty or parsing fails, an error hash is returned.
 func backTickOperation(command string) object.Object {
+	var (
+		args []string
+		err  error
+	)
 
-	command = strings.TrimSpace(command)
-	if command == "" {
-		return newError("empty command")
+	// Trim leading and trailing whitespace from the command.
+	if command = strings.TrimSpace(command); command != "" {
+		// Split the command into arguments.
+		if args, err = parseCommandLine(command); err != nil {
+			// Return an error hash for parsing failure.
+			return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: "parse error: " + err.Error()},
+				&object.Integer{Value: -1})
+		}
 	}
 
-	// default arguments, if none are found
-	args := []string{}
-
-	// split the command
-	toExec := splitCommand(command)
-
-	// Did that work?
+	// Check if the command is empty after parsing.
 	if len(args) == 0 {
-		return newError("error - empty command")
+		// Return an error hash for an empty command.
+		return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: "no command"},
+			&object.Integer{Value: -1})
 	}
 
-	// Use the real args if we got any
-	if len(args) > 1 {
-		args = toExec[1:]
+	// Run the command.
+	cmd := exec.Command(filepath.Clean(args[0]), args[1:]...)
+
+	// Capture the command's stdout and stderr.
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	var exitCode int64 = 0
+
+	// Execute the command and handle errors.
+	err = cmd.Run()
+	if err != nil {
+		var exitError *exec.ExitError
+		if !errors.As(err, &exitError) {
+			// Handle non-ExitError errors (e.g., command not found).
+			return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: fmt.Sprintf("Failed to run '%s' -> %s\n", command, err.Error())},
+				&object.Integer{Value: -1})
+		}
+		exitCode = int64(exitError.ExitCode())
 	}
 
-	// Run the ocmmand.
-	cmd := exec.Command(toExec[0], args...)
+	// Create a hash with 'stdout', 'stderr', and 'code' fields.
+	return createCommandExecHash(&object.String{Value: stdout.String()}, &object.String{Value: stderr.String()},
+		&object.Integer{Value: exitCode})
+}
 
-	// get the result
-	var outb, errb bytes.Buffer
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-	err := cmd.Run()
-
-	// If the command exits with a non-zero exit-code it
-	// is regarded as a failure.  Here we test for ExitError
-	// to regard that as a non-failure.
-	if err != nil && err != err.(*exec.ExitError) {
-		fmt.Printf("Failed to run '%s' -> %s\n", command, err.Error())
-		return NULL
-	}
-
-	//
-	// The result-objects to store in our hash.
-	//
-	stdout := &object.String{Value: outb.String()}
-	stderr := &object.String{Value: errb.String()}
-
-	// Create keys
+// createCommandExecHash Create a hash with 'stdout', 'stderr', and 'code' fields.
+func createCommandExecHash(stdoutObj, stderrObj, errorObj object.Object) object.Object {
+	// Create keys for the hash.
 	stdoutKey := &object.String{Value: "stdout"}
-	stdoutHash := object.HashPair{Key: stdoutKey, Value: stdout}
-
 	stderrKey := &object.String{Value: "stderr"}
-	stderrHash := object.HashPair{Key: stderrKey, Value: stderr}
+	exitCodeKey := &object.String{Value: "exitCode"}
 
-	// Make a new hash, and populate it
-	newHash := make(map[object.HashKey]object.HashPair)
-	newHash[stdoutKey.HashKey()] = stdoutHash
-	newHash[stderrKey.HashKey()] = stderrHash
+	// Populate the hash with key-value pairs.
+	hashPairs := map[object.HashKey]object.HashPair{
+		stdoutKey.HashKey():   {Key: stdoutKey, Value: stdoutObj},
+		stderrKey.HashKey():   {Key: stderrKey, Value: stderrObj},
+		exitCodeKey.HashKey(): {Key: exitCodeKey, Value: errorObj},
+	}
 
-	return &object.Hash{Pairs: newHash}
+	// Create and return the hash object.
+	return &object.Hash{Pairs: hashPairs}
 }
 
 func evalIndexExpression(left, index object.Object) object.Object {
