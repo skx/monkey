@@ -60,7 +60,7 @@ func TestBadLetConstStatement(t *testing.T) {
 	}
 }
 
-//TestConstStatements tests the "const" token.
+// TestConstStatements tests the "const" token.
 func TestConstStatements(t *testing.T) {
 	tests := []struct {
 		input              string
@@ -748,6 +748,46 @@ func TestParsingIndexExpression(t *testing.T) {
 	}
 	if !testInfixExpression(t, indexExp.Index, 1, "+", 1) {
 		return
+	}
+}
+
+func TestParsingIndexExpressionByDot(t *testing.T) {
+	input := `myArray.name;
+	myArray.2`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.IndexExpression. got=%T", stmt.Expression)
+	}
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+	literal, ok := indexExp.Index.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.StringLiteral. got=%T", indexExp.Index)
+	}
+	if literal.Value != "name" {
+		t.Errorf("literal.Value not %q, got=%q", "name", literal.Value)
+	}
+
+	stmt, _ = program.Statements[1].(*ast.ExpressionStatement)
+	indexExp, ok = stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.IndexExpression. got=%T", stmt.Expression)
+	}
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+	bLiteral, ok := indexExp.Index.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.IntegerLiteral. got=%T", indexExp.Index)
+	}
+	if bLiteral.Value != 2 {
+		t.Errorf("literal.Value not %q, got=%q", "2", bLiteral.Value)
 	}
 }
 

@@ -558,11 +558,11 @@ func (p *Parser) parseTernaryExpression(condition ast.Expression) ast.Expression
 		Token:     p.curToken,
 		Condition: condition,
 	}
-	p.nextToken() //skip the '?'
+	p.nextToken() // skip the '?'
 	precedence := p.curPrecedence()
 	expression.IfTrue = p.parseExpression(precedence)
 
-	if !p.expectPeek(token.COLON) { //skip the ":"
+	if !p.expectPeek(token.COLON) { // skip the ":"
 		return nil
 	}
 
@@ -999,14 +999,33 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	return hash
 }
 
-// parseMethodCallExpression parses an object-based method-call.
+// parseMethodCallExpression parses an object-based method call expression.
 func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
-	methodCall := &ast.ObjectCallExpression{Token: p.curToken, Object: obj}
+	currentToken := p.curToken
 	p.nextToken()
+
+	// If the next token is not a left parenthesis, it's an index expression.
+	if p.peekToken.Type != token.LPAREN {
+		var index ast.Expression
+
+		// If the current token is an identifier, treat it as a string literal index.
+		if p.curToken.Type == token.IDENT {
+			// Create a string literal index token.
+			indexToken := token.Token{Type: token.STRING, Literal: p.curToken.Literal}
+			index = &ast.StringLiteral{Token: indexToken, Value: indexToken.Literal}
+		} else {
+			// Otherwise, parse the index expression.
+			index = p.parseExpression(LOWEST)
+		}
+		// Return an index expression.
+		return &ast.IndexExpression{Token: currentToken, Left: obj, Index: index}
+	}
+
+	// Parse the method name as an identifier.
 	name := p.parseIdentifier()
 	p.nextToken()
-	methodCall.Call = p.parseCallExpression(name)
-	return methodCall
+	// Parse the method call expression and return an object call expression.
+	return &ast.ObjectCallExpression{Token: currentToken, Object: obj, Call: p.parseCallExpression(name)}
 }
 
 // curTokenIs tests if the current token has the given type.
