@@ -1000,40 +1000,51 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 }
 
 // parseMethodCallExpression parses an object-based method call expression.
+// It distinguishes between index expressions and method calls based on the next token.
 func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
 	currentToken := p.curToken
 	p.nextToken()
 
-	// If the next token is not a left parenthesis, it's an index expression.
+	// Handle index expressions if the next token is not a left parenthesis.
 	if p.peekToken.Type != token.LPAREN {
-		var index ast.Expression
-
-		switch p.curToken.Type {
-		case token.IDENT:
-			// If the current token is an identifier, treat it as a string literal index.
-			indexToken := token.Token{Type: token.STRING, Literal: p.curToken.Literal}
-			index = &ast.StringLiteral{Token: indexToken, Value: indexToken.Literal}
-		case token.INT:
-			// If it's an integer, parse it as an integer literal expression.
-			index = p.parseIntegerLiteral()
-		case token.TRUE, token.FALSE:
-			// If it's a boolean literal, parse it as a boolean expression.
-			index = p.parseBoolean()
-		default:
-			// Otherwise, parse the index expression.
-			index = p.parseExpression(LOWEST)
+		return &ast.IndexExpression{
+			Token: currentToken,
+			Left:  obj,
+			Index: p.parseDotIndexExpression(),
 		}
-
-		// Return an index expression.
-		return &ast.IndexExpression{Token: currentToken, Left: obj, Index: index}
 	}
 
-	// Parse the method name as an identifier.
-	name := p.parseIdentifier()
+	// For method calls, parse the method name and the call expression.
+	methodName := p.parseIdentifier()
 	p.nextToken()
+	return &ast.ObjectCallExpression{
+		Token:  currentToken,
+		Object: obj,
+		Call:   p.parseCallExpression(methodName),
+	}
+}
 
-	// Parse the method call expression and return an object call expression.
-	return &ast.ObjectCallExpression{Token: currentToken, Object: obj, Call: p.parseCallExpression(name)}
+// parseDotIndexExpression handles parsing expressions that follow a dot (.) in an object.
+// It supports identifiers, integers, and booleans, treating them appropriately.
+func (p *Parser) parseDotIndexExpression() ast.Expression {
+	switch p.curToken.Type {
+	case token.IDENT:
+		// Treat identifiers as string literals for indexing purposes.
+		indexToken := token.Token{Type: token.STRING, Literal: p.curToken.Literal}
+		return &ast.StringLiteral{
+			Token: indexToken,
+			Value: indexToken.Literal,
+		}
+	case token.INT:
+		// Parse integer literals.
+		return p.parseIntegerLiteral()
+	case token.TRUE, token.FALSE:
+		// Parse boolean literals.
+		return p.parseBoolean()
+	default:
+		// Handle other types of expressions.
+		return p.parseExpression(LOWEST)
+	}
 }
 
 // curTokenIs tests if the current token has the given type.
