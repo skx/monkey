@@ -1008,15 +1008,22 @@ func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
 	if p.peekToken.Type != token.LPAREN {
 		var index ast.Expression
 
-		// If the current token is an identifier, treat it as a string literal index.
-		if p.curToken.Type == token.IDENT {
-			// Create a string literal index token.
+		switch p.curToken.Type {
+		case token.IDENT:
+			// If the current token is an identifier, treat it as a string literal index.
 			indexToken := token.Token{Type: token.STRING, Literal: p.curToken.Literal}
 			index = &ast.StringLiteral{Token: indexToken, Value: indexToken.Literal}
-		} else {
+		case token.INT:
+			// If it's an integer, parse it as an integer literal expression.
+			index = p.parseIntegerLiteral()
+		case token.TRUE, token.FALSE:
+			// If it's a boolean literal, parse it as a boolean expression.
+			index = p.parseBoolean()
+		default:
 			// Otherwise, parse the index expression.
 			index = p.parseExpression(LOWEST)
 		}
+
 		// Return an index expression.
 		return &ast.IndexExpression{Token: currentToken, Left: obj, Index: index}
 	}
@@ -1024,6 +1031,7 @@ func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
 	// Parse the method name as an identifier.
 	name := p.parseIdentifier()
 	p.nextToken()
+
 	// Parse the method call expression and return an object call expression.
 	return &ast.ObjectCallExpression{Token: currentToken, Object: obj, Call: p.parseCallExpression(name)}
 }
