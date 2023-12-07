@@ -558,11 +558,11 @@ func (p *Parser) parseTernaryExpression(condition ast.Expression) ast.Expression
 		Token:     p.curToken,
 		Condition: condition,
 	}
-	p.nextToken() //skip the '?'
+	p.nextToken() // skip the '?'
 	precedence := p.curPrecedence()
 	expression.IfTrue = p.parseExpression(precedence)
 
-	if !p.expectPeek(token.COLON) { //skip the ":"
+	if !p.expectPeek(token.COLON) { // skip the ":"
 		return nil
 	}
 
@@ -999,14 +999,52 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	return hash
 }
 
-// parseMethodCallExpression parses an object-based method-call.
+// parseMethodCallExpression parses an object-based method call expression.
+// It distinguishes between index expressions and method calls based on the next token.
 func (p *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
-	methodCall := &ast.ObjectCallExpression{Token: p.curToken, Object: obj}
+	currentToken := p.curToken
 	p.nextToken()
-	name := p.parseIdentifier()
+
+	// Handle index expressions if the next token is not a left parenthesis.
+	if p.peekToken.Type != token.LPAREN {
+		return &ast.IndexExpression{
+			Token: currentToken,
+			Left:  obj,
+			Index: p.parseDotIndexExpression(),
+		}
+	}
+
+	// For method calls, parse the method name and the call expression.
+	methodName := p.parseIdentifier()
 	p.nextToken()
-	methodCall.Call = p.parseCallExpression(name)
-	return methodCall
+	return &ast.ObjectCallExpression{
+		Token:  currentToken,
+		Object: obj,
+		Call:   p.parseCallExpression(methodName),
+	}
+}
+
+// parseDotIndexExpression handles parsing expressions that follow a dot (.) in an object.
+// It supports identifiers, integers, and booleans, treating them appropriately.
+func (p *Parser) parseDotIndexExpression() ast.Expression {
+	switch p.curToken.Type {
+	case token.IDENT:
+		// Treat identifiers as string literals for indexing purposes.
+		indexToken := token.Token{Type: token.STRING, Literal: p.curToken.Literal}
+		return &ast.StringLiteral{
+			Token: indexToken,
+			Value: indexToken.Literal,
+		}
+	case token.INT:
+		// Parse integer literals.
+		return p.parseIntegerLiteral()
+	case token.TRUE, token.FALSE:
+		// Parse boolean literals.
+		return p.parseBoolean()
+	default:
+		// Handle other types of expressions.
+		return p.parseExpression(LOWEST)
+	}
 }
 
 // curTokenIs tests if the current token has the given type.
