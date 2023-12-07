@@ -771,3 +771,20 @@ func TestRangeOperator(t *testing.T) {
 		}
 	}
 }
+
+func TestBackTickOperation(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"``", "no command"},
+		{"`/bin/sh -c \"ls /etc`", `parse error: unclosed quote in command line: /bin/sh -c "ls /etc`},
+		{"`/usr/bin/noexe`", "Failed to run"},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		if !strings.Contains(evaluated.Inspect(), tt.expected) {
+			t.Fatalf("unexpected output for back tick operation, got %s for input %s", evaluated.Inspect(), tt.input)
+		}
+	}
+}

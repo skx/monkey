@@ -529,19 +529,17 @@ The update-operators work with integers and doubles by default, when it comes to
 ## 2.11 Command Execution
 
 As with many scripting languages commands may be executed via the backtick
-operator (`\``).
+operator (``).
 
       let uptime = `/usr/bin/uptime`;
 
-      if ( uptime ) {
+      if ( uptime["exitCode"] == 0 ) {
           puts( "STDOUT: ", uptime["stdout"].trim() , "\n");
-          puts( "STDERR: ", uptime["stderr"].trim() , "\n");
       } else {
-          puts( "Failed to run command\n");
+          puts( "An error occurred while running the command: ", uptime["stderr"].trim(), "\n");
       }
 
-The output will be a hash with two keys `stdout` and `stderr`.  NULL is
-returned if the execution fails.  This can be seen in [examples/exec.mon](examples/exec.mon).
+The output will be a hash containing the keys `stdout`, `stderr`, and `exitCode`, as demonstrated in [examples/exec.mon](examples/exec.mon).
 
 
 
